@@ -38,7 +38,11 @@ function Login({navigation}) {
       />
       <Text style={styles.baseText}>
         Don't have an account?
-        <Text style={styles.innerText}> Sign up</Text>
+        <Text
+          style={styles.innerText}
+          onPress={() => navigation.navigate('Signup')}>
+          {' Sign up'}
+        </Text>
       </Text>
     </View>
   );

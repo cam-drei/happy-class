@@ -5,13 +5,12 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#fff',
     alignItems: 'center',
-    // justifyContent: 'center',
   },
   logo: {
     aspectRatio: 1,
-    width: 300,
-    height: 300,
-    borderRadius: 300 / 2,
+    width: 250,
+    height: 250,
+    borderRadius: 250 / 2,
   },
   inputGroup: {
     width: 300,
