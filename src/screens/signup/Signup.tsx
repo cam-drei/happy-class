@@ -1,9 +1,10 @@
-import React, {useState} from 'react';
+import React from 'react';
 import {View, Image} from 'react-native';
-import {Input, Button, Text} from '@rneui/themed';
+import {Input, Text} from '@rneui/themed';
 import styles from './styles';
+import BottomButton from '../../components/buttons/BottomButton';
 
-function Course({navigation}) {
+function Signup({navigation}: {navigation: any}) {
   return (
     <View style={styles.container}>
       <Image
@@ -21,10 +22,8 @@ function Course({navigation}) {
           inputContainerStyle={styles.inputField}
         />
       </View>
-      <Button
-        title="Signup"
-        titleStyle={styles.loginBtnTitle}
-        buttonStyle={styles.loginBtn}
+      <BottomButton
+        text="Sign up"
         onPress={() => navigation.navigate('Course')}
       />
       <Text style={styles.baseText}>
@@ -32,11 +31,11 @@ function Course({navigation}) {
         <Text
           style={styles.innerText}
           onPress={() => navigation.navigate('Login')}>
-          {' Login'}
+          {' Login here'}
         </Text>
       </Text>
     </View>
   );
 }
 
-export default Course;
+export default Signup;

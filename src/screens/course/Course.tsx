@@ -2,7 +2,7 @@ import React from 'react';
 import {Text, View, Button} from 'react-native';
 import styles from './styles';
 
-function Course({navigation}) {
+function Course({navigation}: {navigation: any}) {
   return (
     <View style={styles.container}>
       <Text>Course</Text>
@@ -12,7 +12,7 @@ function Course({navigation}) {
       />
       <Button
         title="Go to Signup"
-        onPress={() => navigation.navigate('Signup')}
+        onPress={() => navigation.navigate('SignUp')}
       />
       <Button
         title="Go to Details... again"

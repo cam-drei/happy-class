@@ -1,9 +1,10 @@
 import React, {useState} from 'react';
 import {View, Image} from 'react-native';
-import {Input, Button, Text, CheckBox} from '@rneui/themed';
+import {Input, Text, CheckBox} from '@rneui/themed';
 import styles from './styles';
+import BottomButton from '../../components/buttons/BottomButton';
 
-function Login({navigation}) {
+function Login({navigation}: {navigation: any}) {
   const [check1, setCheck1] = useState(false);
 
   return (
@@ -30,10 +31,8 @@ function Login({navigation}) {
           containerStyle={styles.checkbox}
         />
       </View>
-      <Button
-        title="Login"
-        titleStyle={styles.loginBtnTitle}
-        buttonStyle={styles.loginBtn}
+      <BottomButton
+        text="Login"
         onPress={() => navigation.navigate('Course')}
       />
       <Text style={styles.baseText}>
@@ -46,6 +45,6 @@ function Login({navigation}) {
       </Text>
     </View>
   );
-};
+}
 
 export default Login;

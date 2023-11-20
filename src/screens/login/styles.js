@@ -37,17 +37,6 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: 'normal',
   },
-  loginBtn: {
-    backgroundColor: '#FF9900',
-    borderColor: 'transparent',
-    borderRadius: 30,
-    width: 300,
-    marginVertical: 10,
-    fontWeight: 'bold',
-  },
-  loginBtnTitle: {
-    fontWeight: 'bold',
-  },
   baseText: {
     fontSize: 16,
   },
