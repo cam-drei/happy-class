@@ -33,7 +33,9 @@ function Login({navigation}: {navigation: any}) {
       </View>
       <BottomButton
         text="Login"
-        onPress={() => navigation.navigate('Course')}
+        type="filled"
+        titleStyle
+        onPress={() => navigation.navigate('Home')}
       />
       <Text style={styles.baseText}>
         Don't have an account?
