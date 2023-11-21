@@ -20,6 +20,11 @@ const styles = StyleSheet.create({
     color: '#FF9900',
     paddingBottom: 20,
   },
+  forgotText: {
+    textAlign: 'right',
+    fontSize: 16,
+    marginTop: -25,
+  },
   inputField: {
     borderWidth: 1,
     borderColor: '#A9A9A9',
@@ -31,7 +36,6 @@ const styles = StyleSheet.create({
   },
   checkbox: {
     marginLeft: -10,
-    marginVertical: -10,
   },
   checkboxTitle: {
     fontSize: 16,

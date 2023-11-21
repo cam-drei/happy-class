@@ -19,6 +19,7 @@ function Login({navigation}: {navigation: any}) {
         </Text>
         <Input placeholder="Username" inputContainerStyle={styles.inputField} />
         <Input placeholder="Password" inputContainerStyle={styles.inputField} />
+        <Text style={styles.forgotText}>Forgot password?</Text>
         <CheckBox
           title="Remember me"
           checked={check1}
