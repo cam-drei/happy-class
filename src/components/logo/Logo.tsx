@@ -1,6 +1,5 @@
 import React from 'react';
 import {Image} from 'react-native';
-import styles from './styles';
 
 interface Size {
   width?: any;
@@ -8,12 +7,18 @@ interface Size {
 }
 
 const Logo = (props: Size) => {
+  const {width, height} = props;
+
   return (
     <Image
       source={require('../../assets/images/logo.png')}
-      style={[styles.logo, props.width, props.height]}
+      style={[width, height]}
     />
   );
 };
 
+Logo.defaultProps = {
+  width: {width: 300},
+  height: {height: 300},
+};
 export default Logo;

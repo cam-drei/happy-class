@@ -30,11 +30,7 @@ function Login({navigation}: {navigation: any}) {
           containerStyle={styles.checkbox}
         />
       </View>
-      <BottomButton
-        text="Login"
-        buttonType="filled"
-        onPress={() => navigation.navigate('User')}
-      />
+      <BottomButton text="Login" onPress={() => navigation.navigate('User')} />
       <Text style={styles.baseText}>
         Don't have an account?
         <Text

@@ -19,8 +19,6 @@ function User({navigation}: {navigation: any}) {
       </Text>
       <BottomButton
         text="Let's learn"
-        type="filled"
-        titleStyle
         onPress={() => navigation.navigate('Course')}
       />
       <View style={styles.bottomTextView}>

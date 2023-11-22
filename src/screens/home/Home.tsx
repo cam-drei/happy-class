@@ -10,14 +10,14 @@ function Home({navigation}: {navigation: any}) {
       <Logo />
       <BottomButton
         text="Login"
-        buttonType="filled"
-        titleStyle={styles.bottomButtonTitle}
+        titleStyle={'normal'}
         onPress={() => navigation.navigate('Login')}
       />
+
       <BottomButton
         text="Signup"
-        buttonType="outlined"
-        titleStyle={styles.bottomButtonTitle}
+        buttonType={'outlined'}
+        titleStyle={'normal'}
         onPress={() => navigation.navigate('Signup')}
       />
     </View>

@@ -22,7 +22,6 @@ function Signup({navigation}: {navigation: any}) {
       </View>
       <BottomButton
         text="Sign up"
-        buttonType="filled"
         onPress={() => navigation.navigate('Course')}
       />
       <Text style={styles.baseText}>

@@ -6,9 +6,6 @@ const styles = StyleSheet.create({
     backgroundColor: '#FFFFFF',
     alignItems: 'center',
   },
-  bottomButtonTitle: {
-    fontWeight: 'normal',
-  },
 });
 
 export default styles;

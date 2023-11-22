@@ -2,17 +2,20 @@ import React from 'react';
 import {Button} from '@rneui/themed';
 
 interface ButtonProps {
-  text: any;
+  text: string;
   onPress: any;
   titleStyle?: any;
   buttonType?: any;
 }
 
 const BottomButton = (props: ButtonProps) => {
-  const btnBgColor = props.buttonType === 'filled' ? '#FF9900' : 'transparent';
-  const btnTextColor = props.buttonType === 'filled' ? '#ffffff' : '#FF9900';
+  const {text, onPress, titleStyle, buttonType} = props;
 
-  const border = props.buttonType === 'outlined' && {
+  const btnBgColor = buttonType === 'filled' ? '#FF9900' : 'transparent';
+  const btnTextColor = buttonType === 'filled' ? '#ffffff' : '#FF9900';
+  const fontWeight = titleStyle === 'bold' ? 'bold' : 'normal';
+
+  const border = buttonType === 'outlined' && {
     borderColor: '#FF9900',
     borderWidth: 1,
   };
@@ -30,17 +33,22 @@ const BottomButton = (props: ButtonProps) => {
     fontSize: 16,
     textAlign: 'center',
     fontFamily: 'Quicksand-Medium',
-    fontWeight: 'bold',
+    fontWeight: fontWeight,
   };
 
   return (
     <Button
-      title={props.text}
-      titleStyle={[bottomBtnTitle, props.titleStyle]}
+      title={text}
+      titleStyle={[bottomBtnTitle, fontWeight]}
       buttonStyle={[bottomBtn, border]}
-      onPress={props.onPress}
+      onPress={onPress}
     />
   );
+};
+
+BottomButton.defaultProps = {
+  titleStyle: 'bold',
+  buttonType: 'filled',
 };
 
 export default BottomButton;
