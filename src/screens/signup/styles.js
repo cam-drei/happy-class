@@ -7,10 +7,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   logo: {
-    aspectRatio: 1,
     width: 250,
     height: 250,
-    borderRadius: 250 / 2,
   },
   inputGroup: {
     width: 300,

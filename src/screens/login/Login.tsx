@@ -36,7 +36,7 @@ function Login({navigation}: {navigation: any}) {
         text="Login"
         type="filled"
         titleStyle
-        onPress={() => navigation.navigate('Home')}
+        onPress={() => navigation.navigate('User')}
       />
       <Text style={styles.baseText}>
         Don't have an account?

@@ -6,6 +6,7 @@ function Course({navigation}: {navigation: any}) {
   return (
     <View style={styles.container}>
       <Text>Course</Text>
+      <Button title="Go Home" onPress={() => navigation.navigate('Home')} />
       <Button
         title="Go to Login"
         onPress={() => navigation.navigate('Login')}
@@ -14,6 +15,7 @@ function Course({navigation}: {navigation: any}) {
         title="Go to Signup"
         onPress={() => navigation.navigate('SignUp')}
       />
+      <Button title="Go to User" onPress={() => navigation.navigate('User')} />
       <Button
         title="Go to Details... again"
         onPress={() => navigation.push('Details')}
