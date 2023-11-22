@@ -6,10 +6,6 @@ const styles = StyleSheet.create({
     backgroundColor: '#FFFFFF',
     alignItems: 'center',
   },
-  logo: {
-    width: 300,
-    height: 300,
-  },
   bottomButtonTitle: {
     fontWeight: 'normal',
   },

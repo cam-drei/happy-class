@@ -1,18 +1,16 @@
 import React, {useState} from 'react';
-import {View, Image} from 'react-native';
+import {View} from 'react-native';
 import {Input, Text, CheckBox} from '@rneui/themed';
 import styles from './styles';
 import BottomButton from '../../components/buttons/BottomButton';
+import Logo from '../../components/logo/Logo';
 
 function Login({navigation}: {navigation: any}) {
   const [check1, setCheck1] = useState(false);
 
   return (
     <View style={styles.container}>
-      <Image
-        source={require('../../assets/images/logo.png')}
-        style={styles.logo}
-      />
+      <Logo width={{width: 250}} height={{height: 250}} />
       <View style={styles.inputGroup}>
         <Text h4 style={styles.title}>
           LOGIN
@@ -34,8 +32,7 @@ function Login({navigation}: {navigation: any}) {
       </View>
       <BottomButton
         text="Login"
-        type="filled"
-        titleStyle
+        buttonType="filled"
         onPress={() => navigation.navigate('User')}
       />
       <Text style={styles.baseText}>

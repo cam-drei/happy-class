@@ -1,21 +1,18 @@
 import React from 'react';
 import {Button} from '@rneui/themed';
 
-const BottomButton = ({
-  text,
-  onPress,
-  type = 'filled',
-  titleStyle,
-}: {
+interface ButtonProps {
   text: any;
   onPress: any;
-  type: string;
-  titleStyle: any;
-}) => {
-  const btnBgColor = type === 'filled' ? '#FF9900' : 'transparent';
-  const btnTextColor = type === 'filled' ? '#ffffff' : '#FF9900';
+  titleStyle?: any;
+  buttonType?: any;
+}
 
-  const border = type === 'outlined' && {
+const BottomButton = (props: ButtonProps) => {
+  const btnBgColor = props.buttonType === 'filled' ? '#FF9900' : 'transparent';
+  const btnTextColor = props.buttonType === 'filled' ? '#ffffff' : '#FF9900';
+
+  const border = props.buttonType === 'outlined' && {
     borderColor: '#FF9900',
     borderWidth: 1,
   };
@@ -38,10 +35,10 @@ const BottomButton = ({
 
   return (
     <Button
-      title={text}
-      titleStyle={[bottomBtnTitle, titleStyle]}
+      title={props.text}
+      titleStyle={[bottomBtnTitle, props.titleStyle]}
       buttonStyle={[bottomBtn, border]}
-      onPress={onPress}
+      onPress={props.onPress}
     />
   );
 };

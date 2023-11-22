@@ -6,10 +6,6 @@ const styles = StyleSheet.create({
     backgroundColor: '#FFFFFF',
     alignItems: 'center',
   },
-  logo: {
-    width: 250,
-    height: 250,
-  },
   inputGroup: {
     width: 300,
   },

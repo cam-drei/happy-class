@@ -1,16 +1,14 @@
 import React from 'react';
-import {View, Image} from 'react-native';
+import {View} from 'react-native';
 import {Input, Text} from '@rneui/themed';
 import styles from './styles';
 import BottomButton from '../../components/buttons/BottomButton';
+import Logo from '../../components/logo/Logo';
 
 function Signup({navigation}: {navigation: any}) {
   return (
     <View style={styles.container}>
-      <Image
-        source={require('../../assets/images/logo.png')}
-        style={styles.logo}
-      />
+      <Logo width={{width: 250}} height={{height: 250}} />
       <View style={styles.inputGroup}>
         <Text h4 style={styles.title}>
           SIGN UP
@@ -24,8 +22,7 @@ function Signup({navigation}: {navigation: any}) {
       </View>
       <BottomButton
         text="Sign up"
-        type="filled"
-        titleStyle
+        buttonType="filled"
         onPress={() => navigation.navigate('Course')}
       />
       <Text style={styles.baseText}>

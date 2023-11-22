@@ -2,7 +2,7 @@ import React from 'react';
 import {View, Image} from 'react-native';
 import styles from './styles';
 import BottomButton from '../../components/buttons/BottomButton';
-import {Text, Button} from '@rneui/base';
+import {Text} from '@rneui/base';
 
 function User({navigation}: {navigation: any}) {
   return (
