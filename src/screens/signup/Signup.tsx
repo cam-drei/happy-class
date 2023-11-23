@@ -8,7 +8,7 @@ import Logo from '../../components/logo/Logo';
 function Signup({navigation}: {navigation: any}) {
   return (
     <View style={styles.container}>
-      <Logo width={{width: 250}} height={{height: 250}} />
+      <Logo width={250} height={250} />
       <View style={styles.inputGroup}>
         <Text h4 style={styles.title}>
           SIGN UP

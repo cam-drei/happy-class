@@ -13,7 +13,6 @@ function Home({navigation}: {navigation: any}) {
         titleStyle={'normal'}
         onPress={() => navigation.navigate('Login')}
       />
-
       <BottomButton
         text="Signup"
         buttonType={'outlined'}

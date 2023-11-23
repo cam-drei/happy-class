@@ -5,7 +5,7 @@ interface ButtonProps {
   text: string;
   onPress: any;
   titleStyle?: any;
-  buttonType?: any;
+  buttonType?: string;
 }
 
 const BottomButton = (props: ButtonProps) => {
@@ -32,14 +32,13 @@ const BottomButton = (props: ButtonProps) => {
     color: btnTextColor,
     fontSize: 16,
     textAlign: 'center',
-    fontFamily: 'Quicksand-Medium',
     fontWeight: fontWeight,
   };
 
   return (
     <Button
       title={text}
-      titleStyle={[bottomBtnTitle, fontWeight]}
+      titleStyle={[bottomBtnTitle, titleStyle]}
       buttonStyle={[bottomBtn, border]}
       onPress={onPress}
     />
