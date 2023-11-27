@@ -6,6 +6,8 @@ import BottomButton from '../../components/buttons/BottomButton';
 import Logo from '../../components/logo/Logo';
 
 function Login({navigation}: {navigation: any}) {
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
   const [check1, setCheck1] = useState(false);
 
   return (
@@ -15,8 +17,19 @@ function Login({navigation}: {navigation: any}) {
         <Text h4 style={styles.title}>
           LOGIN
         </Text>
-        <Input placeholder="Username" inputContainerStyle={styles.inputField} />
-        <Input placeholder="Password" inputContainerStyle={styles.inputField} />
+        <Input
+          placeholder="Username"
+          inputContainerStyle={styles.inputField}
+          autoCapitalize={'none'}
+          keyboardType={'email-address'}
+          onChangeText={() => setUsername(username)}
+        />
+        <Input
+          placeholder="Password"
+          inputContainerStyle={styles.inputField}
+          secureTextEntry
+          onChangeText={() => setPassword(password)}
+        />
         <Text style={styles.forgotText}>Forgot password?</Text>
         <CheckBox
           title="Remember me"
