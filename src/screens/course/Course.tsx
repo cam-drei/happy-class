@@ -1,30 +1,86 @@
 import React from 'react';
-import {Text, View, Button} from 'react-native';
+import {View} from 'react-native';
+import {Text} from '@rneui/base';
 import styles from './styles';
+import FontAwesome from 'react-native-vector-icons/FontAwesome';
+import AntDesign from 'react-native-vector-icons/AntDesign';
 
 function Course({navigation}: {navigation: any}) {
   return (
     <View style={styles.container}>
-      <Text>Course</Text>
-      <Button title="Go Home" onPress={() => navigation.navigate('Home')} />
-      <Button
-        title="Go to Login"
-        onPress={() => navigation.navigate('Login')}
-      />
-      <Button
-        title="Go to Signup"
-        onPress={() => navigation.navigate('SignUp')}
-      />
-      <Button title="Go to User" onPress={() => navigation.navigate('User')} />
-      <Button
-        title="Go to Details... again"
-        onPress={() => navigation.push('Details')}
-      />
-      <Button title="Go back" onPress={() => navigation.goBack()} />
-      <Button
+      <View style={styles.box}>
+        <View style={styles.titleView}>
+          <Text h4 style={styles.boxTitle}>
+            ABEKA K4
+          </Text>
+          <FontAwesome
+            name="book"
+            size={30}
+            color="#4F7942"
+            onPress={() => navigation.goBack()}
+          />
+        </View>
+        <View style={[styles.titleView]}>
+          <View style={styles.contentView}>
+            <FontAwesome
+              name="play-circle"
+              size={60}
+              color="#FF9900"
+              style={styles.iconPlay}
+              onPress={() => navigation.goBack()}
+            />
+            <View>
+              <Text style={styles.progressText}>Progress: 150/170 lessons</Text>
+              <Text style={styles.statusText}>Status: in progress</Text>
+            </View>
+          </View>
+          <AntDesign
+            name="edit"
+            size={30}
+            color="#4F7942"
+            onPress={() => navigation.goBack()}
+          />
+        </View>
+      </View>
+
+      <View style={styles.box}>
+        <View style={styles.titleView}>
+          <Text h4 style={styles.boxTitle}>
+            ABEKA K4
+          </Text>
+          <FontAwesome
+            name="book"
+            size={30}
+            color="#4F7942"
+            onPress={() => navigation.goBack()}
+          />
+        </View>
+        <View style={[styles.titleView]}>
+          <View style={styles.contentView}>
+            <FontAwesome
+              name="play-circle"
+              size={60}
+              color="#FF9900"
+              style={styles.iconPlay}
+              onPress={() => navigation.goBack()}
+            />
+            <View>
+              <Text style={styles.progressText}>Progress: 150/170 lessons</Text>
+              <Text style={styles.statusText}>Status: in progress</Text>
+            </View>
+          </View>
+          <AntDesign
+            name="edit"
+            size={30}
+            color="#4F7942"
+            onPress={() => navigation.goBack()}
+          />
+        </View>
+      </View>
+      {/* <Button
         title="Go back to first screen in stack"
         onPress={() => navigation.popToTop()}
-      />
+      /> */}
     </View>
   );
 }
