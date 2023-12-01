@@ -6,6 +6,7 @@ import Login from './src/screens/login/Login';
 import Signup from './src/screens/signup/Signup';
 import User from './src/screens/user/User';
 import Course from './src/screens/course/Course';
+import Enroll from './src/screens/enroll/Enroll';
 import {NativeBaseProvider} from 'native-base';
 
 const Stack = createStackNavigator();
@@ -20,6 +21,7 @@ const App = () => {
           <Stack.Screen name="Signup" component={Signup} />
           <Stack.Screen name="User" component={User} />
           <Stack.Screen name="Course" component={Course} />
+          <Stack.Screen name="Enroll" component={Enroll} />
         </Stack.Navigator>
       </NavigationContainer>
     </NativeBaseProvider>

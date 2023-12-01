@@ -38,7 +38,7 @@ function Course({navigation}: {navigation: any}) {
             name="edit"
             size={30}
             color="#4F7942"
-            onPress={() => navigation.goBack()}
+            onPress={() => navigation.navigate('Enroll')}
           />
         </View>
       </View>
@@ -73,7 +73,7 @@ function Course({navigation}: {navigation: any}) {
             name="edit"
             size={30}
             color="#4F7942"
-            onPress={() => navigation.goBack()}
+            onPress={() => navigation.navigate('Enroll')}
           />
         </View>
       </View>
