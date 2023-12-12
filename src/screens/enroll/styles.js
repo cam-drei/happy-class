@@ -9,12 +9,15 @@ const styles = StyleSheet.create({
   },
   title: {
     fontWeight: 'bold',
+    fontSize: 18,
+    paddingBottom: 10,
   },
   checkbox: {
     marginLeft: -10,
   },
   checkboxTitle: {
     fontSize: 18,
+    fontWeight: 'normal',
   },
   checkboxDetails: {
     marginTop: -5,

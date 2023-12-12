@@ -11,8 +11,8 @@ function Enroll({navigation}: {navigation: any}) {
   return (
     <View style={styles.container}>
       <View>
-        <Text h4 style={styles.title}>
-          Select the subjects you want to learn:
+        <Text style={styles.title}>
+          {'Select the subjects you want to learn:'}
         </Text>
         <CheckBox
           title="Select All"

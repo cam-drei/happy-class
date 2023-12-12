@@ -65,7 +65,6 @@ const styles = StyleSheet.create({
   bottomArrow: {
     alignItems: 'center',
     marginTop: -5,
-    marginBottom: -5,
   },
 });
 
