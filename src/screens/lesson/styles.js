@@ -9,7 +9,7 @@ const styles = StyleSheet.create({
   box: {
     backgroundColor: '#FFFFFF',
     borderRadius: 8,
-    padding: 16,
+    paddingHorizontal: 16,
     shadowColor: '#000000',
     shadowOffset: {width: 0, height: 2},
     shadowOpacity: 0.3,
@@ -17,6 +17,7 @@ const styles = StyleSheet.create({
     elevation: 10, // Required for Android
     width: '90%',
     marginTop: 10,
+    paddingTop: 8,
   },
   boxTitle: {
     fontSize: 18,
@@ -64,7 +65,7 @@ const styles = StyleSheet.create({
   bottomArrow: {
     alignItems: 'center',
     marginTop: -5,
-    marginBottom: -22,
+    marginBottom: -5,
   },
 });
 

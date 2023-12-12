@@ -14,7 +14,7 @@ function Lesson({navigation}: {navigation: any}) {
           <View style={styles.contentView}>
             <Text style={[styles.boxTitle, {color: '#A9A9A9'}]}>
               {'Lesson 152'}
-              <Text style={[styles.innerText, {color: '#A9A9A9'}]}>{' (Done)'}</Text>
+              <Text style={[styles.innerText, {color: '#A9A9A9'}]}>{'   (Done)'}</Text>
             </Text>
           </View>
           <FontAwesome
@@ -44,7 +44,7 @@ function Lesson({navigation}: {navigation: any}) {
           <View style={styles.contentView}>
             <Text style={styles.boxTitle}>
               {'Lesson 152'}
-              <Text style={[styles.innerText, {color: '#FF9900'}]}>{' (In progress)'}</Text>
+              <Text style={[styles.innerText, {color: '#FF9900'}]}>{'   (In progress)'}</Text>
             </Text>
           </View>
           <FontAwesome
@@ -155,7 +155,7 @@ function Lesson({navigation}: {navigation: any}) {
           <View style={styles.contentView}>
             <Text style={styles.boxTitle}>
               {'Lesson 152'}
-              <Text style={styles.innerText}>{' (To do)'}</Text>
+              <Text style={styles.innerText}>{'   (To do)'}</Text>
             </Text>
           </View>
           <FontAwesome
