@@ -87,25 +87,25 @@ function Lesson({navigation}: {navigation: any}) {
 
         <View style={styles.subjectViewGroup}>
           <View style={styles.subjectView}>
-            <Text style={styles.normalSizeText}>{'Activity Time jdgs jdsg jhsdg jhgds jhgds jhdgs nds jhdsg'}</Text>
+            <Text style={[styles.normalSizeText, {color: '#A9A9A9'}]}>{'Activity Time jdgs jdsg jhsdg jhgds jhgds jhdgs nds jhdsg'}</Text>
           </View>
           <View style={styles.iconSubjectViewGroup}>
             <FontAwesome
               name="play-circle"
               size={30}
-              color="#FF9900"
+              color="#A9A9A9"
               onPress={() => navigation.navigate('Lesson')}
             />
             <FontAwesome
               name="book"
               size={30}
-              color="#4F7942"
+              color="#A9A9A9"
               onPress={() => navigation.goBack()}
             />
             <FontAwesome
               name="undo"
               size={20}
-              color="#4F7942"
+              color="#A9A9A9"
               onPress={() => navigation.goBack()}
             />
           </View>
