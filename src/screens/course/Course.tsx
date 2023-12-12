@@ -27,7 +27,7 @@ function Course({navigation}: {navigation: any}) {
               size={60}
               color="#FF9900"
               style={styles.iconPlay}
-              onPress={() => navigation.goBack()}
+              onPress={() => navigation.navigate('Lesson')}
             />
             <View>
               <Text style={styles.progressText}>Progress: 150/170 lessons</Text>
@@ -62,7 +62,7 @@ function Course({navigation}: {navigation: any}) {
               size={60}
               color="#FF9900"
               style={styles.iconPlay}
-              onPress={() => navigation.goBack()}
+              onPress={() => navigation.navigate('Lesson')}
             />
             <View>
               <Text style={styles.progressText}>Progress: 150/170 lessons</Text>

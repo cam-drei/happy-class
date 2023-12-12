@@ -12,7 +12,7 @@ const styles = StyleSheet.create({
     padding: 10,
     width: '90%',
     borderWidth: 1,
-    margin: 10,
+    marginTop: 20,
   },
   boxTitle: {
     fontWeight: 'bold',

@@ -74,7 +74,10 @@ function Enroll({navigation}: {navigation: any}) {
         <Text style={styles.totalText}>You selected 7/10 subjects</Text>
       </View>
       <View style={styles.bottomButton}>
-        <BottomButton text="Next" onPress={() => navigation.goBack()} />
+        <BottomButton
+          text="Next"
+          onPress={() => navigation.navigate('Lesson')}
+        />
       </View>
     </View>
   );
