@@ -1,14 +1,44 @@
 import React, {useState} from 'react';
-import {View} from 'react-native';
+import {View, Alert} from 'react-native';
 import {Input, Text, CheckBox} from '@rneui/themed';
 import styles from './styles';
 import BottomButton from '../../components/buttons/BottomButton';
 import Logo from '../../components/logo/Logo';
+import axios from 'axios';
+import {baseUrl} from '../../utils/apiConfig';
 
 function Login({navigation}: {navigation: any}) {
-  const [username, setUsername] = useState('');
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [check1, setCheck1] = useState(false);
+  const [, setAuthToken] = useState('');
+
+  const handleLogin = async () => {
+    try {
+      const response = await axios.post(
+        `${baseUrl}/api/v1/login`,
+        {
+          user: {
+            email: email,
+            password: password,
+          },
+        },
+        {
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        },
+      );
+      setAuthToken(response.headers.authorization);
+      console.log('Authentication successful:', response.data);
+
+      const userName = email.split('@')[0];
+      navigation.navigate('User', {userName});
+    } catch (error: any) {
+      console.error('Error:', error);
+      Alert.alert('Login Failed', 'Invalid email or password');
+    }
+  };
 
   return (
     <View style={styles.container}>
@@ -18,17 +48,17 @@ function Login({navigation}: {navigation: any}) {
           LOGIN
         </Text>
         <Input
-          placeholder="Username"
+          placeholder="Email"
           inputContainerStyle={styles.inputField}
           autoCapitalize={'none'}
           keyboardType={'email-address'}
-          onChangeText={() => setUsername(username)}
+          onChangeText={text => setEmail(text)}
         />
         <Input
           placeholder="Password"
           inputContainerStyle={styles.inputField}
           secureTextEntry
-          onChangeText={() => setPassword(password)}
+          onChangeText={text => setPassword(text)}
         />
         <Text style={styles.forgotText}>Forgot password?</Text>
         <CheckBox
@@ -43,7 +73,7 @@ function Login({navigation}: {navigation: any}) {
           containerStyle={styles.checkbox}
         />
       </View>
-      <BottomButton text="Login" onPress={() => navigation.navigate('User')} />
+      <BottomButton text="Login" onPress={handleLogin} />
       <Text style={styles.baseText}>
         Don't have an account?
         <Text
