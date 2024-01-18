@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import {View, Alert} from 'react-native';
 import {Input, Text, CheckBox} from '@rneui/themed';
 import styles from './styles';
@@ -40,6 +40,11 @@ function Login({navigation}: {navigation: any}) {
       Alert.alert('Login Failed', 'Invalid email or password');
     }
   };
+
+  useEffect(() => {
+    setEmail('');
+    setPassword('');
+  }, []);
 
   return (
     <View style={styles.container}>

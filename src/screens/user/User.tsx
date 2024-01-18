@@ -11,7 +11,10 @@ function User({route, navigation}: {route: any; navigation: any}) {
   const handleLogout = async () => {
     try {
       await AsyncStorage.removeItem('authToken');
-      navigation.navigate('Login');
+      navigation.reset({
+        index: 0,
+        routes: [{name: 'Login'}],
+      });
     } catch (error) {
       console.error('Error during logout:', error);
     }
