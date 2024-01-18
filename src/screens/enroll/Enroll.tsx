@@ -6,11 +6,11 @@ import BottomButton from '../../components/buttons/BottomButton';
 
 interface EnrollProps {
   navigation: any;
-  route: {params: {authToken: string}};
+  route: {params: {userName: string; authToken: string}};
 }
 
 function Enroll({navigation, route}: EnrollProps) {
-  const {authToken} = route.params;
+  const {userName, authToken} = route.params;
 
   const [check1, setCheck1] = useState(false);
   const [check2, setCheck2] = useState(true);

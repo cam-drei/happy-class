@@ -30,7 +30,6 @@ function Login({navigation}: {navigation: any}) {
         },
       );
       const authToken = response.data.token;
-      console.log('AsyncStorage:', AsyncStorage);
       await AsyncStorage.setItem('authToken', authToken);
 
       if (rememberMe) {
@@ -43,7 +42,7 @@ function Login({navigation}: {navigation: any}) {
       }
 
       const userName = email.split('@')[0];
-      navigation.navigate('User', {userName});
+      navigation.navigate('User', {userName, authToken});
     } catch (error: any) {
       console.error('Error:', error);
       Alert.alert('Login Failed', 'Invalid email or password');

@@ -26,7 +26,7 @@ function User({navigation, route}: UserProps) {
   };
 
   const navigateToCourse = () => {
-    navigation.navigate('Course', {authToken});
+    navigation.navigate('Course', {userName, authToken});
   };
 
   return (

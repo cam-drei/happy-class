@@ -8,11 +8,11 @@ import Line from '../../components/line/Line';
 
 interface LessonProps {
   navigation: any;
-  route: {params: {authToken: string}};
+  route: {params: {userName: string; authToken: string}};
 }
 
 function Lesson({navigation, route}: LessonProps) {
-  const {authToken} = route.params;
+  const {userName, authToken} = route.params;
 
   return (
     <View style={styles.container}>
