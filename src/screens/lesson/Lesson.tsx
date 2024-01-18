@@ -6,7 +6,14 @@ import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import Line from '../../components/line/Line';
 
-function Lesson({navigation}: {navigation: any}) {
+interface LessonProps {
+  navigation: any;
+  route: {params: {authToken: string}};
+}
+
+function Lesson({navigation, route}: LessonProps) {
+  const {authToken} = route.params;
+
   return (
     <View style={styles.container}>
       <View style={styles.box}>

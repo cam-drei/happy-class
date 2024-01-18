@@ -5,7 +5,22 @@ import styles from './styles';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 
-function Course({navigation}: {navigation: any}) {
+interface CourseProps {
+  navigation: any;
+  route: {params: {authToken: string}};
+}
+
+function Course({navigation, route}: CourseProps) {
+  const {authToken} = route.params;
+
+  const navigateToLesson = () => {
+    navigation.navigate('Lesson', {authToken});
+  };
+
+  const navigateToEnroll = () => {
+    navigation.navigate('Enroll', {authToken});
+  };
+
   return (
     <View style={styles.container}>
       <View style={styles.box}>
@@ -27,7 +42,7 @@ function Course({navigation}: {navigation: any}) {
               size={60}
               color="#FF9900"
               style={styles.iconPlay}
-              onPress={() => navigation.navigate('Lesson')}
+              onPress={navigateToLesson}
             />
             <View>
               <Text style={styles.progressText}>Progress: 150/170 lessons</Text>
@@ -38,7 +53,7 @@ function Course({navigation}: {navigation: any}) {
             name="edit"
             size={30}
             color="#4F7942"
-            onPress={() => navigation.navigate('Enroll')}
+            onPress={navigateToEnroll}
           />
         </View>
       </View>
@@ -62,7 +77,7 @@ function Course({navigation}: {navigation: any}) {
               size={60}
               color="#FF9900"
               style={styles.iconPlay}
-              onPress={() => navigation.navigate('Lesson')}
+              onPress={navigateToLesson}
             />
             <View>
               <Text style={styles.progressText}>Progress: 150/170 lessons</Text>
@@ -73,7 +88,7 @@ function Course({navigation}: {navigation: any}) {
             name="edit"
             size={30}
             color="#4F7942"
-            onPress={() => navigation.navigate('Enroll')}
+            onPress={navigateToEnroll}
           />
         </View>
       </View>

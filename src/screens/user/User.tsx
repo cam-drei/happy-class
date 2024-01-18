@@ -5,8 +5,13 @@ import BottomButton from '../../components/buttons/BottomButton';
 import {Text} from '@rneui/base';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-function User({route, navigation}: {route: any; navigation: any}) {
-  const {userName} = route.params;
+interface UserProps {
+  navigation: any;
+  route: {params: {userName: string; authToken: string}};
+}
+
+function User({navigation, route}: UserProps) {
+  const {userName, authToken} = route.params;
 
   const handleLogout = async () => {
     try {
@@ -18,6 +23,10 @@ function User({route, navigation}: {route: any; navigation: any}) {
     } catch (error) {
       console.error('Error during logout:', error);
     }
+  };
+
+  const navigateToCourse = () => {
+    navigation.navigate('Course', {authToken});
   };
 
   return (
@@ -32,10 +41,7 @@ function User({route, navigation}: {route: any; navigation: any}) {
       <Text h4 style={styles.userName}>
         {userName}
       </Text>
-      <BottomButton
-        text="Let's learn"
-        onPress={() => navigation.navigate('Course')}
-      />
+      <BottomButton text="Let's learn" onPress={navigateToCourse} />
       <View style={styles.bottomTextView}>
         <Text onPress={handleLogout} style={styles.bottomText}>
           Login to another account

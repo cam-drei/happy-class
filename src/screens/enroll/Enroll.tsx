@@ -4,9 +4,20 @@ import {Text, CheckBox} from '@rneui/base';
 import styles from './styles';
 import BottomButton from '../../components/buttons/BottomButton';
 
-function Enroll({navigation}: {navigation: any}) {
+interface EnrollProps {
+  navigation: any;
+  route: {params: {authToken: string}};
+}
+
+function Enroll({navigation, route}: EnrollProps) {
+  const {authToken} = route.params;
+
   const [check1, setCheck1] = useState(false);
   const [check2, setCheck2] = useState(true);
+
+  const navigateToLesson = () => {
+    navigation.navigate('Lesson', {authToken});
+  };
 
   return (
     <View style={styles.container}>
@@ -74,10 +85,7 @@ function Enroll({navigation}: {navigation: any}) {
         <Text style={styles.totalText}>You selected 7/10 subjects</Text>
       </View>
       <View style={styles.bottomButton}>
-        <BottomButton
-          text="Next"
-          onPress={() => navigation.navigate('Lesson')}
-        />
+        <BottomButton text="Next" onPress={navigateToLesson} />
       </View>
     </View>
   );

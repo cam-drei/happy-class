@@ -73,6 +73,10 @@ function Login({navigation}: {navigation: any}) {
     setPassword('');
   }, []);
 
+  const handleForgotPassword = () => {
+    navigation.navigate('ForgotPassword');
+  };
+
   return (
     <View style={styles.container}>
       <Logo width={250} height={250} />
@@ -93,7 +97,9 @@ function Login({navigation}: {navigation: any}) {
           secureTextEntry
           onChangeText={text => setPassword(text)}
         />
-        <Text style={styles.forgotText}>Forgot password?</Text>
+        <Text onPress={handleForgotPassword} style={styles.forgotText}>
+          Forgot password?
+        </Text>
         <CheckBox
           title="Remember me"
           checked={rememberMe}
