@@ -6,12 +6,12 @@ import BottomButton from '../../components/buttons/BottomButton';
 import Logo from '../../components/logo/Logo';
 import axios from 'axios';
 import {baseUrl} from '../../utils/apiConfig';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 function Login({navigation}: {navigation: any}) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [check1, setCheck1] = useState(false);
-  const [, setAuthToken] = useState('');
 
   const handleLogin = async () => {
     try {
@@ -29,8 +29,9 @@ function Login({navigation}: {navigation: any}) {
           },
         },
       );
-      setAuthToken(response.headers.authorization);
-      console.log('Authentication successful:', response.data);
+      const authToken = response.data.token;
+      console.log('AsyncStorage:', AsyncStorage);
+      await AsyncStorage.setItem('authToken', authToken);
 
       const userName = email.split('@')[0];
       navigation.navigate('User', {userName});

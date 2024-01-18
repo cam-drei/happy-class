@@ -3,14 +3,14 @@ import {View, Image} from 'react-native';
 import styles from './styles';
 import BottomButton from '../../components/buttons/BottomButton';
 import {Text} from '@rneui/base';
-// import AsyncStorage from '@react-native-async-storage/async-storage';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 function User({route, navigation}: {route: any; navigation: any}) {
   const {userName} = route.params;
 
   const handleLogout = async () => {
     try {
-      // await AsyncStorage.removeItem('authToken');
+      await AsyncStorage.removeItem('authToken');
       navigation.navigate('Login');
     } catch (error) {
       console.error('Error during logout:', error);
