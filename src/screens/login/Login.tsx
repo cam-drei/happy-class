@@ -11,7 +11,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 function Login({navigation}: {navigation: any}) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [check1, setCheck1] = useState(false);
+  const [rememberMe, setRememberMe] = useState(false);
 
   const handleLogin = async () => {
     try {
@@ -33,6 +33,15 @@ function Login({navigation}: {navigation: any}) {
       console.log('AsyncStorage:', AsyncStorage);
       await AsyncStorage.setItem('authToken', authToken);
 
+      if (rememberMe) {
+        try {
+          await AsyncStorage.setItem('email', email);
+          await AsyncStorage.setItem('password', password);
+        } catch (error) {
+          console.error('Error saving credentials:', error);
+        }
+      }
+
       const userName = email.split('@')[0];
       navigation.navigate('User', {userName});
     } catch (error: any) {
@@ -40,6 +49,24 @@ function Login({navigation}: {navigation: any}) {
       Alert.alert('Login Failed', 'Invalid email or password');
     }
   };
+
+  useEffect(() => {
+    const loadCredentials = async () => {
+      try {
+        const savedEmail = await AsyncStorage.getItem('email');
+        const savedPassword = await AsyncStorage.getItem('password');
+
+        if (savedEmail && savedPassword && rememberMe) {
+          setEmail(savedEmail);
+          setPassword(savedPassword);
+        }
+      } catch (error) {
+        console.error('Error loading credentials:', error);
+      }
+    };
+
+    loadCredentials();
+  }, [rememberMe]);
 
   useEffect(() => {
     setEmail('');
@@ -69,8 +96,8 @@ function Login({navigation}: {navigation: any}) {
         <Text style={styles.forgotText}>Forgot password?</Text>
         <CheckBox
           title="Remember me"
-          checked={check1}
-          onPress={() => setCheck1(!check1)}
+          checked={rememberMe}
+          onPress={() => setRememberMe(!rememberMe)}
           iconType="material-community"
           checkedIcon="checkbox-outline"
           uncheckedIcon={'checkbox-blank-outline'}
