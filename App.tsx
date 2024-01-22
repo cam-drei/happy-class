@@ -8,6 +8,7 @@ import User from './src/screens/user/User';
 import Course from './src/screens/course/Course';
 import Enroll from './src/screens/enroll/Enroll';
 import Lesson from './src/screens/lesson/Lesson';
+import { Text } from '@rneui/base';
 
 const Stack = createStackNavigator();
 

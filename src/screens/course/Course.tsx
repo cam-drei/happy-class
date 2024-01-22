@@ -1,9 +1,10 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import {View} from 'react-native';
 import {Text} from '@rneui/base';
 import styles from './styles';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import AntDesign from 'react-native-vector-icons/AntDesign';
+import HeaderRight from '../../components/header/HeaderRight';
 
 interface CourseProps {
   navigation: any;
@@ -21,13 +22,23 @@ function Course({navigation, route}: CourseProps) {
     navigation.navigate('Enroll', {userName, authToken});
   };
 
+  useEffect(() => {
+    navigation.setOptions({
+      headerRight: () => (
+        <HeaderRight
+          userName={userName}
+          userImage={require('../../assets/images/tulip.webp')}
+        />
+      ),
+    });
+  }, [navigation, userName]);
+
   const isLoggedIn = !!authToken;
 
   return (
     <View style={styles.container}>
       {isLoggedIn ? (
         <>
-          <Text h4>{userName}</Text>
           <View style={styles.box}>
             <View style={styles.titleView}>
               <Text h4 style={styles.boxTitle}>
