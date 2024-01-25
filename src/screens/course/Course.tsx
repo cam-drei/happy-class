@@ -10,7 +10,7 @@ import {baseUrl} from '../../utils/apiConfig';
 
 interface CourseProps {
   navigation: any;
-  route: {params: {userName: string; authToken: string}};
+  route: {params: {authToken: string; userId: string; userName: string}};
 }
 
 interface Course {
@@ -19,15 +19,15 @@ interface Course {
 }
 
 function Course({navigation, route}: CourseProps) {
-  const {userName, authToken} = route.params;
+  const {authToken, userId, userName} = route.params;
   const [enrolledCourses, setEnrolledCourses] = useState<Course[]>([]);
 
   const navigateToLesson = () => {
-    navigation.navigate('Lesson', {userName, authToken});
+    navigation.navigate('Lesson', {authToken, userId, userName});
   };
 
   const navigateToEnroll = () => {
-    navigation.navigate('Enroll', {userName, authToken});
+    navigation.navigate('Enroll', {authToken, userId, userName});
   };
 
   useEffect(() => {
@@ -51,7 +51,7 @@ function Course({navigation, route}: CourseProps) {
     if (authToken) {
       fetchEnrolledCourses();
     }
-  }, [authToken]);
+  }, [authToken, userId]);
 
   useEffect(() => {
     navigation.setOptions({
@@ -110,75 +110,6 @@ function Course({navigation, route}: CourseProps) {
           ) : (
             <Text h4>No enrolled courses.</Text>
           )}
-          {/* <View style={styles.box}>
-            <View style={styles.titleView}>
-              <Text h4 style={styles.boxTitle}>
-                ABEKA K4
-              </Text>
-              <FontAwesome
-                name="book"
-                size={30}
-                color="#4F7942"
-                onPress={() => navigation.goBack()}
-              />
-            </View>
-            <View style={[styles.titleView]}>
-              <View style={styles.contentView}>
-                <FontAwesome
-                  name="play-circle"
-                  size={60}
-                  color="#FF9900"
-                  style={styles.iconPlay}
-                  onPress={navigateToLesson}
-                />
-                <View>
-                  <Text style={styles.progressText}>Progress: 150/170 lessons</Text>
-                  <Text style={styles.statusText}>Status: in progress</Text>
-                </View>
-              </View>
-              <AntDesign
-                name="edit"
-                size={30}
-                color="#4F7942"
-                onPress={navigateToEnroll}
-              />
-            </View>
-          </View>
-
-          <View style={styles.box}>
-            <View style={styles.titleView}>
-              <Text h4 style={styles.boxTitle}>
-                ABEKA K4
-              </Text>
-              <FontAwesome
-                name="book"
-                size={30}
-                color="#4F7942"
-                onPress={() => navigation.goBack()}
-              />
-            </View>
-            <View style={[styles.titleView]}>
-              <View style={styles.contentView}>
-                <FontAwesome
-                  name="play-circle"
-                  size={60}
-                  color="#FF9900"
-                  style={styles.iconPlay}
-                  onPress={navigateToLesson}
-                />
-                <View>
-                  <Text style={styles.progressText}>Progress: 150/170 lessons</Text>
-                  <Text style={styles.statusText}>Status: in progress</Text>
-                </View>
-              </View>
-              <AntDesign
-                name="edit"
-                size={30}
-                color="#4F7942"
-                onPress={navigateToEnroll}
-              />
-            </View>
-          </View> */}
         </>
       ) : (
         <View>

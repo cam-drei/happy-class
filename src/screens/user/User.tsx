@@ -7,11 +7,11 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 interface UserProps {
   navigation: any;
-  route: {params: {userName: string; authToken: string}};
+  route: {params: {authToken: string; userId: string; userName: string}};
 }
 
 function User({navigation, route}: UserProps) {
-  const {userName, authToken} = route.params;
+  const {authToken, userId, userName} = route.params;
 
   const handleLogout = async () => {
     try {
@@ -26,7 +26,7 @@ function User({navigation, route}: UserProps) {
   };
 
   const navigateToCourse = () => {
-    navigation.navigate('Course', {userName, authToken});
+    navigation.navigate('Course', {authToken, userId, userName});
   };
 
   return (
