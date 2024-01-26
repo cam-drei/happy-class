@@ -31,7 +31,7 @@ function Login({navigation}: {navigation: any}) {
       );
 
       const authToken = response.data.token;
-      const userId = response.data.user.id;
+      const userId = response.data.user.id.toString();
       const userName = response.data.user.email.split('@')[0];
       await AsyncStorage.setItem('authToken', authToken);
       await AsyncStorage.setItem('userId', userId);

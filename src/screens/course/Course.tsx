@@ -1,5 +1,5 @@
 import React, {useState, useEffect} from 'react';
-import {View} from 'react-native';
+import {View, Modal, TouchableOpacity, ScrollView} from 'react-native';
 import {Text} from '@rneui/base';
 import styles from './styles';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
@@ -10,25 +10,19 @@ import {baseUrl} from '../../utils/apiConfig';
 
 interface CourseProps {
   navigation: any;
-  route: {params: {authToken: string; userId: number; userName: string}};
+  route: {params: {authToken: string; userId: string; userName: string}};
 }
 
 interface Course {
   id: number;
   name: string;
+  description: string;
 }
 
 function Course({navigation, route}: CourseProps) {
   const {authToken, userId, userName} = route.params;
   const [enrolledCourses, setEnrolledCourses] = useState<Course[]>([]);
-
-  const navigateToLesson = () => {
-    navigation.navigate('Lesson', {authToken, userId, userName});
-  };
-
-  const navigateToEnroll = () => {
-    navigation.navigate('Enroll', {authToken, userId, userName});
-  };
+  const [isModalVisible, setModalVisible] = useState(false);
 
   useEffect(() => {
     const fetchEnrolledCourses = async () => {
@@ -64,6 +58,14 @@ function Course({navigation, route}: CourseProps) {
     });
   }, [navigation, userName]);
 
+  const navigateToLesson = () => {
+    navigation.navigate('Lesson', {authToken, userId, userName});
+  };
+
+  const navigateToEnroll = () => {
+    navigation.navigate('Enroll', {authToken, userId, userName});
+  };
+
   const isLoggedIn = !!authToken;
 
   return (
@@ -74,7 +76,10 @@ function Course({navigation, route}: CourseProps) {
             enrolledCourses.map(course => (
               <View key={course.id} style={styles.box}>
                 <View style={styles.titleView}>
-                  <Text h4 style={styles.boxTitle}>
+                  <Text
+                    h4
+                    style={styles.boxTitle}
+                    onPress={() => setModalVisible(true)}>
                     {course.name}
                   </Text>
                   <FontAwesome
@@ -94,7 +99,7 @@ function Course({navigation, route}: CourseProps) {
                       onPress={navigateToLesson}
                     />
                     <View>
-                      <Text style={styles.progressText}>Progress: 150/170 lessons</Text>
+                      <Text style={styles.normalSizeText}>Progress: 150/170 lessons</Text>
                       <Text style={styles.statusText}>Status: in progress</Text>
                     </View>
                   </View>
@@ -105,6 +110,23 @@ function Course({navigation, route}: CourseProps) {
                     onPress={navigateToEnroll}
                   />
                 </View>
+                <Modal visible={isModalVisible} transparent>
+                  <View style={styles.centeredView}>
+                    <View style={styles.modalView}>
+                      <ScrollView style={styles.scrollView}>
+                        <Text h4>{course.name}</Text>
+                        <Text style={styles.modalText}>
+                          {course.description}
+                        </Text>
+                      </ScrollView>
+                      <TouchableOpacity
+                        style={[styles.button, styles.buttonClose]}
+                        onPress={() => setModalVisible(!isModalVisible)}>
+                        <Text style={styles.textStyle}>Close</Text>
+                      </TouchableOpacity>
+                    </View>
+                  </View>
+                </Modal>
               </View>
             ))
           ) : (
@@ -126,3 +148,25 @@ function Course({navigation, route}: CourseProps) {
 }
 
 export default Course;
+
+
+
+                // <Modal isOpen={isModalVisible} onClose={toggleModal}>
+                //   {/* <View style={{padding: 20}}>
+                //     <Text>{course.description}</Text>
+                //     <Button onPress={toggleModal} style={{marginTop: 10}}>
+                //       <Text>Close Modal</Text>
+                //     </Button>
+                //   </View> */}
+                //   <Modal.Content maxWidth="400" maxH="200">
+                //     <Modal.CloseButton />
+                //     <Modal.Header>{course.name}</Modal.Header>
+                //     <Modal.Body>
+                //       <ScrollView>
+                //         <Text style={styles.normalSizeText}>
+                //           {course.description}
+                //         </Text>
+                //       </ScrollView>
+                //     </Modal.Body>
+                //   </Modal.Content>
+                // </Modal>

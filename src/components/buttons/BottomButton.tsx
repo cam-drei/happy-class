@@ -6,10 +6,11 @@ interface ButtonProps {
   onPress: any;
   titleStyle?: any;
   buttonType?: string;
+  buttonWidth?: number;
 }
 
 const BottomButton = (props: ButtonProps) => {
-  const {text, onPress, titleStyle, buttonType} = props;
+  const {text, onPress, titleStyle, buttonType, buttonWidth} = props;
 
   const btnBgColor = buttonType === 'filled' ? '#FF9900' : 'transparent';
   const btnTextColor = buttonType === 'filled' ? '#ffffff' : '#FF9900';
@@ -24,7 +25,7 @@ const BottomButton = (props: ButtonProps) => {
     backgroundColor: btnBgColor,
     borderColor: 'transparent',
     borderRadius: 30,
-    width: 300,
+    width: buttonWidth,
     marginVertical: 10,
   };
 
@@ -48,6 +49,7 @@ const BottomButton = (props: ButtonProps) => {
 BottomButton.defaultProps = {
   titleStyle: 'bold',
   buttonType: 'filled',
+  buttonWidth: 300,
 };
 
 export default BottomButton;
