@@ -34,7 +34,7 @@ function Login({navigation}: {navigation: any}) {
       const userId = response.data.user.id;
       const userName = response.data.user.email.split('@')[0];
       await AsyncStorage.setItem('authToken', authToken);
-      await AsyncStorage.setItem('userId', userId.toString());
+      await AsyncStorage.setItem('userId', userId);
       await AsyncStorage.setItem('userName', userName);
 
       if (rememberMe) {

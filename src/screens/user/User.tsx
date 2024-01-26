@@ -7,7 +7,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 interface UserProps {
   navigation: any;
-  route: {params: {authToken: string; userId: string; userName: string}};
+  route: {params: {authToken: string; userId: number; userName: string}};
 }
 
 function User({navigation, route}: UserProps) {

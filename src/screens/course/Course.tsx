@@ -10,7 +10,7 @@ import {baseUrl} from '../../utils/apiConfig';
 
 interface CourseProps {
   navigation: any;
-  route: {params: {authToken: string; userId: string; userName: string}};
+  route: {params: {authToken: string; userId: number; userName: string}};
 }
 
 interface Course {
