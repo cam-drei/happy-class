@@ -28,7 +28,7 @@ function Course({navigation, route}: CourseProps) {
     const fetchEnrolledCourses = async () => {
       try {
         const response = await axios.get(
-          `${baseUrl}/api/v1/users/${userId}/enrolled_courses`,
+          `${baseUrl}/api/v1/users/enrolled_courses`,
           {
             headers: {
               Authorization: `Bearer ${authToken}`,
@@ -148,25 +148,3 @@ function Course({navigation, route}: CourseProps) {
 }
 
 export default Course;
-
-
-
-                // <Modal isOpen={isModalVisible} onClose={toggleModal}>
-                //   {/* <View style={{padding: 20}}>
-                //     <Text>{course.description}</Text>
-                //     <Button onPress={toggleModal} style={{marginTop: 10}}>
-                //       <Text>Close Modal</Text>
-                //     </Button>
-                //   </View> */}
-                //   <Modal.Content maxWidth="400" maxH="200">
-                //     <Modal.CloseButton />
-                //     <Modal.Header>{course.name}</Modal.Header>
-                //     <Modal.Body>
-                //       <ScrollView>
-                //         <Text style={styles.normalSizeText}>
-                //           {course.description}
-                //         </Text>
-                //       </ScrollView>
-                //     </Modal.Body>
-                //   </Modal.Content>
-                // </Modal>
