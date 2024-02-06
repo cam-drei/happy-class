@@ -45,7 +45,7 @@ function Course({navigation, route}: CourseProps) {
     if (authToken) {
       fetchEnrolledCourses();
     }
-  }, [authToken, userId]);
+  }, [authToken]);
 
   useEffect(() => {
     navigation.setOptions({
