@@ -14,10 +14,19 @@ interface LessonProps {
   route: {params: {userName: string; authToken: string; courseId: number}};
 }
 
+interface Subject {
+  id: number;
+  name: string;
+  description: string;
+  done: boolean;
+}
+
 interface Lesson {
   id: number;
   name: string;
   description: string;
+  done: boolean;
+  subjects: Subject[];
 }
 
 function Lesson({navigation, route}: LessonProps) {
@@ -36,7 +45,23 @@ function Lesson({navigation, route}: LessonProps) {
           },
         );
 
-        setLessons(response.data.lessons);
+        // setLessons(response.data.lessons);
+        const lessonsWithSubjects = await Promise.all(
+          response.data.lessons.map(async (lesson: Lesson) => {
+            const subjectResponse = await axios.get(
+              `${baseUrl}/api/v1/users/enrolled_courses/${courseId}/lessons/${lesson.id}/subjects`,
+              {
+                headers: {
+                  Authorization: `Bearer ${authToken}`,
+                },
+              }
+            );
+            lesson.subjects = subjectResponse.data.subjects;
+            return lesson;
+          }),
+        );
+
+        setLessons(lessonsWithSubjects);
       } catch (error) {
         console.error('Error fetching enrolled courses:', error);
       }
@@ -84,60 +109,38 @@ function Lesson({navigation, route}: LessonProps) {
                 <Text style={[styles.normalSizeText, styles.progressText]}>
                   {'Progress: 3/8 subjects'}
                 </Text>
-
-                <View style={styles.subjectViewGroup}>
-                  <View style={styles.subjectView}>
-                    <Text style={styles.normalSizeText}>{'Activity Time'}</Text>
-                  </View>
-                  <View style={styles.iconSubjectViewGroup}>
-                    <FontAwesome
-                      name="play-circle"
-                      size={30}
-                      color="#FF9900"
-                      onPress={() => navigation.navigate('Lesson')}
-                    />
-                    <FontAwesome
-                      name="book"
-                      size={30}
-                      color="#4F7942"
-                      onPress={() => navigation.goBack()}
-                    />
-                    <FontAwesome
-                      name="undo"
-                      size={20}
-                      color="#4F7942"
-                      onPress={() => navigation.goBack()}
-                    />
-                  </View>
-                </View>
-                <Line />
-
-                <View style={styles.subjectViewGroup}>
-                  <View style={styles.subjectView}>
-                    <Text style={[styles.normalSizeText, {color: '#A9A9A9'}]}>{'Language Enrichment'}</Text>
-                  </View>
-                  <View style={styles.iconSubjectViewGroup}>
-                    <FontAwesome
-                      name="play-circle"
-                      size={30}
-                      color="#A9A9A9"
-                      onPress={() => navigation.navigate('Lesson')}
-                    />
-                    <FontAwesome
-                      name="book"
-                      size={30}
-                      color="#A9A9A9"
-                      onPress={() => navigation.goBack()}
-                    />
-                    <FontAwesome
-                      name="undo"
-                      size={20}
-                      color="#A9A9A9"
-                      onPress={() => navigation.goBack()}
-                    />
-                  </View>
-                </View>
-                <Line />
+                {lesson.subjects.map(subject => (
+                  <>
+                    <View key={subject.id} style={styles.subjectViewGroup}>
+                      <View style={styles.subjectView}>
+                        <Text style={styles.normalSizeText}>
+                          {subject.name}
+                        </Text>
+                      </View>
+                      <View style={styles.iconSubjectViewGroup}>
+                        <FontAwesome
+                          name="play-circle"
+                          size={30}
+                          color="#FF9900"
+                          onPress={() => navigation.navigate('Lesson')}
+                        />
+                        <FontAwesome
+                          name="book"
+                          size={30}
+                          color="#4F7942"
+                          onPress={() => navigation.goBack()}
+                        />
+                        <FontAwesome
+                          name="undo"
+                          size={20}
+                          color="#4F7942"
+                          onPress={() => navigation.goBack()}
+                        />
+                      </View>
+                    </View>
+                    <Line />
+                  </>
+                ))}
 
                 <View style={styles.bottomArrow}>
                   <MaterialIcons
