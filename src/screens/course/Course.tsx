@@ -58,8 +58,8 @@ function Course({navigation, route}: CourseProps) {
     });
   }, [navigation, userName]);
 
-  const navigateToLesson = () => {
-    navigation.navigate('Lesson', {authToken, userId, userName});
+  const navigateToLesson = (courseId: number) => {
+    navigation.navigate('Lesson', {authToken, userId, userName, courseId});
   };
 
   const navigateToEnroll = () => {
@@ -96,7 +96,7 @@ function Course({navigation, route}: CourseProps) {
                       size={60}
                       color="#FF9900"
                       style={styles.iconPlay}
-                      onPress={navigateToLesson}
+                      onPress={() => navigateToLesson(course.id)}
                     />
                     <View>
                       <Text style={styles.normalSizeText}>Progress: 150/170 lessons</Text>

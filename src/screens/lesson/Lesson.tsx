@@ -1,190 +1,163 @@
-import React from 'react';
+import React, {useState, useEffect} from 'react';
 import {View} from 'react-native';
 import {Text} from '@rneui/base';
 import styles from './styles';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import Line from '../../components/line/Line';
+import HeaderRight from '../../components/header/HeaderRight';
+import axios from 'axios';
+import {baseUrl} from '../../utils/apiConfig';
 
 interface LessonProps {
   navigation: any;
-  route: {params: {userName: string; authToken: string}};
+  route: {params: {userName: string; authToken: string; courseId: number}};
+}
+
+interface Lesson {
+  id: number;
+  name: string;
+  description: string;
 }
 
 function Lesson({navigation, route}: LessonProps) {
-  const {userName, authToken} = route.params;
+  const {userName, authToken, courseId} = route.params;
+  const [lessons, setLessons] = useState<Lesson[]>([]);
+
+  useEffect(() => {
+    const fetchEnrolledLessons = async () => {
+      try {
+        const response = await axios.get(
+          `${baseUrl}/api/v1/courses/${courseId}/lessons`,
+          {
+            headers: {
+              Authorization: `Bearer ${authToken}`,
+            },
+          },
+        );
+
+        setLessons(response.data);
+      } catch (error) {
+        console.error('Error fetching enrolled courses:', error);
+      }
+    };
+
+    if (courseId) {
+      fetchEnrolledLessons();
+    }
+  }, [authToken, courseId]);
+
+  useEffect(() => {
+    navigation.setOptions({
+      headerRight: () => (
+        <HeaderRight
+          userName={userName}
+          userImage={require('../../assets/images/tulip.webp')}
+        />
+      ),
+    });
+  }, [navigation, userName]);
+
+  const isLoggedIn = !!authToken;
 
   return (
     <View style={styles.container}>
-      <View style={styles.box}>
-        <View style={styles.titleView}>
-          <View style={styles.contentView}>
-            <Text style={[styles.boxTitle, {color: '#A9A9A9'}]}>
-              {'Lesson 152'}
-              <Text style={[styles.innerText, {color: '#A9A9A9'}]}>{'   (Done)'}</Text>
-            </Text>
-          </View>
-          <FontAwesome
-            name="book"
-            size={30}
-            color="#A9A9A9"
-            onPress={() => navigation.goBack()}
-          />
-        </View>
-        <Text style={[styles.normalSizeText, styles.progressText, {color: '#A9A9A9'}]}>
-          {'Progress: 10/10 subjects'}
-        </Text>
+      {isLoggedIn ? (
+        <>
+          {lessons.length > 0 ? (
+            lessons.map(lesson => (
+              <View key={lesson.id} style={styles.box}>
+                <View style={styles.titleView}>
+                  <View style={styles.contentView}>
+                    <Text style={styles.boxTitle}>
+                      {lesson.name}
+                      <Text style={[styles.innerText, {color: '#FF9900'}]}>{'   (In progress)'}</Text>
+                    </Text>
+                  </View>
+                  <FontAwesome
+                    name="book"
+                    size={30}
+                    color="#4F7942"
+                    onPress={() => navigation.goBack()}
+                  />
+                </View>
+                <Text style={[styles.normalSizeText, styles.progressText]}>
+                  {'Progress: 3/8 subjects'}
+                </Text>
 
-        <View style={styles.bottomArrow}>
-          <MaterialIcons
-            name="keyboard-arrow-down"
-            size={40}
-            color="#A9A9A9"
-            onPress={() => navigation.goBack()}
-          />
-        </View>
-      </View>
-      {/* end of subject */}
+                <View style={styles.subjectViewGroup}>
+                  <View style={styles.subjectView}>
+                    <Text style={styles.normalSizeText}>{'Activity Time'}</Text>
+                  </View>
+                  <View style={styles.iconSubjectViewGroup}>
+                    <FontAwesome
+                      name="play-circle"
+                      size={30}
+                      color="#FF9900"
+                      onPress={() => navigation.navigate('Lesson')}
+                    />
+                    <FontAwesome
+                      name="book"
+                      size={30}
+                      color="#4F7942"
+                      onPress={() => navigation.goBack()}
+                    />
+                    <FontAwesome
+                      name="undo"
+                      size={20}
+                      color="#4F7942"
+                      onPress={() => navigation.goBack()}
+                    />
+                  </View>
+                </View>
+                <Line />
 
-      <View style={styles.box}>
-        <View style={styles.titleView}>
-          <View style={styles.contentView}>
-            <Text style={styles.boxTitle}>
-              {'Lesson 152'}
-              <Text style={[styles.innerText, {color: '#FF9900'}]}>{'   (In progress)'}</Text>
-            </Text>
-          </View>
-          <FontAwesome
-            name="book"
-            size={30}
-            color="#4F7942"
-            onPress={() => navigation.goBack()}
-          />
-        </View>
-        <Text style={[styles.normalSizeText, styles.progressText]}>
-          {'Progress: 3/8 subjects'}
-        </Text>
+                <View style={styles.subjectViewGroup}>
+                  <View style={styles.subjectView}>
+                    <Text style={[styles.normalSizeText, {color: '#A9A9A9'}]}>{'Language Enrichment'}</Text>
+                  </View>
+                  <View style={styles.iconSubjectViewGroup}>
+                    <FontAwesome
+                      name="play-circle"
+                      size={30}
+                      color="#A9A9A9"
+                      onPress={() => navigation.navigate('Lesson')}
+                    />
+                    <FontAwesome
+                      name="book"
+                      size={30}
+                      color="#A9A9A9"
+                      onPress={() => navigation.goBack()}
+                    />
+                    <FontAwesome
+                      name="undo"
+                      size={20}
+                      color="#A9A9A9"
+                      onPress={() => navigation.goBack()}
+                    />
+                  </View>
+                </View>
+                <Line />
 
-        <View style={styles.subjectViewGroup}>
-          <View style={styles.subjectView}>
-            <Text style={styles.normalSizeText}>{'Activity Time'}</Text>
-          </View>
-          <View style={styles.iconSubjectViewGroup}>
-            <FontAwesome
-              name="play-circle"
-              size={30}
-              color="#FF9900"
-              onPress={() => navigation.navigate('Lesson')}
-            />
-            <FontAwesome
-              name="book"
-              size={30}
-              color="#4F7942"
-              onPress={() => navigation.goBack()}
-            />
-            <FontAwesome
-              name="undo"
-              size={20}
-              color="#4F7942"
-              onPress={() => navigation.goBack()}
-            />
-          </View>
+                <View style={styles.bottomArrow}>
+                  <MaterialIcons
+                    name="keyboard-arrow-up"
+                    size={40}
+                    color="#4F7942"
+                    onPress={() => navigation.goBack()}
+                  />
+                </View>
+              </View>
+            ))
+          ) : (
+            <Text h4>No lessons.</Text>
+          )}
+        </>
+      ) : (
+        <View>
+          <Text h4>Please log in to access the lesson.</Text>
         </View>
-        <Line />
-
-        <View style={styles.subjectViewGroup}>
-          <View style={styles.subjectView}>
-            <Text style={[styles.normalSizeText, {color: '#A9A9A9'}]}>{'Activity Time jdgs jdsg jhsdg jhgds jhgds jhdgs nds jhdsg'}</Text>
-          </View>
-          <View style={styles.iconSubjectViewGroup}>
-            <FontAwesome
-              name="play-circle"
-              size={30}
-              color="#A9A9A9"
-              onPress={() => navigation.navigate('Lesson')}
-            />
-            <FontAwesome
-              name="book"
-              size={30}
-              color="#A9A9A9"
-              onPress={() => navigation.goBack()}
-            />
-            <FontAwesome
-              name="undo"
-              size={20}
-              color="#A9A9A9"
-              onPress={() => navigation.goBack()}
-            />
-          </View>
-        </View>
-        <Line />
-
-        <View style={styles.subjectViewGroup}>
-          <View style={styles.subjectView}>
-            <Text style={styles.normalSizeText}>{'Language Enrichment'}</Text>
-          </View>
-          <View style={styles.iconSubjectViewGroup}>
-            <FontAwesome
-              name="play-circle"
-              size={30}
-              color="#FF9900"
-              onPress={() => navigation.navigate('Lesson')}
-            />
-            <FontAwesome
-              name="book"
-              size={30}
-              color="#4F7942"
-              onPress={() => navigation.goBack()}
-            />
-            <FontAwesome
-              name="undo"
-              size={20}
-              color="#4F7942"
-              onPress={() => navigation.goBack()}
-            />
-          </View>
-        </View>
-        <Line />
-
-        <View style={styles.bottomArrow}>
-          <MaterialIcons
-            name="keyboard-arrow-up"
-            size={40}
-            color="#4F7942"
-            onPress={() => navigation.goBack()}
-          />
-        </View>
-      </View>
-      {/* end of subject */}
-
-      <View style={styles.box}>
-        <View style={styles.titleView}>
-          <View style={styles.contentView}>
-            <Text style={styles.boxTitle}>
-              {'Lesson 152'}
-              <Text style={styles.innerText}>{'   (To do)'}</Text>
-            </Text>
-          </View>
-          <FontAwesome
-            name="book"
-            size={30}
-            color="#4F7942"
-            onPress={() => navigation.goBack()}
-          />
-        </View>
-        <Text style={[styles.normalSizeText, styles.progressText]}>
-          {'Progress: 10/10 subjects'}
-        </Text>
-
-        <View style={styles.bottomArrow}>
-          <MaterialIcons
-            name="keyboard-arrow-down"
-            size={40}
-            color="#4F7942"
-            onPress={() => navigation.goBack()}
-          />
-        </View>
-      </View>
+      )}
     </View>
   );
 }
