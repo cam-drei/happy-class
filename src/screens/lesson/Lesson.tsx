@@ -28,7 +28,7 @@ function Lesson({navigation, route}: LessonProps) {
     const fetchEnrolledLessons = async () => {
       try {
         const response = await axios.get(
-          `${baseUrl}/api/v1/courses/${courseId}/lessons`,
+          `${baseUrl}/api/v1/users/enrolled_courses/${courseId}/lessons`,
           {
             headers: {
               Authorization: `Bearer ${authToken}`,
@@ -36,7 +36,7 @@ function Lesson({navigation, route}: LessonProps) {
           },
         );
 
-        setLessons(response.data);
+        setLessons(response.data.lessons);
       } catch (error) {
         console.error('Error fetching enrolled courses:', error);
       }
