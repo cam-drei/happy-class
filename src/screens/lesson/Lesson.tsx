@@ -68,7 +68,7 @@ function Lesson({navigation, route}: LessonProps) {
             lesson.subjects = subjectResponse.data.subjects;
 
             for (let subject of lesson.subjects) {
-              const contentResponse = await axios.get(
+              const contentSubjectResponse = await axios.get(
                 `${baseUrl}/api/v1/users/enrolled_courses/${courseId}/lessons/${lesson.id}/subjects/${subject.id}/contents`,
                 {
                   headers: {
@@ -76,7 +76,7 @@ function Lesson({navigation, route}: LessonProps) {
                   },
                 },
               );
-              subject.contents = contentResponse.data.contents;
+              subject.contents = contentSubjectResponse.data.contents;
             }
 
             const lessonContentResponse = await axios.get(
