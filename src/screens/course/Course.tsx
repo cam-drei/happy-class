@@ -80,12 +80,11 @@ function Course({navigation, route}: CourseProps) {
             },
           },
         );
-        // setContents(response.data.contents);
+
         setContents(prevContents => ({
           ...prevContents,
           [courseId]: response.data.contents,
         }));
-        // console.log('prevContents ===', contents);
       } catch (error) {
         console.error('Error fetching contents for course:', error);
       }
@@ -203,11 +202,6 @@ function Course({navigation, route}: CourseProps) {
           <Text h4>Please log in to access the course.</Text>
         </View>
       )}
-
-      {/* <Button
-        title="Go back to first screen in stack"
-        onPress={() => navigation.popToTop()}
-      /> */}
     </View>
   );
 }
