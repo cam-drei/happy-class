@@ -82,7 +82,15 @@ const styles = StyleSheet.create({
     fontSize: 16,
     paddingTop: 10,
   },
-
+  iconSubjectViewGroup: {
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+    alignItems: 'center',
+    flex: 1,
+  },
+  bookIcon: {
+    paddingLeft: 15,
+  },
 });
 
 export default styles;

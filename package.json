@@ -27,6 +27,7 @@
     "react-native-screens": "^3.27.0",
     "react-native-svg": "^14.1.0",
     "react-native-vector-icons": "^10.0.2",
+    "react-native-video": "^5.2.1",
     "react-native-web": "^0.19.9"
   },
   "devDependencies": {
@@ -38,6 +39,7 @@
     "@react-native/metro-config": "^0.72.11",
     "@tsconfig/react-native": "^3.0.0",
     "@types/react": "^18.0.24",
+    "@types/react-native-video": "^5.0.19",
     "@types/react-test-renderer": "^18.0.0",
     "babel-jest": "^29.2.1",
     "eslint": "^8.19.0",

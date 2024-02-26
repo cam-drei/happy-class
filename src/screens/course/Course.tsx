@@ -1,9 +1,10 @@
 import React, {useState, useEffect} from 'react';
-import {View, Modal, TouchableOpacity, ScrollView} from 'react-native';
+import {View, Modal, TouchableOpacity, ScrollView, Linking} from 'react-native';
 import {Text} from '@rneui/base';
 import styles from './styles';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import AntDesign from 'react-native-vector-icons/AntDesign';
+import Feather from 'react-native-vector-icons/Feather';
 import HeaderRight from '../../components/header/HeaderRight';
 import axios from 'axios';
 import {baseUrl} from '../../utils/apiConfig';
@@ -22,7 +23,9 @@ interface Course {
 function Course({navigation, route}: CourseProps) {
   const {authToken, userId, userName} = route.params;
   const [enrolledCourses, setEnrolledCourses] = useState<Course[]>([]);
-  const [isModalVisible, setModalVisible] = useState(false);
+  const [isCourseInfoModalVisible, setCourseInfoModalVisible] = useState(false);
+  // const [contents, setContents] = useState<any[]>([]);
+  const [contents, setContents] = useState<{[courseId: number]: any[]}>({});
 
   useEffect(() => {
     const fetchEnrolledCourses = async () => {
@@ -66,6 +69,43 @@ function Course({navigation, route}: CourseProps) {
     navigation.navigate('Enroll', {authToken, userId, userName});
   };
 
+  useEffect(() => {
+    const fetchContentsForCourse = async (courseId: number) => {
+      try {
+        const response = await axios.get(
+          `${baseUrl}/api/v1/users/enrolled_courses/${courseId}/contents`,
+          {
+            headers: {
+              Authorization: `Bearer ${authToken}`,
+            },
+          },
+        );
+        // setContents(response.data.contents);
+        setContents(prevContents => ({
+          ...prevContents,
+          [courseId]: response.data.contents,
+        }));
+        // console.log('prevContents ===', contents);
+      } catch (error) {
+        console.error('Error fetching contents for course:', error);
+      }
+    };
+
+    enrolledCourses.forEach(course => {
+      fetchContentsForCourse(course.id);
+    });
+  }, [authToken, enrolledCourses]);
+
+  const openResourceLink = (resourceLink: string) => {
+    if (resourceLink) {
+      Linking.openURL(resourceLink);
+    }
+  };
+
+  const handleVideoPlay = (videoLink: string, videoName: string) => {
+    navigation.navigate('VideoScreen', {videoLink, videoName});
+  };
+
   const isLoggedIn = !!authToken;
 
   return (
@@ -79,15 +119,38 @@ function Course({navigation, route}: CourseProps) {
                   <Text
                     h4
                     style={styles.boxTitle}
-                    onPress={() => setModalVisible(true)}>
+                    onPress={() => setCourseInfoModalVisible(true)}>
                     {course.name}
                   </Text>
-                  <FontAwesome
-                    name="book"
-                    size={30}
-                    color="#4F7942"
-                    onPress={() => navigation.goBack()}
-                  />
+                  {contents[course.id] &&
+                    contents[course.id].length > 0 &&
+                    contents[course.id].map(content => (
+                      <View
+                        key={content.id}
+                        style={styles.iconSubjectViewGroup}>
+                        {content.video_link && (
+                          <Feather
+                            name="video"
+                            size={30}
+                            color="#4F7942"
+                            onPress={() =>
+                              handleVideoPlay(content.video_link, course.name)
+                            }
+                          />
+                        )}
+                        {content.document_link && (
+                          <FontAwesome
+                            name="book"
+                            style={styles.bookIcon}
+                            size={30}
+                            color="#4F7942"
+                            onPress={() =>
+                              openResourceLink(content.document_link)
+                            }
+                          />
+                        )}
+                      </View>
+                    ))}
                 </View>
                 <View style={[styles.titleView]}>
                   <View style={styles.contentView}>
@@ -110,7 +173,7 @@ function Course({navigation, route}: CourseProps) {
                     onPress={navigateToEnroll}
                   />
                 </View>
-                <Modal visible={isModalVisible} transparent>
+                <Modal visible={isCourseInfoModalVisible} transparent>
                   <View style={styles.centeredView}>
                     <View style={styles.modalView}>
                       <ScrollView style={styles.scrollView}>
@@ -121,7 +184,9 @@ function Course({navigation, route}: CourseProps) {
                       </ScrollView>
                       <TouchableOpacity
                         style={[styles.button, styles.buttonClose]}
-                        onPress={() => setModalVisible(!isModalVisible)}>
+                        onPress={() =>
+                          setCourseInfoModalVisible(!isCourseInfoModalVisible)
+                        }>
                         <Text style={styles.textStyle}>Close</Text>
                       </TouchableOpacity>
                     </View>
