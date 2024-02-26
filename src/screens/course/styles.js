@@ -82,7 +82,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     paddingTop: 10,
   },
-  iconSubjectViewGroup: {
+  iconSubjectGroup: {
     flexDirection: 'row',
     justifyContent: 'flex-end',
     alignItems: 'center',

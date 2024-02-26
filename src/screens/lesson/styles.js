@@ -46,7 +46,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#FF9900',
   },
-  subjectViewGroup: {
+  subjectGroup: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
@@ -56,15 +56,24 @@ const styles = StyleSheet.create({
     flex: 2,
     paddingRight: 15,
   },
-  iconSubjectViewGroup: {
+  iconSubjectGroup: {
     flexDirection: 'row',
     justifyContent: 'space-between',
+    alignItems: 'center',
+    flex: 1,
+  },
+  iconTitleGroup: {
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
     alignItems: 'center',
     flex: 1,
   },
   bottomArrow: {
     alignItems: 'center',
     marginTop: -5,
+  },
+  bookIcon: {
+    paddingLeft: 15,
   },
 });
 

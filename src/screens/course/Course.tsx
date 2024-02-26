@@ -24,7 +24,6 @@ function Course({navigation, route}: CourseProps) {
   const {authToken, userId, userName} = route.params;
   const [enrolledCourses, setEnrolledCourses] = useState<Course[]>([]);
   const [isCourseInfoModalVisible, setCourseInfoModalVisible] = useState(false);
-  // const [contents, setContents] = useState<any[]>([]);
   const [contents, setContents] = useState<{[courseId: number]: any[]}>({});
 
   useEffect(() => {
@@ -124,9 +123,7 @@ function Course({navigation, route}: CourseProps) {
                   {contents[course.id] &&
                     contents[course.id].length > 0 &&
                     contents[course.id].map(content => (
-                      <View
-                        key={content.id}
-                        style={styles.iconSubjectViewGroup}>
+                      <View key={content.id} style={styles.iconSubjectGroup}>
                         {content.video_link && (
                           <Feather
                             name="video"

@@ -1,9 +1,10 @@
 import React, {useState, useEffect} from 'react';
-import {View} from 'react-native';
+import {View, Linking} from 'react-native';
 import {Text} from '@rneui/base';
 import styles from './styles';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
+import Feather from 'react-native-vector-icons/Feather';
 import Line from '../../components/line/Line';
 import HeaderRight from '../../components/header/HeaderRight';
 import axios from 'axios';
@@ -19,6 +20,14 @@ interface Subject {
   name: string;
   description: string;
   done: boolean;
+  contents: Content[];
+}
+
+interface Content {
+  id: number;
+  video_link: string;
+  document_link: string;
+  resource_type: string;
 }
 
 interface Lesson {
@@ -27,6 +36,7 @@ interface Lesson {
   description: string;
   done: boolean;
   subjects: Subject[];
+  contents: Content[];
 }
 
 function Lesson({navigation, route}: LessonProps) {
@@ -45,7 +55,6 @@ function Lesson({navigation, route}: LessonProps) {
           },
         );
 
-        // setLessons(response.data.lessons);
         const lessonsWithSubjects = await Promise.all(
           response.data.lessons.map(async (lesson: Lesson) => {
             const subjectResponse = await axios.get(
@@ -54,9 +63,32 @@ function Lesson({navigation, route}: LessonProps) {
                 headers: {
                   Authorization: `Bearer ${authToken}`,
                 },
-              }
+              },
             );
             lesson.subjects = subjectResponse.data.subjects;
+
+            for (let subject of lesson.subjects) {
+              const contentResponse = await axios.get(
+                `${baseUrl}/api/v1/users/enrolled_courses/${courseId}/lessons/${lesson.id}/subjects/${subject.id}/contents`,
+                {
+                  headers: {
+                    Authorization: `Bearer ${authToken}`,
+                  },
+                },
+              );
+              subject.contents = contentResponse.data.contents;
+            }
+
+            const lessonContentResponse = await axios.get(
+              `${baseUrl}/api/v1/users/enrolled_courses/${courseId}/lessons/${lesson.id}/contents`,
+              {
+                headers: {
+                  Authorization: `Bearer ${authToken}`,
+                },
+              },
+            );
+            lesson.contents = lessonContentResponse.data.contents;
+
             return lesson;
           }),
         );
@@ -83,6 +115,15 @@ function Lesson({navigation, route}: LessonProps) {
     });
   }, [navigation, userName]);
 
+  const openResourceLink = (resourceLink: string) => {
+    if (resourceLink) {
+      Linking.openURL(resourceLink);
+    }
+  };
+
+  const handleVideoPlay = (videoLink: string, videoName: string) => {
+    navigation.navigate('VideoScreen', {videoLink, videoName});
+  };
   const isLoggedIn = !!authToken;
 
   return (
@@ -99,47 +140,79 @@ function Lesson({navigation, route}: LessonProps) {
                       <Text style={[styles.innerText, {color: '#FF9900'}]}>{'   (In progress)'}</Text>
                     </Text>
                   </View>
-                  <FontAwesome
-                    name="book"
-                    size={30}
-                    color="#4F7942"
-                    onPress={() => navigation.goBack()}
-                  />
+                  {lesson.contents.map(content => (
+                    <View key={content.id} style={styles.iconTitleGroup}>
+                      {content.video_link && (
+                        <Feather
+                          name="video"
+                          size={30}
+                          color="#4F7942"
+                          onPress={() =>
+                            handleVideoPlay(content.video_link, lesson.name)
+                          }
+                        />
+                      )}
+                      {content.document_link && (
+                        <FontAwesome
+                          name="book"
+                          style={styles.bookIcon}
+                          size={30}
+                          color="#4F7942"
+                          onPress={() =>
+                            openResourceLink(content.document_link)
+                          }
+                        />
+                      )}
+                    </View>
+                  ))}
                 </View>
                 <Text style={[styles.normalSizeText, styles.progressText]}>
                   {'Progress: 3/8 subjects'}
                 </Text>
                 {lesson.subjects.map(subject => (
-                  <>
-                    <View key={subject.id} style={styles.subjectViewGroup}>
+                  <View>
+                    <View key={subject.id} style={styles.subjectGroup}>
                       <View style={styles.subjectView}>
                         <Text style={styles.normalSizeText}>
                           {subject.name}
                         </Text>
                       </View>
-                      <View style={styles.iconSubjectViewGroup}>
-                        <FontAwesome
-                          name="play-circle"
-                          size={30}
-                          color="#FF9900"
-                          onPress={() => navigation.navigate('Lesson')}
-                        />
-                        <FontAwesome
-                          name="book"
-                          size={30}
-                          color="#4F7942"
-                          onPress={() => navigation.goBack()}
-                        />
-                        <FontAwesome
-                          name="undo"
-                          size={20}
-                          color="#4F7942"
-                          onPress={() => navigation.goBack()}
-                        />
-                      </View>
+                      {subject.contents.map(content => (
+                        <View key={content.id} style={styles.iconSubjectGroup}>
+                          {content.video_link && (
+                            <FontAwesome
+                              name="play-circle"
+                              size={30}
+                              color="#FF9900"
+                              onPress={() =>
+                                handleVideoPlay(
+                                  content.video_link,
+                                  subject.name,
+                                )
+                              }
+                            />
+                          )}
+                          {content.document_link && (
+                            <FontAwesome
+                              name="book"
+                              size={30}
+                              color="#4F7942"
+                              onPress={() =>
+                                openResourceLink(content.document_link)
+                              }
+                            />
+                          )}
+                          <FontAwesome
+                            name="undo"
+                            size={20}
+                            color="#4F7942"
+                            onPress={() => navigation.goBack()}
+                          />
+                        </View>
+                      ))}
                     </View>
                     <Line />
-                  </>
+                  </View>
                 ))}
 
                 <View style={styles.bottomArrow}>
