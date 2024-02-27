@@ -155,7 +155,7 @@ function Lesson({navigation, route}: LessonProps) {
                       {content.document_link && (
                         <FontAwesome
                           name="book"
-                          style={styles.bookIcon}
+                          style={styles.paddingLeftIcon}
                           size={30}
                           color="#4F7942"
                           onPress={() =>
@@ -197,6 +197,7 @@ function Lesson({navigation, route}: LessonProps) {
                               name="book"
                               size={30}
                               color="#4F7942"
+                              style={styles.paddingLeftIcon}
                               onPress={() =>
                                 openResourceLink(content.document_link)
                               }
@@ -206,6 +207,7 @@ function Lesson({navigation, route}: LessonProps) {
                             name="undo"
                             size={20}
                             color="#4F7942"
+                            style={styles.paddingLeftIcon}
                             onPress={() => navigation.goBack()}
                           />
                         </View>

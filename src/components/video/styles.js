@@ -8,10 +8,10 @@ const styles = StyleSheet.create({
   },
   videoView: {
     width: '100%',
-    height: '60%',
+    height: '90%',
   },
   videoName: {
-    paddingTop: 10,
+    paddingTop: 5,
   },
 });
 

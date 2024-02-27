@@ -58,7 +58,7 @@ const styles = StyleSheet.create({
   },
   iconSubjectGroup: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
+    justifyContent: 'flex-end',
     alignItems: 'center',
     flex: 1,
   },
@@ -72,7 +72,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginTop: -5,
   },
-  bookIcon: {
+  paddingLeftIcon: {
     paddingLeft: 15,
   },
 });
