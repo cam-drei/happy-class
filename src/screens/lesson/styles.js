@@ -28,12 +28,12 @@ const styles = StyleSheet.create({
     fontWeight: 'normal',
     fontStyle: 'italic',
   },
-  titleView: {
+  titleLessonView: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
   },
-  contentView: {
+  titleView: {
     flexDirection: 'row',
   },
   normalSizeText: {
@@ -46,21 +46,15 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#FF9900',
   },
-  subjectGroup: {
+  subjectContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
     paddingVertical: 2,
   },
-  subjectView: {
-    flex: 2,
-    paddingRight: 15,
-  },
-  iconSubjectGroup: {
+  iconSubjectContainer: {
     flexDirection: 'row',
-    justifyContent: 'flex-end',
     alignItems: 'center',
-    flex: 1,
   },
   iconTitleGroup: {
     flexDirection: 'row',

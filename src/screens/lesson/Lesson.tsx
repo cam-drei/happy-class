@@ -124,6 +124,7 @@ function Lesson({navigation, route}: LessonProps) {
   const handleVideoPlay = (videoLink: string, videoName: string) => {
     navigation.navigate('VideoScreen', {videoLink, videoName});
   };
+
   const isLoggedIn = !!authToken;
 
   return (
@@ -133,8 +134,8 @@ function Lesson({navigation, route}: LessonProps) {
           {lessons.length > 0 ? (
             lessons.map(lesson => (
               <View key={lesson.id} style={styles.box}>
-                <View style={styles.titleView}>
-                  <View style={styles.contentView}>
+                <View style={styles.titleLessonView}>
+                  <View style={styles.titleView}>
                     <Text style={styles.boxTitle}>
                       {lesson.name}
                       <Text style={[styles.innerText, {color: '#FF9900'}]}>{'   (In progress)'}</Text>
@@ -171,14 +172,12 @@ function Lesson({navigation, route}: LessonProps) {
                 </Text>
                 {lesson.subjects.map(subject => (
                   <View>
-                    <View key={subject.id} style={styles.subjectGroup}>
-                      <View style={styles.subjectView}>
-                        <Text style={styles.normalSizeText}>
-                          {subject.name}
-                        </Text>
-                      </View>
+                    <View key={subject.id} style={styles.subjectContainer}>
+                      <Text style={styles.normalSizeText}>{subject.name}</Text>
                       {subject.contents.map(content => (
-                        <View key={content.id} style={styles.iconSubjectGroup}>
+                        <View
+                          key={content.id}
+                          style={styles.iconSubjectContainer}>
                           {content.video_link && (
                             <FontAwesome
                               name="play-circle"
