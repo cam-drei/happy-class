@@ -18,6 +18,7 @@ const styles = StyleSheet.create({
     width: '90%',
     marginTop: 10,
     paddingTop: 8,
+    paddingBottom: 10,
   },
   boxTitle: {
     fontSize: 18,
@@ -62,12 +63,14 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     flex: 1,
   },
-  bottomArrow: {
-    alignItems: 'center',
-    marginTop: -5,
+  arrowButton: {
+    marginTop: -8,
   },
   paddingLeftIcon: {
     paddingLeft: 15,
+  },
+  animatedLessonView: {
+    overflow: 'scroll',
   },
 });
 

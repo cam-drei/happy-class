@@ -1,5 +1,5 @@
-import React, {useState, useEffect} from 'react';
-import {View, Linking} from 'react-native';
+import React, {useState, useEffect, useRef} from 'react';
+import {View, Linking, Animated} from 'react-native';
 import {Text} from '@rneui/base';
 import styles from './styles';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
@@ -42,6 +42,8 @@ interface Lesson {
 function Lesson({navigation, route}: LessonProps) {
   const {userName, authToken, courseId} = route.params;
   const [lessons, setLessons] = useState<Lesson[]>([]);
+  const [expandedLessonId, setExpandedLessonId] = useState<number | null>(null);
+  const animatedLessonHeight = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
     const fetchEnrolledLessons = async () => {
@@ -127,6 +129,17 @@ function Lesson({navigation, route}: LessonProps) {
 
   const isLoggedIn = !!authToken;
 
+  const toggleLesson = (lessonId: number) => {
+    const isOpen = expandedLessonId === lessonId;
+    setExpandedLessonId(isOpen ? null : lessonId);
+
+    Animated.timing(animatedLessonHeight, {
+      toValue: isOpen ? 0 : 1,
+      duration: 300,
+      useNativeDriver: false,
+    }).start();
+  };
+
   return (
     <View style={styles.container}>
       {isLoggedIn ? (
@@ -136,6 +149,18 @@ function Lesson({navigation, route}: LessonProps) {
               <View key={lesson.id} style={styles.box}>
                 <View style={styles.titleLessonView}>
                   <View style={styles.titleView}>
+                    <View style={styles.arrowButton}>
+                      <MaterialIcons
+                        name={
+                          expandedLessonId === lesson.id
+                            ? 'arrow-drop-up'
+                            : 'arrow-drop-down'
+                        }
+                        size={40}
+                        color="#4F7942"
+                        onPress={() => toggleLesson(lesson.id)}
+                      />
+                    </View>
                     <Text style={styles.boxTitle}>
                       {lesson.name}
                       <Text style={[styles.innerText, {color: '#FF9900'}]}>{'   (In progress)'}</Text>
@@ -170,60 +195,64 @@ function Lesson({navigation, route}: LessonProps) {
                 <Text style={[styles.normalSizeText, styles.progressText]}>
                   {'Progress: 3/8 subjects'}
                 </Text>
-                {lesson.subjects.map(subject => (
-                  <View>
-                    <View key={subject.id} style={styles.subjectContainer}>
-                      <Text style={styles.normalSizeText}>{subject.name}</Text>
-                      {subject.contents.map(content => (
-                        <View
-                          key={content.id}
-                          style={styles.iconSubjectContainer}>
-                          {content.video_link && (
+                <Animated.View
+                  style={[
+                    {
+                      height: animatedLessonHeight.interpolate({
+                        inputRange: [0, 1],
+                        outputRange: [0, lessons.find(lesson => lesson.id === expandedLessonId)?.subjects.length * 38 || 10],
+                      }),
+                    },
+                    styles.animatedLessonView,
+                  ]}>
+                  {lesson.subjects.map(subject => (
+                    <View>
+                      <View key={subject.id} style={styles.subjectContainer}>
+                        <Text style={styles.normalSizeText}>
+                          {subject.name}
+                        </Text>
+                        {subject.contents.map(content => (
+                          <View
+                            key={content.id}
+                            style={styles.iconSubjectContainer}>
+                            {content.video_link && (
+                              <FontAwesome
+                                name="play-circle"
+                                size={30}
+                                color="#FF9900"
+                                onPress={() =>
+                                  handleVideoPlay(
+                                    content.video_link,
+                                    subject.name,
+                                  )
+                                }
+                              />
+                            )}
+                            {content.document_link && (
+                              <FontAwesome
+                                name="book"
+                                size={30}
+                                color="#4F7942"
+                                style={styles.paddingLeftIcon}
+                                onPress={() =>
+                                  openResourceLink(content.document_link)
+                                }
+                              />
+                            )}
                             <FontAwesome
-                              name="play-circle"
-                              size={30}
-                              color="#FF9900"
-                              onPress={() =>
-                                handleVideoPlay(
-                                  content.video_link,
-                                  subject.name,
-                                )
-                              }
-                            />
-                          )}
-                          {content.document_link && (
-                            <FontAwesome
-                              name="book"
-                              size={30}
+                              name="undo"
+                              size={20}
                               color="#4F7942"
                               style={styles.paddingLeftIcon}
-                              onPress={() =>
-                                openResourceLink(content.document_link)
-                              }
+                              onPress={() => navigation.goBack()}
                             />
-                          )}
-                          <FontAwesome
-                            name="undo"
-                            size={20}
-                            color="#4F7942"
-                            style={styles.paddingLeftIcon}
-                            onPress={() => navigation.goBack()}
-                          />
-                        </View>
-                      ))}
+                          </View>
+                        ))}
+                      </View>
+                      <Line />
                     </View>
-                    <Line />
-                  </View>
-                ))}
-
-                <View style={styles.bottomArrow}>
-                  <MaterialIcons
-                    name="keyboard-arrow-up"
-                    size={40}
-                    color="#4F7942"
-                    onPress={() => navigation.goBack()}
-                  />
-                </View>
+                  ))}
+                </Animated.View>
               </View>
             ))
           ) : (
