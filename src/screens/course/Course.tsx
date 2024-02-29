@@ -25,6 +25,7 @@ function Course({navigation, route}: CourseProps) {
   const [enrolledCourses, setEnrolledCourses] = useState<Course[]>([]);
   const [isCourseInfoModalVisible, setCourseInfoModalVisible] = useState(false);
   const [contents, setContents] = useState<{[courseId: number]: any[]}>({});
+  const [selectedCourse, setSelectedCourse] = useState<Course | null>(null);
 
   useEffect(() => {
     const fetchEnrolledCourses = async () => {
@@ -117,7 +118,10 @@ function Course({navigation, route}: CourseProps) {
                   <Text
                     h4
                     style={styles.boxTitle}
-                    onPress={() => setCourseInfoModalVisible(true)}>
+                    onPress={() => {
+                      setSelectedCourse(course);
+                      setCourseInfoModalVisible(!!course.description);
+                    }}>
                     {course.name}
                   </Text>
                   {contents[course.id] &&
@@ -169,25 +173,28 @@ function Course({navigation, route}: CourseProps) {
                     onPress={navigateToEnroll}
                   />
                 </View>
-                <Modal visible={isCourseInfoModalVisible} transparent>
-                  <View style={styles.centeredView}>
-                    <View style={styles.modalView}>
-                      <ScrollView style={styles.scrollView}>
-                        <Text h4>{course.name}</Text>
-                        <Text style={styles.modalText}>
-                          {course.description}
-                        </Text>
-                      </ScrollView>
-                      <TouchableOpacity
-                        style={[styles.button, styles.buttonClose]}
-                        onPress={() =>
-                          setCourseInfoModalVisible(!isCourseInfoModalVisible)
-                        }>
-                        <Text style={styles.textStyle}>Close</Text>
-                      </TouchableOpacity>
+                {selectedCourse && (
+                  <Modal visible={isCourseInfoModalVisible} transparent>
+                    <View style={styles.centeredView}>
+                      <View style={styles.modalView}>
+                        <ScrollView style={styles.scrollView}>
+                          <Text h4>{selectedCourse.name}</Text>
+                          <Text style={styles.modalText}>
+                            {selectedCourse.description}
+                          </Text>
+                        </ScrollView>
+                        <TouchableOpacity
+                          style={[styles.button, styles.buttonClose]}
+                          onPress={() => {
+                            setCourseInfoModalVisible(false);
+                            setSelectedCourse(null);
+                          }}>
+                          <Text style={styles.textStyle}>Close</Text>
+                        </TouchableOpacity>
+                      </View>
                     </View>
-                  </View>
-                </Modal>
+                  </Modal>
+                )}
               </View>
             ))
           ) : (
