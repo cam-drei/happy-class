@@ -1,5 +1,5 @@
-import React, {useState, useEffect, useRef} from 'react';
-import {View, Linking, Animated} from 'react-native';
+import React, {useState, useEffect} from 'react';
+import {View, Linking} from 'react-native';
 import {Text} from '@rneui/base';
 import styles from './styles';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
@@ -136,6 +136,10 @@ function Lesson({navigation, route}: LessonProps) {
       ...prevState,
       [lessonId]: !prevState[lessonId],
     }));
+    // setExpandedLessons({
+    //   ...expandedLessons,
+    //   [lessonId]: true,
+    // });
   };
 
   return (
@@ -151,8 +155,8 @@ function Lesson({navigation, route}: LessonProps) {
                       <MaterialIcons
                         name={
                           expandedLessons[lesson.id]
-                            ? 'arrow-drop-up'
-                            : 'arrow-drop-down'
+                            ? 'keyboard-arrow-up'
+                            : 'keyboard-arrow-down'
                         }
                         size={40}
                         color="#4F7942"
@@ -161,35 +165,33 @@ function Lesson({navigation, route}: LessonProps) {
                     </View>
                     <Text style={styles.boxTitle}>
                       {lesson.name}
-                      <Text style={[styles.innerText, {color: '#FF9900'}]}>{'   (In progress)'}</Text>
+                      <Text style={[styles.innerText, {color: '#FF9900' }]}>{'   (In progress)'}</Text>
                     </Text>
                   </View>
-                  {lesson.contents.map(content => (
-                    <View key={content.id} style={styles.iconTitleGroup}>
-                      {content.video_link && (
-                        <Feather
-                          name="video"
-                          size={30}
-                          color="#4F7942"
-                          onPress={() =>
-                            handleVideoPlay(content.video_link, lesson.name)
-                          }
-                        />
-                      )}
-                      {content.document_link && (
-                        <FontAwesome
-                          name="book"
-                          style={styles.paddingLeftIcon}
-                          size={30}
-                          color="#4F7942"
-                          onPress={() =>
-                            openResourceLink(content.document_link)
-                          }
-                        />
-                      )}
-                    </View>
-                  ))}
                 </View>
+                {lesson.contents.map(content => (
+                  <View key={content.id} style={styles.iconTitleGroup}>
+                    {content.video_link && (
+                      <Feather
+                        name="video"
+                        size={30}
+                        color="#4F7942"
+                        onPress={() =>
+                          handleVideoPlay(content.video_link, lesson.name)
+                        }
+                      />
+                    )}
+                    {content.document_link && (
+                      <FontAwesome
+                        name="book"
+                        style={styles.paddingLeftIcon}
+                        size={30}
+                        color="#4F7942"
+                        onPress={() => openResourceLink(content.document_link)}
+                      />
+                    )}
+                  </View>
+                ))}
                 <Text style={[styles.normalSizeText, styles.progressText]}>
                   {'Progress: 3/8 subjects'}
                 </Text>
