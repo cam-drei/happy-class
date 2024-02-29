@@ -1,5 +1,5 @@
 import React from 'react';
-import {View, Image} from 'react-native';
+import {View, Image, Alert} from 'react-native';
 import styles from './styles';
 import BottomButton from '../../components/buttons/BottomButton';
 import {Text} from '@rneui/base';
@@ -42,6 +42,13 @@ function User({navigation, route}: UserProps) {
         {userName}
       </Text>
       <BottomButton text="Let's learn" onPress={navigateToCourse} />
+      <BottomButton
+        text="Click for choose your Course"
+        buttonType={'outlined'}
+        onPress={() => {
+          Alert.alert('Alert Title', 'Button Clicked!');
+        }}
+      />
       <View style={styles.bottomTextView}>
         <Text onPress={handleLogout} style={styles.bottomText}>
           Login to another account

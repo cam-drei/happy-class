@@ -12,8 +12,8 @@ interface ButtonProps {
 const BottomButton = (props: ButtonProps) => {
   const {text, onPress, titleStyle, buttonType, buttonWidth} = props;
 
-  const btnBgColor = buttonType === 'filled' ? '#FF9900' : 'transparent';
-  const btnTextColor = buttonType === 'filled' ? '#ffffff' : '#FF9900';
+  const btnBgColor = buttonType === 'filled' ? '#FF9900' : '#FFFFFF';
+  const btnTextColor = buttonType === 'filled' ? '#FFFFFF' : '#FF9900';
   const fontWeight = titleStyle === 'bold' ? 'bold' : 'normal';
 
   const border = buttonType === 'outlined' && {
