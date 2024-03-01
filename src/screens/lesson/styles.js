@@ -24,10 +24,13 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: 'bold',
   },
-  innerText: {
+  statusText: {
     fontSize: 16,
     fontWeight: 'normal',
     fontStyle: 'italic',
+  },
+  statusColor: {
+    color: '#FF9900',
   },
   titleLessonView: {
     flexDirection: 'row',
@@ -42,10 +45,6 @@ const styles = StyleSheet.create({
   },
   progressText: {
     paddingBottom: 10,
-  },
-  statusText: {
-    fontSize: 16,
-    color: '#FF9900',
   },
   subjectContainer: {
     flexDirection: 'row',
@@ -65,9 +64,10 @@ const styles = StyleSheet.create({
   },
   arrowButton: {
     marginTop: -8,
+    marginLeft: -10,
   },
   paddingLeftIcon: {
-    paddingLeft: 15,
+    paddingLeft: 10,
   },
   animatedLessonView: {
     overflow: 'scroll',

@@ -1,5 +1,5 @@
-import React, {useState, useEffect, useRef} from 'react';
-import {View, Linking, Animated} from 'react-native';
+import React, {useState, useEffect} from 'react';
+import {View, Linking} from 'react-native';
 import {Text} from '@rneui/base';
 import styles from './styles';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
@@ -42,6 +42,10 @@ interface Lesson {
 function Lesson({navigation, route}: LessonProps) {
   const {userName, authToken, courseId} = route.params;
   const [lessons, setLessons] = useState<Lesson[]>([]);
+  const [buttonColors, setButtonColors] = useState<{[key: number]: string}>({});
+  const [clickedContents, setClickedContents] = useState<{
+    [key: number]: boolean;
+  }>({});
 
   useEffect(() => {
     const fetchEnrolledLessons = async () => {
@@ -125,6 +129,39 @@ function Lesson({navigation, route}: LessonProps) {
     navigation.navigate('VideoScreen', {videoLink, videoName});
   };
 
+  const revertButtonColor = (contentId: number) => {
+    setButtonColors(prevState => {
+      const updatedColors = {...prevState};
+      delete updatedColors[contentId];
+      return updatedColors;
+    });
+  };
+
+  const revertClickedTitle = (contentId: number) => {
+    setClickedContents(prevState => ({
+      ...prevState,
+      [contentId]: false,
+    }));
+  };
+
+  const handleButtonClick = (contentId: number) => {
+    if (buttonColors[contentId]) {
+      revertButtonColor(contentId);
+    } else {
+      setButtonColors(prevState => ({
+        ...prevState,
+        [contentId]: '#A9A9A9',
+      }));
+    }
+  };
+
+  const updateClickedTitle = (resourseId: number) => {
+    setClickedContents(prevState => ({
+      ...prevState,
+      [resourseId]: true,
+    }));
+  };
+
   const isLoggedIn = !!authToken;
 
   const [expandedLessons, setExpandedLessons] = useState<{
@@ -159,9 +196,11 @@ function Lesson({navigation, route}: LessonProps) {
                         onPress={() => toggleLessonExpansion(lesson.id)}
                       />
                     </View>
-                    <Text style={styles.boxTitle}>
+                    <Text style={[styles.boxTitle]}>
                       {lesson.name}
-                      <Text style={[styles.innerText, {color: '#FF9900'}]}>{'   (In progress)'}</Text>
+                      <Text style={[styles.statusText, styles.statusColor]}>
+                        {'  (In progress)'}
+                      </Text>
                     </Text>
                   </View>
                   {lesson.contents.map(content => (
@@ -170,10 +209,12 @@ function Lesson({navigation, route}: LessonProps) {
                         <Feather
                           name="video"
                           size={30}
-                          color="#4F7942"
-                          onPress={() =>
-                            handleVideoPlay(content.video_link, lesson.name)
-                          }
+                          color={buttonColors[content.id] || '#4F7942'}
+                          onPress={() => {
+                            handleButtonClick(content.id);
+                            handleVideoPlay(content.video_link, lesson.name);
+                            // updateClickedTitle(lesson.id);
+                          }}
                         />
                       )}
                       {content.document_link && (
@@ -181,10 +222,24 @@ function Lesson({navigation, route}: LessonProps) {
                           name="book"
                           style={styles.paddingLeftIcon}
                           size={30}
-                          color="#4F7942"
-                          onPress={() =>
-                            openResourceLink(content.document_link)
-                          }
+                          color={buttonColors[content.id] || '#4F7942'}
+                          onPress={() => {
+                            handleButtonClick(content.id);
+                            openResourceLink(content.document_link);
+                            // updateClickedTitle(lesson.id);
+                          }}
+                        />
+                      )}
+                      {content.video_link && content.document_link && (
+                        <FontAwesome
+                          name="undo"
+                          size={20}
+                          color="#A9A9A9"
+                          style={styles.paddingLeftIcon}
+                          onPress={() => {
+                            revertClickedTitle(lesson.id);
+                            revertButtonColor(content.id);
+                          }}
                         />
                       )}
                     </View>
@@ -198,7 +253,13 @@ function Lesson({navigation, route}: LessonProps) {
                     {lesson.subjects.map(subject => (
                       <View>
                         <View key={subject.id} style={styles.subjectContainer}>
-                          <Text style={styles.normalSizeText}>
+                          <Text
+                            style={[
+                              styles.normalSizeText,
+                              clickedContents[subject.id]
+                                ? {color: '#A9A9A9'}
+                                : null,
+                            ]}>
                             {subject.name}
                           </Text>
                           {subject.contents.map(content => (
@@ -209,32 +270,39 @@ function Lesson({navigation, route}: LessonProps) {
                                 <FontAwesome
                                   name="play-circle"
                                   size={30}
-                                  color="#FF9900"
-                                  onPress={() =>
+                                  color={buttonColors[content.id] || '#FF9900'}
+                                  onPress={() => {
+                                    handleButtonClick(content.id);
                                     handleVideoPlay(
                                       content.video_link,
                                       subject.name,
-                                    )
-                                  }
+                                    );
+                                    updateClickedTitle(subject.id);
+                                  }}
                                 />
                               )}
                               {content.document_link && (
                                 <FontAwesome
                                   name="book"
                                   size={30}
-                                  color="#4F7942"
+                                  color={buttonColors[content.id] || '#4F7942'}
                                   style={styles.paddingLeftIcon}
-                                  onPress={() =>
-                                    openResourceLink(content.document_link)
-                                  }
+                                  onPress={() => {
+                                    handleButtonClick(content.id);
+                                    openResourceLink(content.document_link);
+                                    updateClickedTitle(subject.id);
+                                  }}
                                 />
                               )}
                               <FontAwesome
                                 name="undo"
                                 size={20}
-                                color="#4F7942"
+                                color="#A9A9A9"
                                 style={styles.paddingLeftIcon}
-                                onPress={() => navigation.goBack()}
+                                onPress={() => {
+                                  revertClickedTitle(subject.id);
+                                  revertButtonColor(content.id);
+                                }}
                               />
                             </View>
                           ))}
