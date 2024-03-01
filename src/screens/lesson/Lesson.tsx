@@ -172,7 +172,7 @@ function Lesson({navigation, route}: LessonProps) {
     navigation.navigate('VideoScreen', {videoLink, videoName});
   };
 
-  const revertButtonColor = (contentId: number) => {
+  const revertClickedButtonColor = (contentId: number) => {
     setButtonColors(prevState => {
       const updatedColors = {...prevState};
       delete updatedColors[contentId];
@@ -180,16 +180,16 @@ function Lesson({navigation, route}: LessonProps) {
     });
   };
 
-  const revertClickedTitle = (contentId: number) => {
+  const revertClickedTitleColor = (contentId: number) => {
     setClickedContents(prevState => ({
       ...prevState,
       [contentId]: false,
     }));
   };
 
-  const handleButtonClick = (contentId: number) => {
+  const handleButtonClickColor = (contentId: number) => {
     if (buttonColors[contentId]) {
-      revertButtonColor(contentId);
+      revertClickedButtonColor(contentId);
     } else {
       setButtonColors(prevState => ({
         ...prevState,
@@ -198,7 +198,7 @@ function Lesson({navigation, route}: LessonProps) {
     }
   };
 
-  const updateClickedTitle = (resourseId: number) => {
+  const updateClickedTitleColor = (resourseId: number) => {
     setClickedContents(prevState => ({
       ...prevState,
       [resourseId]: true,
@@ -254,9 +254,9 @@ function Lesson({navigation, route}: LessonProps) {
                           size={30}
                           color={buttonColors[content.id] || '#4F7942'}
                           onPress={() => {
-                            handleButtonClick(content.id);
+                            handleButtonClickColor(content.id);
                             handleVideoPlay(content.video_link, lesson.name);
-                            // updateClickedTitle(lesson.id);
+                            // updateClickedTitleColor(lesson.id);
                           }}
                         />
                       )}
@@ -267,9 +267,9 @@ function Lesson({navigation, route}: LessonProps) {
                           size={30}
                           color={buttonColors[content.id] || '#4F7942'}
                           onPress={() => {
-                            handleButtonClick(content.id);
+                            handleButtonClickColor(content.id);
                             openResourceLink(content.document_link);
-                            // updateClickedTitle(lesson.id);
+                            // updateClickedTitleColor(lesson.id);
                           }}
                         />
                       )}
@@ -280,8 +280,8 @@ function Lesson({navigation, route}: LessonProps) {
                           color="#A9A9A9"
                           style={styles.paddingLeftIcon}
                           onPress={() => {
-                            revertClickedTitle(lesson.id);
-                            revertButtonColor(content.id);
+                            revertClickedTitleColor(lesson.id);
+                            revertClickedButtonColor(content.id);
                           }}
                         />
                       )}
@@ -315,12 +315,12 @@ function Lesson({navigation, route}: LessonProps) {
                                   size={30}
                                   color={buttonColors[content.id] || '#FF9900'}
                                   onPress={() => {
-                                    handleButtonClick(content.id);
+                                    handleButtonClickColor(content.id);
                                     handleVideoPlay(
                                       content.video_link,
                                       subject.name,
                                     );
-                                    updateClickedTitle(subject.id);
+                                    updateClickedTitleColor(subject.id);
                                   }}
                                 />
                               )}
@@ -331,9 +331,9 @@ function Lesson({navigation, route}: LessonProps) {
                                   color={buttonColors[content.id] || '#4F7942'}
                                   style={styles.paddingLeftIcon}
                                   onPress={() => {
-                                    handleButtonClick(content.id);
+                                    handleButtonClickColor(content.id);
                                     openResourceLink(content.document_link);
-                                    updateClickedTitle(subject.id);
+                                    updateClickedTitleColor(subject.id);
                                   }}
                                 />
                               )}
@@ -343,8 +343,8 @@ function Lesson({navigation, route}: LessonProps) {
                                 color="#A9A9A9"
                                 style={styles.paddingLeftIcon}
                                 onPress={() => {
-                                  revertClickedTitle(subject.id);
-                                  revertButtonColor(content.id);
+                                  revertClickedTitleColor(subject.id);
+                                  revertClickedButtonColor(content.id);
                                 }}
                               />
                             </View>
