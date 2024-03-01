@@ -9,6 +9,7 @@ import Line from '../../components/line/Line';
 import HeaderRight from '../../components/header/HeaderRight';
 import axios from 'axios';
 import {baseUrl} from '../../utils/apiConfig';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 interface LessonProps {
   navigation: any;
@@ -118,6 +119,48 @@ function Lesson({navigation, route}: LessonProps) {
       ),
     });
   }, [navigation, userName]);
+
+  useEffect(() => {
+    const loadStateFromStorage = async () => {
+      try {
+        const storedButtonColors = await AsyncStorage.getItem('buttonColors');
+        const storedClickedContents = await AsyncStorage.getItem(
+          'clickedContents',
+        );
+
+        if (storedButtonColors) {
+          setButtonColors(JSON.parse(storedButtonColors));
+        }
+
+        if (storedClickedContents) {
+          setClickedContents(JSON.parse(storedClickedContents));
+        }
+      } catch (error) {
+        console.error('Error loading state from AsyncStorage:', error);
+      }
+    };
+
+    loadStateFromStorage();
+  }, []);
+
+  useEffect(() => {
+    const saveStateToStorage = async () => {
+      try {
+        await AsyncStorage.setItem(
+          'buttonColors',
+          JSON.stringify(buttonColors),
+        );
+        await AsyncStorage.setItem(
+          'clickedContents',
+          JSON.stringify(clickedContents),
+        );
+      } catch (error) {
+        console.error('Error saving state to AsyncStorage:', error);
+      }
+    };
+
+    saveStateToStorage();
+  }, [buttonColors, clickedContents]);
 
   const openResourceLink = (resourceLink: string) => {
     if (resourceLink) {
