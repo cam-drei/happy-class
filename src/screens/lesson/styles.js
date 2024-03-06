@@ -72,6 +72,9 @@ const styles = StyleSheet.create({
   animatedLessonView: {
     overflow: 'scroll',
   },
+  doneTextColor: {
+    color: '#A9A9A9',
+  },
 });
 
 export default styles;

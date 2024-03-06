@@ -1,5 +1,5 @@
-import React, {useState, useEffect} from 'react';
-import {View, Linking} from 'react-native';
+import React, {useState, useEffect, useRef} from 'react';
+import {View, Linking, Animated} from 'react-native';
 import {Text} from '@rneui/base';
 import styles from './styles';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
@@ -9,7 +9,6 @@ import Line from '../../components/line/Line';
 import HeaderRight from '../../components/header/HeaderRight';
 import axios from 'axios';
 import {baseUrl} from '../../utils/apiConfig';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 
 interface LessonProps {
   navigation: any;
@@ -43,13 +42,9 @@ interface Lesson {
 function Lesson({navigation, route}: LessonProps) {
   const {userName, authToken, courseId} = route.params;
   const [lessons, setLessons] = useState<Lesson[]>([]);
-  const [buttonColors, setButtonColors] = useState<{[key: number]: string}>({});
-  const [clickedContents, setClickedContents] = useState<{
-    [key: number]: boolean;
-  }>({});
 
   useEffect(() => {
-    const fetchEnrolledLessons = async () => {
+    const fetchLessons = async () => {
       try {
         const response = await axios.get(
           `${baseUrl}/api/v1/users/enrolled_courses/${courseId}/lessons`,
@@ -105,7 +100,7 @@ function Lesson({navigation, route}: LessonProps) {
     };
 
     if (courseId) {
-      fetchEnrolledLessons();
+      fetchLessons();
     }
   }, [authToken, courseId]);
 
@@ -120,91 +115,6 @@ function Lesson({navigation, route}: LessonProps) {
     });
   }, [navigation, userName]);
 
-  useEffect(() => {
-    const loadStateFromStorage = async () => {
-      try {
-        const storedButtonColors = await AsyncStorage.getItem('buttonColors');
-        const storedClickedContents = await AsyncStorage.getItem(
-          'clickedContents',
-        );
-
-        if (storedButtonColors) {
-          setButtonColors(JSON.parse(storedButtonColors));
-        }
-
-        if (storedClickedContents) {
-          setClickedContents(JSON.parse(storedClickedContents));
-        }
-      } catch (error) {
-        console.error('Error loading state from AsyncStorage:', error);
-      }
-    };
-
-    loadStateFromStorage();
-  }, []);
-
-  useEffect(() => {
-    const saveStateToStorage = async () => {
-      try {
-        await AsyncStorage.setItem(
-          'buttonColors',
-          JSON.stringify(buttonColors),
-        );
-        await AsyncStorage.setItem(
-          'clickedContents',
-          JSON.stringify(clickedContents),
-        );
-      } catch (error) {
-        console.error('Error saving state to AsyncStorage:', error);
-      }
-    };
-
-    saveStateToStorage();
-  }, [buttonColors, clickedContents]);
-
-  const openResourceLink = (resourceLink: string) => {
-    if (resourceLink) {
-      Linking.openURL(resourceLink);
-    }
-  };
-
-  const handleVideoPlay = (videoLink: string, videoName: string) => {
-    navigation.navigate('VideoScreen', {videoLink, videoName});
-  };
-
-  const revertClickedButtonColor = (contentId: number) => {
-    setButtonColors(prevState => {
-      const updatedColors = {...prevState};
-      delete updatedColors[contentId];
-      return updatedColors;
-    });
-  };
-
-  const revertClickedTitleColor = (contentId: number) => {
-    setClickedContents(prevState => ({
-      ...prevState,
-      [contentId]: false,
-    }));
-  };
-
-  const handleButtonClickColor = (contentId: number) => {
-    if (buttonColors[contentId]) {
-      revertClickedButtonColor(contentId);
-    } else {
-      setButtonColors(prevState => ({
-        ...prevState,
-        [contentId]: '#A9A9A9',
-      }));
-    }
-  };
-
-  const updateClickedTitleColor = (resourseId: number) => {
-    setClickedContents(prevState => ({
-      ...prevState,
-      [resourseId]: true,
-    }));
-  };
-
   const isLoggedIn = !!authToken;
 
   const [expandedLessons, setExpandedLessons] = useState<{
@@ -216,6 +126,150 @@ function Lesson({navigation, route}: LessonProps) {
       ...prevState,
       [lessonId]: !prevState[lessonId],
     }));
+  };
+
+  const markLessonAsDone = async (lessonId: number) => {
+    try {
+      await axios.put(
+        `${baseUrl}/api/v1/users/enrolled_courses/${courseId}/lessons/${lessonId}/mark_done`,
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${authToken}`,
+          },
+        },
+      );
+
+      setLessons(prevLessons =>
+        prevLessons.map(lesson =>
+          lesson.id === lessonId ? {...lesson, done: true} : lesson,
+        ),
+      );
+    } catch (error) {
+      console.error('Error marking lesson as done:', error);
+    }
+  };
+
+  const unmarkLessonAsDone = async (lessonId: number) => {
+    try {
+      await axios.put(
+        `${baseUrl}/api/v1/users/enrolled_courses/${courseId}/lessons/${lessonId}/unmark_done`,
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${authToken}`,
+          },
+        },
+      );
+
+      setLessons(prevLessons =>
+        prevLessons.map(lesson =>
+          lesson.id === lessonId ? {...lesson, done: false} : lesson,
+        ),
+      );
+    } catch (error) {
+      console.error('Error marking lesson as not done:', error);
+    }
+  };
+
+  const markSubjectAsDone = async (lessonId: number, subjectId: number) => {
+    try {
+      await axios.put(
+        `${baseUrl}/api/v1/users/enrolled_courses/${courseId}/lessons/${lessonId}/subjects/${subjectId}/mark_done`,
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${authToken}`,
+          },
+        },
+      );
+
+      setLessons(prevLessons =>
+        prevLessons.map(lesson =>
+          lesson.id === lessonId
+            ? {
+                ...lesson,
+                subjects: lesson.subjects.map(subject =>
+                  subject.id === subjectId ? {...subject, done: true} : subject,
+                ),
+              }
+            : lesson,
+        ),
+      );
+    } catch (error) {
+      console.error('Error marking subject as done:', error);
+    }
+  };
+
+  const unmarkSubjectAsDone = async (lessonId: number, subjectId: number) => {
+    try {
+      await axios.put(
+        `${baseUrl}/api/v1/users/enrolled_courses/${courseId}/lessons/${lessonId}/subjects/${subjectId}/unmark_done`,
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${authToken}`,
+          },
+        },
+      );
+
+      setLessons(prevLessons =>
+        prevLessons.map(lesson =>
+          lesson.id === lessonId
+            ? {
+                ...lesson,
+                subjects: lesson.subjects.map(subject =>
+                  subject.id === subjectId
+                    ? {...subject, done: false}
+                    : subject,
+                ),
+              }
+            : lesson,
+        ),
+      );
+    } catch (error) {
+      console.error('Error marking subject as not done:', error);
+    }
+  };
+
+  const handleVideoPlayForLesson = (
+    videoLink: string,
+    videoName: string,
+    lessonId: number,
+  ) => {
+    navigation.navigate('VideoScreen', {videoLink, videoName});
+    markLessonAsDone(lessonId);
+  };
+
+  const openResourceLinkForLesson = (
+    resourceLink: string,
+    lessonId: number,
+  ) => {
+    if (resourceLink) {
+      Linking.openURL(resourceLink);
+    }
+    markLessonAsDone(lessonId);
+  };
+
+  const handleVideoPlayForSubject = (
+    videoLink: string,
+    videoName: string,
+    lessonId: number,
+    subjectId: number,
+  ) => {
+    navigation.navigate('VideoScreen', {videoLink, videoName});
+    markSubjectAsDone(lessonId, subjectId);
+  };
+
+  const openResourceLinkForSubject = (
+    resourceLink: string,
+    lessonId: number,
+    subjectId: number,
+  ) => {
+    if (resourceLink) {
+      Linking.openURL(resourceLink);
+    }
+    markSubjectAsDone(lessonId, subjectId);
   };
 
   return (
@@ -235,14 +289,23 @@ function Lesson({navigation, route}: LessonProps) {
                             : 'arrow-drop-down'
                         }
                         size={40}
-                        color="#4F7942"
+                        color={lesson.done ? '#A9A9A9' : '#4F7942'}
                         onPress={() => toggleLessonExpansion(lesson.id)}
                       />
                     </View>
-                    <Text style={[styles.boxTitle]}>
+                    <Text
+                      style={[
+                        styles.boxTitle,
+                        lesson.done && styles.doneTextColor,
+                      ]}>
                       {lesson.name}
-                      <Text style={[styles.statusText, styles.statusColor]}>
-                        {'  (In progress)'}
+                      <Text
+                        style={[
+                          styles.statusText,
+                          styles.statusColor,
+                          lesson.done && styles.doneTextColor,
+                        ]}>
+                        {lesson.done ? ' (Done)' : ' (In progress)'}
                       </Text>
                     </Text>
                   </View>
@@ -252,12 +315,14 @@ function Lesson({navigation, route}: LessonProps) {
                         <Feather
                           name="video"
                           size={30}
-                          color={buttonColors[content.id] || '#4F7942'}
-                          onPress={() => {
-                            handleButtonClickColor(content.id);
-                            handleVideoPlay(content.video_link, lesson.name);
-                            // updateClickedTitleColor(lesson.id);
-                          }}
+                          color={lesson.done ? '#A9A9A9' : '#4F7942'}
+                          onPress={() =>
+                            handleVideoPlayForLesson(
+                              content.video_link,
+                              lesson.name,
+                              lesson.id,
+                            )
+                          }
                         />
                       )}
                       {content.document_link && (
@@ -265,30 +330,37 @@ function Lesson({navigation, route}: LessonProps) {
                           name="book"
                           style={styles.paddingLeftIcon}
                           size={30}
-                          color={buttonColors[content.id] || '#4F7942'}
-                          onPress={() => {
-                            handleButtonClickColor(content.id);
-                            openResourceLink(content.document_link);
-                            // updateClickedTitleColor(lesson.id);
-                          }}
+                          color={lesson.done ? '#A9A9A9' : '#4F7942'}
+                          onPress={() =>
+                            openResourceLinkForLesson(
+                              content.document_link,
+                              lesson.id,
+                            )
+                          }
                         />
                       )}
-                      {content.video_link && content.document_link && (
-                        <FontAwesome
-                          name="undo"
-                          size={20}
-                          color="#A9A9A9"
-                          style={styles.paddingLeftIcon}
-                          onPress={() => {
-                            revertClickedTitleColor(lesson.id);
-                            revertClickedButtonColor(content.id);
-                          }}
-                        />
-                      )}
+                      <FontAwesome
+                        name="undo"
+                        size={20}
+                        color={lesson.done ? '#A9A9A9' : '#4F7942'}
+                        style={styles.paddingLeftIcon}
+                        onPress={() => {
+                          if (lesson.done) {
+                            unmarkLessonAsDone(lesson.id);
+                          } else {
+                            markLessonAsDone(lesson.id);
+                          }
+                        }}
+                      />
                     </View>
                   ))}
                 </View>
-                <Text style={[styles.normalSizeText, styles.progressText]}>
+                <Text
+                  style={[
+                    styles.normalSizeText,
+                    styles.progressText,
+                    lesson.done && styles.doneTextColor,
+                  ]}>
                   {'Progress: 3/8 subjects'}
                 </Text>
                 {expandedLessons[lesson.id] && (
@@ -299,9 +371,7 @@ function Lesson({navigation, route}: LessonProps) {
                           <Text
                             style={[
                               styles.normalSizeText,
-                              clickedContents[subject.id]
-                                ? {color: '#A9A9A9'}
-                                : null,
+                              subject.done && styles.doneTextColor,
                             ]}>
                             {subject.name}
                           </Text>
@@ -313,38 +383,43 @@ function Lesson({navigation, route}: LessonProps) {
                                 <FontAwesome
                                   name="play-circle"
                                   size={30}
-                                  color={buttonColors[content.id] || '#FF9900'}
-                                  onPress={() => {
-                                    handleButtonClickColor(content.id);
-                                    handleVideoPlay(
+                                  color={subject.done ? '#A9A9A9' : '#FF9900'}
+                                  onPress={() =>
+                                    handleVideoPlayForSubject(
                                       content.video_link,
                                       subject.name,
-                                    );
-                                    updateClickedTitleColor(subject.id);
-                                  }}
+                                      lesson.id,
+                                      subject.id,
+                                    )
+                                  }
                                 />
                               )}
                               {content.document_link && (
                                 <FontAwesome
                                   name="book"
                                   size={30}
-                                  color={buttonColors[content.id] || '#4F7942'}
+                                  color={subject.done ? '#A9A9A9' : '#4F7942'}
                                   style={styles.paddingLeftIcon}
-                                  onPress={() => {
-                                    handleButtonClickColor(content.id);
-                                    openResourceLink(content.document_link);
-                                    updateClickedTitleColor(subject.id);
-                                  }}
+                                  onPress={() =>
+                                    openResourceLinkForSubject(
+                                      content.document_link,
+                                      lesson.id,
+                                      subject.id,
+                                    )
+                                  }
                                 />
                               )}
                               <FontAwesome
                                 name="undo"
                                 size={20}
-                                color="#A9A9A9"
+                                color={subject.done ? '#A9A9A9' : '#4F7942'}
                                 style={styles.paddingLeftIcon}
                                 onPress={() => {
-                                  revertClickedTitleColor(subject.id);
-                                  revertClickedButtonColor(content.id);
+                                  if (subject.done) {
+                                    unmarkSubjectAsDone(lesson.id, subject.id);
+                                  } else {
+                                    markSubjectAsDone(lesson.id, subject.id);
+                                  }
                                 }}
                               />
                             </View>
