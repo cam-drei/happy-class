@@ -272,6 +272,10 @@ function Lesson({navigation, route}: LessonProps) {
     markSubjectAsDone(lessonId, subjectId);
   };
 
+  const isLessonDone = (lesson: Lesson) => {
+    return lesson.subjects.every((subject: Subject) => subject.done);
+  };
+
   return (
     <View style={styles.container}>
       {isLoggedIn ? (
@@ -289,23 +293,23 @@ function Lesson({navigation, route}: LessonProps) {
                             : 'arrow-drop-down'
                         }
                         size={40}
-                        color={lesson.done ? '#A9A9A9' : '#4F7942'}
+                        color={isLessonDone(lesson) ? '#A9A9A9' : '#4F7942'}
                         onPress={() => toggleLessonExpansion(lesson.id)}
                       />
                     </View>
                     <Text
                       style={[
                         styles.boxTitle,
-                        lesson.done && styles.doneTextColor,
+                        isLessonDone(lesson) && styles.doneTextColor,
                       ]}>
                       {lesson.name}
                       <Text
                         style={[
                           styles.statusText,
                           styles.statusColor,
-                          lesson.done && styles.doneTextColor,
+                          isLessonDone(lesson) && styles.doneTextColor,
                         ]}>
-                        {lesson.done ? ' (Done)' : ' (In progress)'}
+                        {isLessonDone(lesson) ? ' (Done)' : ' (In progress)'}
                       </Text>
                     </Text>
                   </View>
@@ -359,9 +363,12 @@ function Lesson({navigation, route}: LessonProps) {
                   style={[
                     styles.normalSizeText,
                     styles.progressText,
-                    lesson.done && styles.doneTextColor,
+                    isLessonDone(lesson) && styles.doneTextColor,
                   ]}>
-                  {'Progress: 3/8 subjects'}
+                  {'Progress: '}
+                  {lesson.subjects.filter(subject => subject.done).length}/
+                  {lesson.subjects.length}
+                  {lesson.subjects.length <= 1 ? ' subject' : ' subjects'}
                 </Text>
                 {expandedLessons[lesson.id] && (
                   <>
