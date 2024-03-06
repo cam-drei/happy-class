@@ -75,6 +75,9 @@ const styles = StyleSheet.create({
   doneTextColor: {
     color: '#A9A9A9',
   },
+  todoTextColor: {
+    color: '#000000',
+  },
 });
 
 export default styles;
