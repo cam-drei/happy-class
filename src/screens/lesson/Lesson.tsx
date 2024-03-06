@@ -124,7 +124,10 @@ function Lesson({navigation, route}: LessonProps) {
   useEffect(() => {
     const initialExpandedState: {[key: number]: boolean} = {};
     lessons.forEach(lesson => {
-      initialExpandedState[lesson.id] = !isLessonDone(lesson);
+      const isDone = isLessonDone(lesson);
+      const isTodo =
+        lesson.subjects.filter(subject => subject.done).length === 0;
+      initialExpandedState[lesson.id] = isDone || isTodo ? false : true;
     });
     setExpandedLessons(initialExpandedState);
   }, [lessons]);
@@ -315,10 +318,12 @@ function Lesson({navigation, route}: LessonProps) {
                         style={[
                           styles.statusText,
                           styles.statusColor,
-                          lesson.subjects.filter(subject => subject.done).length === 0 && styles.todoTextColor,
+                          lesson.subjects.filter(subject => subject.done)
+                            .length === 0 && styles.todoTextColor,
                           isLessonDone(lesson) && styles.doneTextColor,
                         ]}>
-                        {lesson.subjects.filter(subject => subject.done).length === 0
+                        {lesson.subjects.filter(subject => subject.done)
+                          .length === 0
                           ? ' (Todo)'
                           : isLessonDone(lesson)
                           ? ' (Done)'
