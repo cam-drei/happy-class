@@ -173,7 +173,7 @@ function Lesson({navigation, route}: LessonProps) {
         console.error('Error marking lesson as done:', error);
       }
     },
-    [authToken, courseId, setLessons],
+    [authToken, courseId],
   );
 
   const unmarkLessonAsDone = useCallback(
@@ -198,7 +198,7 @@ function Lesson({navigation, route}: LessonProps) {
         console.error('Error marking lesson as not done:', error);
       }
     },
-    [authToken, courseId, setLessons],
+    [authToken, courseId],
   );
 
   useEffect(() => {
