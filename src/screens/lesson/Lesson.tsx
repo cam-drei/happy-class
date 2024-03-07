@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react';
+import React, {useState, useEffect, useCallback} from 'react';
 import {View, Linking, ScrollView} from 'react-native';
 import {Text} from '@rneui/base';
 import styles from './styles';
@@ -55,8 +55,20 @@ function Lesson({navigation, route}: LessonProps) {
           },
         );
 
+        const sortedLessons = response.data.lessons.sort(
+          (a: Lesson, b: Lesson) => {
+            if (a.done && !b.done) {
+              return -1;
+            }
+            if (!a.done && b.done) {
+              return 1;
+            }
+            return 0;
+          },
+        );
+
         const lessonsWithSubjects = await Promise.all(
-          response.data.lessons.map(async (lesson: Lesson) => {
+          sortedLessons.map(async (lesson: Lesson) => {
             const subjectResponse = await axios.get(
               `${baseUrl}/api/v1/users/enrolled_courses/${courseId}/lessons/${lesson.id}/subjects`,
               {
@@ -139,49 +151,73 @@ function Lesson({navigation, route}: LessonProps) {
     }));
   };
 
-  const markLessonAsDone = async (lessonId: number) => {
-    try {
-      await axios.put(
-        `${baseUrl}/api/v1/users/enrolled_courses/${courseId}/lessons/${lessonId}/mark_done`,
-        {},
-        {
-          headers: {
-            Authorization: `Bearer ${authToken}`,
+  const markLessonAsDone = useCallback(
+    async (lessonId: number) => {
+      try {
+        await axios.put(
+          `${baseUrl}/api/v1/users/enrolled_courses/${courseId}/lessons/${lessonId}/mark_done`,
+          {},
+          {
+            headers: {
+              Authorization: `Bearer ${authToken}`,
+            },
           },
-        },
-      );
+        );
 
-      setLessons(prevLessons =>
-        prevLessons.map(lesson =>
-          lesson.id === lessonId ? {...lesson, done: true} : lesson,
-        ),
-      );
-    } catch (error) {
-      console.error('Error marking lesson as done:', error);
-    }
-  };
+        setLessons(prevLessons =>
+          prevLessons.map(lesson =>
+            lesson.id === lessonId ? {...lesson, done: true} : lesson,
+          ),
+        );
+      } catch (error) {
+        console.error('Error marking lesson as done:', error);
+      }
+    },
+    [authToken, courseId, setLessons],
+  );
 
-  const unmarkLessonAsDone = async (lessonId: number) => {
-    try {
-      await axios.put(
-        `${baseUrl}/api/v1/users/enrolled_courses/${courseId}/lessons/${lessonId}/unmark_done`,
-        {},
-        {
-          headers: {
-            Authorization: `Bearer ${authToken}`,
+  const unmarkLessonAsDone = useCallback(
+    async (lessonId: number) => {
+      try {
+        await axios.put(
+          `${baseUrl}/api/v1/users/enrolled_courses/${courseId}/lessons/${lessonId}/unmark_done`,
+          {},
+          {
+            headers: {
+              Authorization: `Bearer ${authToken}`,
+            },
           },
-        },
-      );
+        );
 
-      setLessons(prevLessons =>
-        prevLessons.map(lesson =>
-          lesson.id === lessonId ? {...lesson, done: false} : lesson,
-        ),
-      );
-    } catch (error) {
-      console.error('Error marking lesson as not done:', error);
-    }
-  };
+        setLessons(prevLessons =>
+          prevLessons.map(lesson =>
+            lesson.id === lessonId ? {...lesson, done: false} : lesson,
+          ),
+        );
+      } catch (error) {
+        console.error('Error marking lesson as not done:', error);
+      }
+    },
+    [authToken, courseId, setLessons],
+  );
+
+  useEffect(() => {
+    lessons.forEach(lesson => {
+      const allSubjectsDone = lesson.subjects.every(subject => subject.done);
+      if (allSubjectsDone && !lesson.done) {
+        markLessonAsDone(lesson.id);
+      }
+    });
+  }, [lessons, markLessonAsDone]);
+
+  useEffect(() => {
+    lessons.forEach(lesson => {
+      const anySubjectNotDone = lesson.subjects.some(subject => !subject.done);
+      if (anySubjectNotDone && lesson.done) {
+        unmarkLessonAsDone(lesson.id);
+      }
+    });
+  }, [lessons, unmarkLessonAsDone]);
 
   const markSubjectAsDone = async (lessonId: number, subjectId: number) => {
     try {
@@ -243,23 +279,14 @@ function Lesson({navigation, route}: LessonProps) {
     }
   };
 
-  const handleVideoPlayForLesson = (
-    videoLink: string,
-    videoName: string,
-    lessonId: number,
-  ) => {
+  const handleVideoPlayForLesson = (videoLink: string, videoName: string) => {
     navigation.navigate('VideoScreen', {videoLink, videoName});
-    markLessonAsDone(lessonId);
   };
 
-  const openResourceLinkForLesson = (
-    resourceLink: string,
-    lessonId: number,
-  ) => {
+  const openResourceLinkForLesson = (resourceLink: string) => {
     if (resourceLink) {
       Linking.openURL(resourceLink);
     }
-    markLessonAsDone(lessonId);
   };
 
   const handleVideoPlayForSubject = (
@@ -342,7 +369,6 @@ function Lesson({navigation, route}: LessonProps) {
                             handleVideoPlayForLesson(
                               content.video_link,
                               lesson.name,
-                              lesson.id,
                             )
                           }
                         />
@@ -354,26 +380,10 @@ function Lesson({navigation, route}: LessonProps) {
                           size={30}
                           color={lesson.done ? '#A9A9A9' : '#4F7942'}
                           onPress={() =>
-                            openResourceLinkForLesson(
-                              content.document_link,
-                              lesson.id,
-                            )
+                            openResourceLinkForLesson(content.document_link)
                           }
                         />
                       )}
-                      <FontAwesome
-                        name="undo"
-                        size={20}
-                        color={lesson.done ? '#A9A9A9' : '#4F7942'}
-                        style={styles.paddingLeftIcon}
-                        onPress={() => {
-                          if (lesson.done) {
-                            unmarkLessonAsDone(lesson.id);
-                          } else {
-                            markLessonAsDone(lesson.id);
-                          }
-                        }}
-                      />
                     </View>
                   ))}
                 </View>
