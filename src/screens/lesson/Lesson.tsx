@@ -1,5 +1,5 @@
-import React, {useState, useEffect, useRef} from 'react';
-import {View, Linking, Animated} from 'react-native';
+import React, {useState, useEffect} from 'react';
+import {View, Linking, ScrollView} from 'react-native';
 import {Text} from '@rneui/base';
 import styles from './styles';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
@@ -288,7 +288,7 @@ function Lesson({navigation, route}: LessonProps) {
   };
 
   return (
-    <View style={styles.container}>
+    <ScrollView contentContainerStyle={styles.container}>
       {isLoggedIn ? (
         <>
           {lessons.length > 0 ? (
@@ -466,7 +466,7 @@ function Lesson({navigation, route}: LessonProps) {
           <Text h4>Please log in to access the lesson.</Text>
         </View>
       )}
-    </View>
+    </ScrollView>
   );
 }
 
