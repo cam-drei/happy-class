@@ -8,6 +8,7 @@ import Feather from 'react-native-vector-icons/Feather';
 import HeaderRight from '../../components/header/HeaderRight';
 import axios from 'axios';
 import {baseUrl} from '../../utils/apiConfig';
+import LoadingIndicator from '../../components/loading/LoadingIndicator';
 
 interface CourseProps {
   navigation: any;
@@ -26,6 +27,7 @@ function Course({navigation, route}: CourseProps) {
   const [isCourseInfoModalVisible, setCourseInfoModalVisible] = useState(false);
   const [contents, setContents] = useState<{[courseId: number]: any[]}>({});
   const [selectedCourse, setSelectedCourse] = useState<Course | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const fetchEnrolledCourses = async () => {
@@ -40,6 +42,7 @@ function Course({navigation, route}: CourseProps) {
         );
 
         setEnrolledCourses(response.data.enrolled_courses);
+        setIsLoading(false);
       } catch (error) {
         console.error('Error fetching enrolled courses:', error);
       }
@@ -109,7 +112,9 @@ function Course({navigation, route}: CourseProps) {
 
   return (
     <View style={styles.container}>
-      {isLoggedIn ? (
+      {isLoading ? (
+        <LoadingIndicator />
+      ) : isLoggedIn ? (
         <>
           {enrolledCourses.length > 0 ? (
             enrolledCourses.map(course => (
