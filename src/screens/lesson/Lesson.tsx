@@ -55,20 +55,8 @@ function Lesson({navigation, route}: LessonProps) {
           },
         );
 
-        const sortedLessons = response.data.lessons.sort(
-          (a: Lesson, b: Lesson) => {
-            if (a.done && !b.done) {
-              return -1;
-            }
-            if (!a.done && b.done) {
-              return 1;
-            }
-            return 0;
-          },
-        );
-
         const lessonsWithSubjects = await Promise.all(
-          sortedLessons.map(async (lesson: Lesson) => {
+          response.data.lessons.map(async (lesson: Lesson) => {
             const subjectResponse = await axios.get(
               `${baseUrl}/api/v1/users/enrolled_courses/${courseId}/lessons/${lesson.id}/subjects`,
               {
@@ -314,12 +302,37 @@ function Lesson({navigation, route}: LessonProps) {
     return lesson.subjects.every((subject: Subject) => subject.done);
   };
 
+  const getLessonStatus = (lesson: Lesson): 'InProgress' | 'Done' | 'Todo' => {
+    const allSubjectsDone = lesson.subjects.every(subject => subject.done);
+    if (allSubjectsDone) {
+      return 'Done';
+    } else if (lesson.subjects.some(subject => subject.done)) {
+      return 'InProgress';
+    } else {
+      return 'Todo';
+    }
+  };
+
+  const sortedLessons = lessons.slice().sort((a, b) => {
+    const aStatus = getLessonStatus(a);
+    const bStatus = getLessonStatus(b);
+
+    if (aStatus !== bStatus) {
+      return (
+        (aStatus === 'InProgress' ? 0 : aStatus === 'Todo' ? 1 : 2) -
+        (bStatus === 'InProgress' ? 0 : bStatus === 'Todo' ? 1 : 2)
+      );
+    }
+
+    return a.name.localeCompare(b.name) || 0;
+  });
+
   return (
     <ScrollView contentContainerStyle={styles.container}>
       {isLoggedIn ? (
         <>
-          {lessons.length > 0 ? (
-            lessons.map(lesson => (
+          {sortedLessons.length > 0 ? (
+            sortedLessons.map(lesson => (
               <View key={lesson.id} style={styles.box}>
                 <View style={styles.titleLessonView}>
                   <View style={styles.titleView}>
