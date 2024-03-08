@@ -1,5 +1,5 @@
 import React, {useState, useEffect, useCallback} from 'react';
-import {View, Linking, ScrollView, ActivityIndicator} from 'react-native';
+import {View, Linking, ScrollView} from 'react-native';
 import {Text} from '@rneui/base';
 import styles from './styles';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
@@ -9,6 +9,7 @@ import Line from '../../components/line/Line';
 import HeaderRight from '../../components/header/HeaderRight';
 import axios from 'axios';
 import {baseUrl} from '../../utils/apiConfig';
+import LoadingIndicator from '../../components/loading/LoadingIndicator';
 
 interface LessonProps {
   navigation: any;
@@ -42,7 +43,7 @@ interface Lesson {
 function Lesson({navigation, route}: LessonProps) {
   const {userName, authToken, courseId} = route.params;
   const [lessons, setLessons] = useState<Lesson[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const fetchLessons = async () => {
@@ -95,7 +96,7 @@ function Lesson({navigation, route}: LessonProps) {
         );
 
         setLessons(lessonsWithSubjects);
-        setLoading(false);
+        setIsLoading(false);
       } catch (error) {
         console.error('Error fetching enrolled courses:', error);
       }
@@ -338,10 +339,8 @@ function Lesson({navigation, route}: LessonProps) {
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
-      {loading ? (
-        <View style={[styles.container, styles.loadingContainer]}>
-          <ActivityIndicator size="large" color="#FF9900" />
-        </View>
+      {isLoading ? (
+        <LoadingIndicator />
       ) : isLoggedIn ? (
         <>
           {sortedLessons.length > 0 ? (

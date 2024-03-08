@@ -78,10 +78,6 @@ const styles = StyleSheet.create({
   todoTextColor: {
     color: '#000000',
   },
-  loadingContainer: {
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
 });
 
 export default styles;
