@@ -314,17 +314,24 @@ function Lesson({navigation, route}: LessonProps) {
   };
 
   const sortedLessons = lessons.slice().sort((a, b) => {
+    const statusOrder = {InProgress: 0, Todo: 1, Done: 2};
+
     const aStatus = getLessonStatus(a);
     const bStatus = getLessonStatus(b);
 
-    if (aStatus !== bStatus) {
-      return (
-        (aStatus === 'InProgress' ? 0 : aStatus === 'Todo' ? 1 : 2) -
-        (bStatus === 'InProgress' ? 0 : bStatus === 'Todo' ? 1 : 2)
-      );
+    if (statusOrder[aStatus] !== statusOrder[bStatus]) {
+      return statusOrder[aStatus] - statusOrder[bStatus];
     }
 
-    return a.name.localeCompare(b.name) || 0;
+    const getNumber = (lessonName: string) => {
+      const match = lessonName.match(/\d+/);
+      return match ? parseInt(match[0], 10) : 0;
+    };
+
+    const numberA = getNumber(a.name);
+    const numberB = getNumber(b.name);
+
+    return numberA - numberB;
   });
 
   return (
