@@ -31,6 +31,14 @@ interface Content {
   resource_type: string;
 }
 
+interface SubjectLesson {
+  id: number;
+  subject_id: number;
+  lesson_id: number;
+  done: boolean;
+  contents: Content[];
+  subject: any;
+}
 interface Lesson {
   id: number;
   name: string;
@@ -38,6 +46,7 @@ interface Lesson {
   done: boolean;
   subjects: Subject[];
   contents: Content[];
+  subject_lessons: SubjectLesson[];
 }
 
 function Lesson({navigation, route}: LessonProps) {
@@ -60,26 +69,27 @@ function Lesson({navigation, route}: LessonProps) {
         const lessonsWithSubjects = await Promise.all(
           response.data.lessons.map(async (lesson: Lesson) => {
             const subjectResponse = await axios.get(
-              `${baseUrl}/api/v1/users/enrolled_courses/${courseId}/lessons/${lesson.id}/subjects`,
+              // `${baseUrl}/api/v1/users/enrolled_courses/${courseId}/lessons/${lesson.id}/subjects`,
+              `${baseUrl}/api/v1/users/enrolled_courses/${courseId}/lessons/${lesson.id}/subject_lessons`,
               {
                 headers: {
                   Authorization: `Bearer ${authToken}`,
                 },
               },
             );
-            lesson.subjects = subjectResponse.data.subjects;
+            lesson.subject_lessons = subjectResponse.data.subject_lessons;
 
-            for (let subject of lesson.subjects) {
-              const contentSubjectResponse = await axios.get(
-                `${baseUrl}/api/v1/users/enrolled_courses/${courseId}/lessons/${lesson.id}/subjects/${subject.id}/contents`,
-                {
-                  headers: {
-                    Authorization: `Bearer ${authToken}`,
-                  },
-                },
-              );
-              subject.contents = contentSubjectResponse.data.contents;
-            }
+            // for (let subject of lesson.subjects) {
+            //   const contentSubjectResponse = await axios.get(
+            //     `${baseUrl}/api/v1/users/enrolled_courses/${courseId}/lessons/${lesson.id}/subjects/${subject.id}/contents`,
+            //     {
+            //       headers: {
+            //         Authorization: `Bearer ${authToken}`,
+            //       },
+            //     },
+            //   );
+            //   subject.contents = contentSubjectResponse.data.contents;
+            // }
 
             const lessonContentResponse = await axios.get(
               `${baseUrl}/api/v1/users/enrolled_courses/${courseId}/lessons/${lesson.id}/contents`,
@@ -129,7 +139,8 @@ function Lesson({navigation, route}: LessonProps) {
     lessons.forEach(lesson => {
       const isDone = isLessonDone(lesson);
       const isTodo =
-        lesson.subjects.filter(subject => subject.done).length === 0;
+        lesson.subject_lessons.filter(subject_lesson => subject_lesson.done)
+          .length === 0;
       initialExpandedState[lesson.id] = isDone || isTodo ? false : true;
     });
     setExpandedLessons(initialExpandedState);
@@ -194,7 +205,9 @@ function Lesson({navigation, route}: LessonProps) {
 
   useEffect(() => {
     lessons.forEach(lesson => {
-      const allSubjectsDone = lesson.subjects.every(subject => subject.done);
+      const allSubjectsDone = lesson.subject_lessons.every(
+        subject_lesson => subject_lesson.done,
+      );
       if (allSubjectsDone && !lesson.done) {
         markLessonAsDone(lesson.id);
       }
@@ -203,7 +216,9 @@ function Lesson({navigation, route}: LessonProps) {
 
   useEffect(() => {
     lessons.forEach(lesson => {
-      const anySubjectNotDone = lesson.subjects.some(subject => !subject.done);
+      const anySubjectNotDone = lesson.subject_lessons.some(
+        subject_lesson => !subject_lesson.done,
+      );
       if (anySubjectNotDone && lesson.done) {
         unmarkLessonAsDone(lesson.id);
       }
@@ -302,14 +317,20 @@ function Lesson({navigation, route}: LessonProps) {
   };
 
   const isLessonDone = (lesson: Lesson) => {
-    return lesson.subjects.every((subject: Subject) => subject.done);
+    return lesson.subject_lessons.every(
+      (subject_lesson: SubjectLesson) => subject_lesson.done,
+    );
   };
 
   const getLessonStatus = (lesson: Lesson): 'InProgress' | 'Done' | 'Todo' => {
-    const allSubjectsDone = lesson.subjects.every(subject => subject.done);
+    const allSubjectsDone = lesson.subject_lessons.every(
+      subject_lesson => subject_lesson.done,
+    );
     if (allSubjectsDone) {
       return 'Done';
-    } else if (lesson.subjects.some(subject => subject.done)) {
+    } else if (
+      lesson.subject_lessons.some(subject_lesson => subject_lesson.done)
+    ) {
       return 'InProgress';
     } else {
       return 'Todo';
@@ -370,12 +391,14 @@ function Lesson({navigation, route}: LessonProps) {
                         style={[
                           styles.statusText,
                           styles.statusColor,
-                          lesson.subjects.filter(subject => subject.done)
-                            .length === 0 && styles.todoTextColor,
+                          lesson.subject_lessons.filter(
+                            subject_lesson => subject_lesson.done,
+                          ).length === 0 && styles.todoTextColor,
                           isLessonDone(lesson) && styles.doneTextColor,
                         ]}>
-                        {lesson.subjects.filter(subject => subject.done)
-                          .length === 0
+                        {lesson.subject_lessons.filter(
+                          subject_lesson => subject_lesson.done,
+                        ).length === 0
                           ? ' (Todo)'
                           : isLessonDone(lesson)
                           ? ' (Done)'
@@ -419,23 +442,31 @@ function Lesson({navigation, route}: LessonProps) {
                     isLessonDone(lesson) && styles.doneTextColor,
                   ]}>
                   {'Progress: '}
-                  {lesson.subjects.filter(subject => subject.done).length}/
-                  {lesson.subjects.length}
-                  {lesson.subjects.length <= 1 ? ' subject' : ' subjects'}
+                  {
+                    lesson.subject_lessons.filter(
+                      subject_lesson => subject_lesson.done,
+                    ).length
+                  }
+                  /{lesson.subject_lessons.length}
+                  {lesson.subject_lessons.length <= 1
+                    ? ' subject'
+                    : ' subjects'}
                 </Text>
                 {expandedLessons[lesson.id] && (
                   <>
-                    {lesson.subjects.map(subject => (
+                    {lesson.subject_lessons.map(subject_lesson => (
                       <View>
-                        <View key={subject.id} style={styles.subjectContainer}>
+                        <View
+                          key={subject_lesson.id}
+                          style={styles.subjectContainer}>
                           <Text
                             style={[
                               styles.normalSizeText,
-                              subject.done && styles.doneTextColor,
+                              subject_lesson.done && styles.doneTextColor,
                             ]}>
-                            {subject.name}
+                            {subject_lesson.subject.name}
                           </Text>
-                          {subject.contents.map(content => (
+                          {/* {subject.contents.map(content => (
                             <View
                               key={content.id}
                               style={styles.iconSubjectContainer}>
@@ -483,7 +514,7 @@ function Lesson({navigation, route}: LessonProps) {
                                 }}
                               />
                             </View>
-                          ))}
+                          ))} */}
                         </View>
                         <Line />
                       </View>
