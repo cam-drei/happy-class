@@ -37,7 +37,7 @@ interface SubjectLesson {
   lesson_id: number;
   done: boolean;
   contents: Content[];
-  subject: Object;
+  subject: Subject;
 }
 interface Lesson {
   id: number;
