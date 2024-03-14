@@ -69,7 +69,6 @@ function Lesson({navigation, route}: LessonProps) {
         const lessonsWithSubjects = await Promise.all(
           response.data.lessons.map(async (lesson: Lesson) => {
             const subjectResponse = await axios.get(
-              // `${baseUrl}/api/v1/users/enrolled_courses/${courseId}/lessons/${lesson.id}/subjects`,
               `${baseUrl}/api/v1/users/enrolled_courses/${courseId}/lessons/${lesson.id}/subject_lessons`,
               {
                 headers: {
@@ -79,17 +78,18 @@ function Lesson({navigation, route}: LessonProps) {
             );
             lesson.subject_lessons = subjectResponse.data.subject_lessons;
 
-            // for (let subject of lesson.subjects) {
-            //   const contentSubjectResponse = await axios.get(
-            //     `${baseUrl}/api/v1/users/enrolled_courses/${courseId}/lessons/${lesson.id}/subjects/${subject.id}/contents`,
-            //     {
-            //       headers: {
-            //         Authorization: `Bearer ${authToken}`,
-            //       },
-            //     },
-            //   );
-            //   subject.contents = contentSubjectResponse.data.contents;
-            // }
+            for (let subject_lesson of lesson.subject_lessons) {
+              const contentSubjectResponse = await axios.get(
+                `${baseUrl}/api/v1/users/enrolled_courses/${courseId}/lessons/${lesson.id}/subject_lesson_contents`,
+                {
+                  headers: {
+                    Authorization: `Bearer ${authToken}`,
+                  },
+                },
+              );
+              subject_lesson.contents =
+                contentSubjectResponse.data.subject_lesson_contents;
+            }
 
             const lessonContentResponse = await axios.get(
               `${baseUrl}/api/v1/users/enrolled_courses/${courseId}/lessons/${lesson.id}/contents`,
@@ -225,10 +225,13 @@ function Lesson({navigation, route}: LessonProps) {
     });
   }, [lessons, unmarkLessonAsDone]);
 
-  const markSubjectAsDone = async (lessonId: number, subjectId: number) => {
+  const markSubjectAsDone = async (
+    lessonId: number,
+    subjectLessonId: number,
+  ) => {
     try {
       await axios.put(
-        `${baseUrl}/api/v1/users/enrolled_courses/${courseId}/lessons/${lessonId}/subjects/${subjectId}/mark_done`,
+        `${baseUrl}/api/v1/users/enrolled_courses/${courseId}/lessons/${lessonId}/subject_lessons/${subjectLessonId}/mark_done`,
         {},
         {
           headers: {
@@ -242,8 +245,10 @@ function Lesson({navigation, route}: LessonProps) {
           lesson.id === lessonId
             ? {
                 ...lesson,
-                subjects: lesson.subjects.map(subject =>
-                  subject.id === subjectId ? {...subject, done: true} : subject,
+                subject_lessons: lesson.subject_lessons.map(subject_lesson =>
+                  subject_lesson.id === subjectLessonId
+                    ? {...subject_lesson, done: true}
+                    : subject_lesson,
                 ),
               }
             : lesson,
@@ -254,10 +259,13 @@ function Lesson({navigation, route}: LessonProps) {
     }
   };
 
-  const unmarkSubjectAsDone = async (lessonId: number, subjectId: number) => {
+  const unmarkSubjectAsDone = async (
+    lessonId: number,
+    subjectLessonId: number,
+  ) => {
     try {
       await axios.put(
-        `${baseUrl}/api/v1/users/enrolled_courses/${courseId}/lessons/${lessonId}/subjects/${subjectId}/unmark_done`,
+        `${baseUrl}/api/v1/users/enrolled_courses/${courseId}/lessons/${lessonId}/subject_lessons/${subjectLessonId}/unmark_done`,
         {},
         {
           headers: {
@@ -271,10 +279,10 @@ function Lesson({navigation, route}: LessonProps) {
           lesson.id === lessonId
             ? {
                 ...lesson,
-                subjects: lesson.subjects.map(subject =>
-                  subject.id === subjectId
-                    ? {...subject, done: false}
-                    : subject,
+                subject_lessons: lesson.subject_lessons.map(subject_lesson =>
+                  subject_lesson.id === subjectLessonId
+                    ? {...subject_lesson, done: false}
+                    : subject_lesson,
                 ),
               }
             : lesson,
@@ -299,21 +307,21 @@ function Lesson({navigation, route}: LessonProps) {
     videoLink: string,
     videoName: string,
     lessonId: number,
-    subjectId: number,
+    subjectLessonId: number,
   ) => {
     navigation.navigate('VideoScreen', {videoLink, videoName});
-    markSubjectAsDone(lessonId, subjectId);
+    markSubjectAsDone(lessonId, subjectLessonId);
   };
 
   const openResourceLinkForSubject = (
     resourceLink: string,
     lessonId: number,
-    subjectId: number,
+    subjectLessonId: number,
   ) => {
     if (resourceLink) {
       Linking.openURL(resourceLink);
     }
-    markSubjectAsDone(lessonId, subjectId);
+    markSubjectAsDone(lessonId, subjectLessonId);
   };
 
   const isLessonDone = (lesson: Lesson) => {
@@ -466,7 +474,7 @@ function Lesson({navigation, route}: LessonProps) {
                             ]}>
                             {subject_lesson.subject.name}
                           </Text>
-                          {/* {subject.contents.map(content => (
+                          {subject_lesson.contents.map(content => (
                             <View
                               key={content.id}
                               style={styles.iconSubjectContainer}>
@@ -474,13 +482,15 @@ function Lesson({navigation, route}: LessonProps) {
                                 <FontAwesome
                                   name="play-circle"
                                   size={30}
-                                  color={subject.done ? '#A9A9A9' : '#FF9900'}
+                                  color={
+                                    subject_lesson.done ? '#A9A9A9' : '#FF9900'
+                                  }
                                   onPress={() =>
                                     handleVideoPlayForSubject(
                                       content.video_link,
-                                      subject.name,
+                                      subject_lesson.subject.name,
                                       lesson.id,
-                                      subject.id,
+                                      subject_lesson.id,
                                     )
                                   }
                                 />
@@ -489,13 +499,15 @@ function Lesson({navigation, route}: LessonProps) {
                                 <FontAwesome
                                   name="book"
                                   size={30}
-                                  color={subject.done ? '#A9A9A9' : '#4F7942'}
+                                  color={
+                                    subject_lesson.done ? '#A9A9A9' : '#4F7942'
+                                  }
                                   style={styles.paddingLeftIcon}
                                   onPress={() =>
                                     openResourceLinkForSubject(
                                       content.document_link,
                                       lesson.id,
-                                      subject.id,
+                                      subject_lesson.id,
                                     )
                                   }
                                 />
@@ -503,18 +515,26 @@ function Lesson({navigation, route}: LessonProps) {
                               <FontAwesome
                                 name="undo"
                                 size={20}
-                                color={subject.done ? '#A9A9A9' : '#4F7942'}
+                                color={
+                                  subject_lesson.done ? '#A9A9A9' : '#4F7942'
+                                }
                                 style={styles.paddingLeftIcon}
                                 onPress={() => {
-                                  if (subject.done) {
-                                    unmarkSubjectAsDone(lesson.id, subject.id);
+                                  if (subject_lesson.done) {
+                                    unmarkSubjectAsDone(
+                                      lesson.id,
+                                      subject_lesson.id,
+                                    );
                                   } else {
-                                    markSubjectAsDone(lesson.id, subject.id);
+                                    markSubjectAsDone(
+                                      lesson.id,
+                                      subject_lesson.id,
+                                    );
                                   }
                                 }}
                               />
                             </View>
-                          ))} */}
+                          ))}
                         </View>
                         <Line />
                       </View>
