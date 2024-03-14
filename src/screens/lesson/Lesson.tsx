@@ -78,16 +78,16 @@ function Lesson({navigation, route}: LessonProps) {
             );
             lesson.subject_lessons = subjectResponse.data.subject_lessons;
 
-            for (let subject_lesson of lesson.subject_lessons) {
+            for (let subjectLesson of lesson.subject_lessons) {
               const contentSubjectResponse = await axios.get(
-                `${baseUrl}/api/v1/users/enrolled_courses/${courseId}/lessons/${lesson.id}/subject_lesson_contents`,
+                `${baseUrl}/api/v1/users/enrolled_courses/${courseId}/lessons/${lesson.id}/subject_lessons/${subjectLesson.id}/subject_lesson_contents`,
                 {
                   headers: {
                     Authorization: `Bearer ${authToken}`,
                   },
                 },
               );
-              subject_lesson.contents =
+              subjectLesson.contents =
                 contentSubjectResponse.data.subject_lesson_contents;
             }
 
@@ -139,7 +139,7 @@ function Lesson({navigation, route}: LessonProps) {
     lessons.forEach(lesson => {
       const isDone = isLessonDone(lesson);
       const isTodo =
-        lesson.subject_lessons.filter(subject_lesson => subject_lesson.done)
+        lesson.subject_lessons.filter(subjectLesson => subjectLesson.done)
           .length === 0;
       initialExpandedState[lesson.id] = isDone || isTodo ? false : true;
     });
@@ -206,7 +206,7 @@ function Lesson({navigation, route}: LessonProps) {
   useEffect(() => {
     lessons.forEach(lesson => {
       const allSubjectsDone = lesson.subject_lessons.every(
-        subject_lesson => subject_lesson.done,
+        subjectLesson => subjectLesson.done,
       );
       if (allSubjectsDone && !lesson.done) {
         markLessonAsDone(lesson.id);
@@ -217,7 +217,7 @@ function Lesson({navigation, route}: LessonProps) {
   useEffect(() => {
     lessons.forEach(lesson => {
       const anySubjectNotDone = lesson.subject_lessons.some(
-        subject_lesson => !subject_lesson.done,
+        subjectLesson => !subjectLesson.done,
       );
       if (anySubjectNotDone && lesson.done) {
         unmarkLessonAsDone(lesson.id);
@@ -245,10 +245,10 @@ function Lesson({navigation, route}: LessonProps) {
           lesson.id === lessonId
             ? {
                 ...lesson,
-                subject_lessons: lesson.subject_lessons.map(subject_lesson =>
-                  subject_lesson.id === subjectLessonId
-                    ? {...subject_lesson, done: true}
-                    : subject_lesson,
+                subject_lessons: lesson.subject_lessons.map(subjectLesson =>
+                  subjectLesson.id === subjectLessonId
+                    ? {...subjectLesson, done: true}
+                    : subjectLesson,
                 ),
               }
             : lesson,
@@ -279,10 +279,10 @@ function Lesson({navigation, route}: LessonProps) {
           lesson.id === lessonId
             ? {
                 ...lesson,
-                subject_lessons: lesson.subject_lessons.map(subject_lesson =>
-                  subject_lesson.id === subjectLessonId
-                    ? {...subject_lesson, done: false}
-                    : subject_lesson,
+                subject_lessons: lesson.subject_lessons.map(subjectLesson =>
+                  subjectLesson.id === subjectLessonId
+                    ? {...subjectLesson, done: false}
+                    : subjectLesson,
                 ),
               }
             : lesson,
@@ -326,18 +326,18 @@ function Lesson({navigation, route}: LessonProps) {
 
   const isLessonDone = (lesson: Lesson) => {
     return lesson.subject_lessons.every(
-      (subject_lesson: SubjectLesson) => subject_lesson.done,
+      (subjectLesson: SubjectLesson) => subjectLesson.done,
     );
   };
 
   const getLessonStatus = (lesson: Lesson): 'InProgress' | 'Done' | 'Todo' => {
     const allSubjectsDone = lesson.subject_lessons.every(
-      subject_lesson => subject_lesson.done,
+      subjectLesson => subjectLesson.done,
     );
     if (allSubjectsDone) {
       return 'Done';
     } else if (
-      lesson.subject_lessons.some(subject_lesson => subject_lesson.done)
+      lesson.subject_lessons.some(subjectLesson => subjectLesson.done)
     ) {
       return 'InProgress';
     } else {
@@ -400,12 +400,12 @@ function Lesson({navigation, route}: LessonProps) {
                           styles.statusText,
                           styles.statusColor,
                           lesson.subject_lessons.filter(
-                            subject_lesson => subject_lesson.done,
+                            subjectLesson => subjectLesson.done,
                           ).length === 0 && styles.todoTextColor,
                           isLessonDone(lesson) && styles.doneTextColor,
                         ]}>
                         {lesson.subject_lessons.filter(
-                          subject_lesson => subject_lesson.done,
+                          subjectLesson => subjectLesson.done,
                         ).length === 0
                           ? ' (Todo)'
                           : isLessonDone(lesson)
@@ -452,7 +452,7 @@ function Lesson({navigation, route}: LessonProps) {
                   {'Progress: '}
                   {
                     lesson.subject_lessons.filter(
-                      subject_lesson => subject_lesson.done,
+                      subjectLesson => subjectLesson.done,
                     ).length
                   }
                   /{lesson.subject_lessons.length}
@@ -462,19 +462,19 @@ function Lesson({navigation, route}: LessonProps) {
                 </Text>
                 {expandedLessons[lesson.id] && (
                   <>
-                    {lesson.subject_lessons.map(subject_lesson => (
+                    {lesson.subject_lessons.map(subjectLesson => (
                       <View>
                         <View
-                          key={subject_lesson.id}
+                          key={subjectLesson.id}
                           style={styles.subjectContainer}>
                           <Text
                             style={[
                               styles.normalSizeText,
-                              subject_lesson.done && styles.doneTextColor,
+                              subjectLesson.done && styles.doneTextColor,
                             ]}>
-                            {subject_lesson.subject.name}
+                            {subjectLesson.subject.name}
                           </Text>
-                          {subject_lesson.contents.map(content => (
+                          {subjectLesson.contents.map(content => (
                             <View
                               key={content.id}
                               style={styles.iconSubjectContainer}>
@@ -483,14 +483,14 @@ function Lesson({navigation, route}: LessonProps) {
                                   name="play-circle"
                                   size={30}
                                   color={
-                                    subject_lesson.done ? '#A9A9A9' : '#FF9900'
+                                    subjectLesson.done ? '#A9A9A9' : '#FF9900'
                                   }
                                   onPress={() =>
                                     handleVideoPlayForSubject(
                                       content.video_link,
-                                      subject_lesson.subject.name,
+                                      subjectLesson.subject.name,
                                       lesson.id,
-                                      subject_lesson.id,
+                                      subjectLesson.id,
                                     )
                                   }
                                 />
@@ -500,14 +500,14 @@ function Lesson({navigation, route}: LessonProps) {
                                   name="book"
                                   size={30}
                                   color={
-                                    subject_lesson.done ? '#A9A9A9' : '#4F7942'
+                                    subjectLesson.done ? '#A9A9A9' : '#4F7942'
                                   }
                                   style={styles.paddingLeftIcon}
                                   onPress={() =>
                                     openResourceLinkForSubject(
                                       content.document_link,
                                       lesson.id,
-                                      subject_lesson.id,
+                                      subjectLesson.id,
                                     )
                                   }
                                 />
@@ -516,19 +516,19 @@ function Lesson({navigation, route}: LessonProps) {
                                 name="undo"
                                 size={20}
                                 color={
-                                  subject_lesson.done ? '#A9A9A9' : '#4F7942'
+                                  subjectLesson.done ? '#A9A9A9' : '#4F7942'
                                 }
                                 style={styles.paddingLeftIcon}
                                 onPress={() => {
-                                  if (subject_lesson.done) {
+                                  if (subjectLesson.done) {
                                     unmarkSubjectAsDone(
                                       lesson.id,
-                                      subject_lesson.id,
+                                      subjectLesson.id,
                                     );
                                   } else {
                                     markSubjectAsDone(
                                       lesson.id,
-                                      subject_lesson.id,
+                                      subjectLesson.id,
                                     );
                                   }
                                 }}
