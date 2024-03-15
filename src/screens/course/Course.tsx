@@ -21,11 +21,19 @@ interface Course {
   description: string;
 }
 
+interface Lesson {
+  id: number;
+  name: string;
+  description: string;
+  done: boolean;
+}
+
 function Course({navigation, route}: CourseProps) {
   const {authToken, userId, userName} = route.params;
   const [enrolledCourses, setEnrolledCourses] = useState<Course[]>([]);
   const [isCourseInfoModalVisible, setCourseInfoModalVisible] = useState(false);
   const [contents, setContents] = useState<{[courseId: number]: any[]}>({});
+  const [lessons, setLessons] = useState<{[courseId: number]: Lesson[]}>({});
   const [selectedCourse, setSelectedCourse] = useState<Course | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -127,6 +135,32 @@ function Course({navigation, route}: CourseProps) {
     });
   }, [authToken, enrolledCourses]);
 
+  useEffect(() => {
+    const fetchLessonsForCourse = async (courseId: number) => {
+      try {
+        const response = await axios.get(
+          `${baseUrl}/api/v1/users/enrolled_courses/${courseId}/lessons`,
+          {
+            headers: {
+              Authorization: `Bearer ${authToken}`,
+            },
+          },
+        );
+
+        setLessons(prevLessons => ({
+          ...prevLessons,
+          [courseId]: response.data.lessons,
+        }));
+      } catch (error) {
+        console.error('Error fetching lessons for course:', error);
+      }
+    };
+
+    enrolledCourses.forEach(course => {
+      fetchLessonsForCourse(course.id);
+    });
+  }, [authToken, enrolledCourses]);
+
   const openResourceLink = (resourceLink: string) => {
     if (resourceLink) {
       Linking.openURL(resourceLink);
@@ -138,6 +172,19 @@ function Course({navigation, route}: CourseProps) {
   };
 
   const isLoggedIn = !!authToken;
+
+  const getTotalLessons = (courseId: number) => {
+    const lessonsForCourse = lessons[courseId];
+    return lessonsForCourse ? lessonsForCourse.length : 0;
+  };
+
+  const getDoneLessons = (courseId: number) => {
+    const lessonsForCourse = lessons[courseId];
+    if (!lessonsForCourse) {
+      return 0;
+    }
+    return lessonsForCourse.filter(lesson => lesson.done).length;
+  };
 
   return (
     <View style={styles.container}>
@@ -196,7 +243,10 @@ function Course({navigation, route}: CourseProps) {
                       onPress={() => navigateToLesson(course.id)}
                     />
                     <View>
-                      <Text style={styles.normalSizeText}>Progress: 150/170 lessons</Text>
+                      <Text style={styles.normalSizeText}>
+                        Progress: {getDoneLessons(course.id)}/
+                        {getTotalLessons(course.id)} lessons
+                      </Text>
                       <Text style={styles.statusText}>Status: in progress</Text>
                     </View>
                   </View>
