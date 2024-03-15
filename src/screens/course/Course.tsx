@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react';
+import React, {useState, useEffect, useCallback} from 'react';
 import {View, Modal, TouchableOpacity, ScrollView, Linking} from 'react-native';
 import {Text} from '@rneui/base';
 import styles from './styles';
@@ -247,8 +247,15 @@ function Course({navigation, route}: CourseProps) {
                         Progress: {getDoneLessons(course.id)}/
                         {getTotalLessons(course.id)} lessons
                       </Text>
-                      <Text style={styles.statusText}>
-                        Status:
+                      <Text
+                        style={[
+                          styles.statusText,
+                          getDoneLessons(course.id) === 0 &&
+                            styles.todoTextColor,
+                          getDoneLessons(course.id) ===
+                            getTotalLessons(course.id) && styles.doneTextColor,
+                        ]}>
+                        Status:{' '}
                         {getDoneLessons(course.id) ===
                         getTotalLessons(course.id)
                           ? 'Done'

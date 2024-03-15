@@ -36,6 +36,12 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#FF9900',
   },
+  doneTextColor: {
+    color: '#A9A9A9',
+  },
+  todoTextColor: {
+    color: '#000000',
+  },
   scrollView: {
     flexGrow: 0,
     minHeight: 50,
