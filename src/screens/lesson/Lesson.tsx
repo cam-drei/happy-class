@@ -318,9 +318,7 @@ function Lesson({navigation, route}: LessonProps) {
     lessonId: number,
     subjectLessonId: number,
   ) => {
-    if (resourceLink) {
-      Linking.openURL(resourceLink);
-    }
+    Linking.openURL(resourceLink);
     markSubjectAsDone(lessonId, subjectLessonId);
   };
 
