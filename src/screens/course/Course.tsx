@@ -247,7 +247,15 @@ function Course({navigation, route}: CourseProps) {
                         Progress: {getDoneLessons(course.id)}/
                         {getTotalLessons(course.id)} lessons
                       </Text>
-                      <Text style={styles.statusText}>Status: in progress</Text>
+                      <Text style={styles.statusText}>
+                        Status:
+                        {getDoneLessons(course.id) ===
+                        getTotalLessons(course.id)
+                          ? 'Done'
+                          : getDoneLessons(course.id) === 0
+                          ? 'Todo'
+                          : 'In progress'}
+                      </Text>
                     </View>
                   </View>
                   <AntDesign
