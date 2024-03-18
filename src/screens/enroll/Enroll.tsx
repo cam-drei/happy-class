@@ -5,12 +5,13 @@ import styles from './styles';
 import BottomButton from '../../components/buttons/BottomButton';
 import HeaderRight from '../../components/header/HeaderRight';
 import LoadingIndicator from '../../components/loading/LoadingIndicator';
+import axios from 'axios';
+import {baseUrl} from '../../utils/apiConfig';
 
 interface EnrollProps {
   navigation: any;
-  route: {params: {authToken: string; userId: string; userName: string}};
+  route: {params: {userName: string; authToken: string; courseId: number}};
 }
-
 
 interface Subject {
   id: number;
@@ -20,24 +21,28 @@ interface Subject {
 }
 
 function Enroll({navigation, route}: EnrollProps) {
-  const {authToken, userId, userName} = route.params;
-
+  const {authToken, userName, courseId} = route.params;
   const [check1, setCheck1] = useState(false);
-  const [check2, setCheck2] = useState(true);
   const [isLoading, setIsLoading] = useState(true);
   const [subjects, setSubjects] = useState<Subject[]>([]);
   const [selectedSubjects, setSelectedSubjects] = useState<{
     [key: number]: boolean;
   }>({});
 
-  const isLoggedIn = !!authToken;
-
   useEffect(() => {
     const fetchSubjects = async () => {
       try {
-        const response = await fetch('YOUR_RAILS_API_ENDPOINT');
-        const data = await response.json();
-        setSubjects(data.subjects);
+        const response = await axios.get(
+          // `${baseUrl}/api/v1/users/enrolled_courses/${courseId}/subjects`,
+          `${baseUrl}/api/v1/users/enrolled_courses/2/subjects`,
+          {
+            headers: {
+              Authorization: `Bearer ${authToken}`,
+            },
+          },
+        );
+
+        setSubjects(response.data.subjects);
         setIsLoading(false);
       } catch (error) {
         console.error('Error fetching subjects:', error);
@@ -47,12 +52,12 @@ function Enroll({navigation, route}: EnrollProps) {
     if (authToken) {
       fetchSubjects();
     }
-  }, [authToken]);
+  }, [authToken, courseId]);
 
   const toggleSubject = (subjectId: number) => {
     setSelectedSubjects({
       ...selectedSubjects,
-      [subjectId]: !selectedSubjects[subjectId]
+      [subjectId]: !selectedSubjects[subjectId],
     });
   };
 
@@ -67,21 +72,31 @@ function Enroll({navigation, route}: EnrollProps) {
     });
   }, [navigation, userName]);
 
-  // const navigateToLesson = () => {
-  //   navigation.navigate('Lesson', {authToken});
-  // };
-  const navigateToLesson = (courseId: number) => {
-    navigation.navigate('Lesson', {authToken, userId, userName, courseId});
+  const navigateToLesson = () => {
+    navigation.navigate('Lesson', {authToken, userName, courseId});
   };
 
   return (
     <View style={styles.container}>
-      {isLoading && <LoadingIndicator /> && isLoggedIn && (
+      {isLoading ? (
+        <LoadingIndicator />
+      ) : (
         <>
           <View>
             <Text style={styles.title}>
               {'Select the subjects you want to learn:'}
             </Text>
+            <CheckBox
+              title={'Select All'}
+              checked={check1}
+              onPress={() => setCheck1(!check1)}
+              iconType="material-community"
+              checkedIcon="checkbox-outline"
+              uncheckedIcon="checkbox-blank-outline"
+              checkedColor="#FF9900"
+              textStyle={styles.selectAllText}
+              containerStyle={styles.selectAllContainer}
+            />
             {subjects.map(subject => (
               <CheckBox
                 key={subject.id}
@@ -98,87 +113,13 @@ function Enroll({navigation, route}: EnrollProps) {
             ))}
           </View>
           <View style={styles.bottomButton}>
+            <Text style={styles.totalText}>You selected 7/10 subjects</Text>
             <BottomButton text="Next" onPress={navigateToLesson} />
           </View>
         </>
       )}
     </View>
   );
-
-  // return (
-  //   <View style={styles.container}>
-  //     {isLoggedIn && (
-  //       <>
-  //         <View>
-  //           <Text style={styles.title}>
-  //             {'Select the subjects you want to learn:'}
-  //           </Text>
-  //           <CheckBox
-  //             title="Select All"
-  //             checked={check1}
-  //             onPress={() => setCheck1(!check1)}
-  //             iconType="material-community"
-  //             checkedIcon="checkbox-outline"
-  //             uncheckedIcon={'checkbox-blank-outline'}
-  //             checkedColor="#FF9900"
-  //             textStyle={styles.checkboxTitle}
-  //             containerStyle={styles.checkbox}
-  //           />
-  //           <View>
-  //             <CheckBox
-  //               title="Activity Time"
-  //               checked={check2}
-  //               onPress={() => setCheck2(!check2)}
-  //               iconType="material-community"
-  //               checkedIcon="checkbox-outline"
-  //               uncheckedIcon={'checkbox-blank-outline'}
-  //               checkedColor="#FF9900"
-  //               textStyle={styles.checkboxTitleDetails}
-  //               containerStyle={styles.checkboxDetails}
-  //             />
-  //             <CheckBox
-  //               title="Bible"
-  //               checked={check1}
-  //               onPress={() => setCheck1(!check1)}
-  //               iconType="material-community"
-  //               checkedIcon="checkbox-outline"
-  //               uncheckedIcon={'checkbox-blank-outline'}
-  //               checkedColor="#FF9900"
-  //               textStyle={styles.checkboxTitleDetails}
-  //               containerStyle={styles.checkboxDetails}
-  //             />
-  //             <CheckBox
-  //               title="Language Enrichment"
-  //               checked={check2}
-  //               onPress={() => setCheck2(!check2)}
-  //               iconType="material-community"
-  //               checkedIcon="checkbox-outline"
-  //               uncheckedIcon={'checkbox-blank-outline'}
-  //               checkedColor="#FF9900"
-  //               textStyle={styles.checkboxTitleDetails}
-  //               containerStyle={styles.checkboxDetails}
-  //             />
-  //             <CheckBox
-  //               title="Language Enrichment"
-  //               checked={check2}
-  //               onPress={() => setCheck2(!check2)}
-  //               iconType="material-community"
-  //               checkedIcon="checkbox-outline"
-  //               uncheckedIcon={'checkbox-blank-outline'}
-  //               checkedColor="#FF9900"
-  //               textStyle={styles.checkboxTitleDetails}
-  //               containerStyle={styles.checkboxDetails}
-  //             />
-  //           </View>
-  //           <Text style={styles.totalText}>You selected 7/10 subjects</Text>
-  //         </View>
-  //         <View style={styles.bottomButton}>
-  //           <BottomButton text="Next" onPress={navigateToLesson} />
-  //         </View>
-  //       </>
-  //     )}
-  //   </View>
-  // );
 }
 
 export default Enroll;

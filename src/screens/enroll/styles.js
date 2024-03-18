@@ -12,28 +12,31 @@ const styles = StyleSheet.create({
     fontSize: 18,
     paddingBottom: 10,
   },
-  checkbox: {
+  selectAllText: {
+    fontWeight: 'bold',
+    fontSize: 18,
+  },
+  selectAllContainer: {
     marginLeft: -10,
+    marginBottom: -10,
+  },
+  checkbox: {
+    marginBottom: -15,
   },
   checkboxTitle: {
-    fontSize: 18,
-    fontWeight: 'normal',
-  },
-  checkboxDetails: {
-    marginTop: -5,
-  },
-  checkboxTitleDetails: {
     fontSize: 16,
     fontWeight: 'normal',
-    marginVertical: -5,
   },
   totalText: {
     fontSize: 16,
     fontStyle: 'italic',
+    fontWeight: 'bold',
+    paddingBottom: 5,
   },
   bottomButton: {
     position: 'absolute',
-    bottom: 50,
+    bottom: 20,
+    alignItems: 'center',
   },
 });
 

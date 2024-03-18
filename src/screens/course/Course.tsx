@@ -105,8 +105,8 @@ function Course({navigation, route}: CourseProps) {
     navigation.navigate('Lesson', {authToken, userId, userName, courseId});
   };
 
-  const navigateToEnroll = () => {
-    navigation.navigate('Enroll', {authToken, userId, userName});
+  const navigateToEnroll = (courseId: number) => {
+    navigation.navigate('Enroll', {authToken, userId, userName, courseId});
   };
 
   useEffect(() => {
