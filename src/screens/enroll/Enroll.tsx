@@ -22,7 +22,7 @@ interface Subject {
 
 function Enroll({navigation, route}: EnrollProps) {
   const {authToken, userName, courseId} = route.params;
-  const [check1, setCheck1] = useState(false);
+  const [selectAllChecked, setSelectAllChecked] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [subjects, setSubjects] = useState<Subject[]>([]);
   const [selectedSubjects, setSelectedSubjects] = useState<{
@@ -41,7 +41,13 @@ function Enroll({navigation, route}: EnrollProps) {
           },
         );
 
+        const initialSelectedSubjects: {[key: number]: boolean} = {};
+        response.data.subjects.forEach((subject: Subject) => {
+          initialSelectedSubjects[subject.id] = false;
+        });
+
         setSubjects(response.data.subjects);
+        setSelectedSubjects(initialSelectedSubjects);
         setIsLoading(false);
       } catch (error) {
         console.error('Error fetching subjects:', error);
@@ -52,13 +58,6 @@ function Enroll({navigation, route}: EnrollProps) {
       fetchSubjects();
     }
   }, [authToken, courseId]);
-
-  const toggleSubject = (subjectId: number) => {
-    setSelectedSubjects({
-      ...selectedSubjects,
-      [subjectId]: !selectedSubjects[subjectId],
-    });
-  };
 
   useEffect(() => {
     navigation.setOptions({
@@ -71,8 +70,33 @@ function Enroll({navigation, route}: EnrollProps) {
     });
   }, [navigation, userName]);
 
+  const toggleSubject = (subjectId: number) => {
+    setSelectedSubjects({
+      ...selectedSubjects,
+      [subjectId]: !selectedSubjects[subjectId],
+    });
+  };
+
+  const toggleSelectAll = () => {
+    const allSelected = !selectAllChecked;
+    setSelectAllChecked(allSelected);
+    const updatedSelectedSubjects: {[key: number]: boolean} = {};
+    subjects.forEach(subject => {
+      updatedSelectedSubjects[subject.id] = allSelected;
+    });
+    setSelectedSubjects(updatedSelectedSubjects);
+  };
+
   const navigateToLesson = () => {
-    navigation.navigate('Lesson', {authToken, userName, courseId});
+    const selectedSubjectsIds = Object.keys(selectedSubjects)
+      .filter((subjectId: any) => selectedSubjects[subjectId])
+      .map(Number);
+    navigation.navigate('Lesson', {
+      authToken,
+      userName,
+      courseId,
+      selectedSubjectsIds,
+    });
   };
 
   return (
@@ -87,8 +111,8 @@ function Enroll({navigation, route}: EnrollProps) {
             </Text>
             <CheckBox
               title={'Select All'}
-              checked={check1}
-              onPress={() => setCheck1(!check1)}
+              checked={selectAllChecked}
+              onPress={toggleSelectAll}
               iconType="material-community"
               checkedIcon="checkbox-outline"
               uncheckedIcon="checkbox-blank-outline"
@@ -112,7 +136,12 @@ function Enroll({navigation, route}: EnrollProps) {
             ))}
           </View>
           <View style={styles.bottomButton}>
-            <Text style={styles.totalText}>You selected 7/10 subjects</Text>
+            <Text style={styles.totalText}>
+              {`You selected ${
+                Object.values(selectedSubjects).filter(selected => selected)
+                  .length
+              }/${subjects.length} subjects`}
+            </Text>
             <BottomButton text="Next" onPress={navigateToLesson} />
           </View>
         </>
