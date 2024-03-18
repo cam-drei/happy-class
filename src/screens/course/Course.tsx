@@ -171,8 +171,6 @@ function Course({navigation, route}: CourseProps) {
     navigation.navigate('VideoScreen', {videoLink, videoName});
   };
 
-  const isLoggedIn = !!authToken;
-
   const getTotalLessons = (courseId: number) => {
     const lessonsForCourse = lessons[courseId];
     return lessonsForCourse ? lessonsForCourse.length : 0;
@@ -190,7 +188,7 @@ function Course({navigation, route}: CourseProps) {
     <View style={styles.container}>
       {isLoading ? (
         <LoadingIndicator />
-      ) : isLoggedIn ? (
+      ) : (
         <>
           {enrolledCourses.length > 0 ? (
             enrolledCourses.map(course => (
@@ -269,7 +267,7 @@ function Course({navigation, route}: CourseProps) {
                     name="edit"
                     size={30}
                     color="#4F7942"
-                    onPress={navigateToEnroll}
+                    onPress={() => navigateToEnroll}
                   />
                 </View>
                 {selectedCourse && (
@@ -300,10 +298,6 @@ function Course({navigation, route}: CourseProps) {
             <Text h4>No enrolled courses.</Text>
           )}
         </>
-      ) : (
-        <View>
-          <Text h4>Please log in to access the course.</Text>
-        </View>
       )}
     </View>
   );

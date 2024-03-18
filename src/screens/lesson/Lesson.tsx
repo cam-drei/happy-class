@@ -112,7 +112,7 @@ function Lesson({navigation, route}: LessonProps) {
       }
     };
 
-    if (courseId) {
+    if (authToken) {
       fetchLessons();
     }
   }, [authToken, courseId]);
@@ -127,8 +127,6 @@ function Lesson({navigation, route}: LessonProps) {
       ),
     });
   }, [navigation, userName]);
-
-  const isLoggedIn = !!authToken;
 
   const [expandedLessons, setExpandedLessons] = useState<{
     [key: number]: boolean;
@@ -368,7 +366,7 @@ function Lesson({navigation, route}: LessonProps) {
     <ScrollView contentContainerStyle={styles.container}>
       {isLoading ? (
         <LoadingIndicator />
-      ) : isLoggedIn ? (
+      ) : (
         <>
           {sortedLessons.length > 0 ? (
             sortedLessons.map(lesson => (
@@ -461,10 +459,8 @@ function Lesson({navigation, route}: LessonProps) {
                 {expandedLessons[lesson.id] && (
                   <>
                     {lesson.subject_lessons.map(subjectLesson => (
-                      <View>
-                        <View
-                          key={subjectLesson.id}
-                          style={styles.subjectContainer}>
+                      <View key={subjectLesson.id}>
+                        <View style={styles.subjectContainer}>
                           <Text
                             style={[
                               styles.normalSizeText,
@@ -545,10 +541,6 @@ function Lesson({navigation, route}: LessonProps) {
             <Text h4>No lessons.</Text>
           )}
         </>
-      ) : (
-        <View>
-          <Text h4>Please log in to access the lesson.</Text>
-        </View>
       )}
     </ScrollView>
   );
