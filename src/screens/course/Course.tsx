@@ -267,7 +267,7 @@ function Course({navigation, route}: CourseProps) {
                     name="edit"
                     size={30}
                     color="#4F7942"
-                    onPress={() => navigateToEnroll}
+                    onPress={() => navigateToEnroll(course.id)}
                   />
                 </View>
                 {selectedCourse && (

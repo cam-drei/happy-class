@@ -33,8 +33,7 @@ function Enroll({navigation, route}: EnrollProps) {
     const fetchSubjects = async () => {
       try {
         const response = await axios.get(
-          // `${baseUrl}/api/v1/users/enrolled_courses/${courseId}/subjects`,
-          `${baseUrl}/api/v1/users/enrolled_courses/2/subjects`,
+          `${baseUrl}/api/v1/users/enrolled_courses/${courseId}/subjects`,
           {
             headers: {
               Authorization: `Bearer ${authToken}`,
