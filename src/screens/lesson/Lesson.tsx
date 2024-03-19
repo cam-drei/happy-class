@@ -13,7 +13,14 @@ import LoadingIndicator from '../../components/loading/LoadingIndicator';
 
 interface LessonProps {
   navigation: any;
-  route: {params: {userName: string; authToken: string; courseId: number; selectedSubjectsIds: [number[]];}};
+  route: {
+    params: {
+      userName: string;
+      authToken: string;
+      courseId: number;
+      selectedSubjectsIds: number[];
+    };
+  };
 }
 
 interface Subject {
@@ -121,7 +128,7 @@ function Lesson({navigation, route}: LessonProps) {
     if (authToken) {
       fetchLessons();
     }
-  }, [authToken, courseId]);
+  }, [authToken, courseId, selectedSubjectsIds]);
 
   useEffect(() => {
     navigation.setOptions({

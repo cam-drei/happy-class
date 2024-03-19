@@ -22,12 +22,12 @@ interface Subject {
 
 function Enroll({navigation, route}: EnrollProps) {
   const {authToken, userName, courseId} = route.params;
-  const [selectAllChecked, setSelectAllChecked] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [subjects, setSubjects] = useState<Subject[]>([]);
   const [selectedSubjects, setSelectedSubjects] = useState<{
     [key: number]: boolean;
   }>({});
+  const [selectAllChecked, setSelectAllChecked] = useState(false);
 
   useEffect(() => {
     const fetchSubjects = async () => {
@@ -79,11 +79,17 @@ function Enroll({navigation, route}: EnrollProps) {
 
   const toggleSelectAll = () => {
     const allSelected = !selectAllChecked;
-    setSelectAllChecked(allSelected);
     const updatedSelectedSubjects: {[key: number]: boolean} = {};
-    subjects.forEach(subject => {
-      updatedSelectedSubjects[subject.id] = allSelected;
-    });
+    if (allSelected) {
+      subjects.forEach(subject => {
+        updatedSelectedSubjects[subject.id] = true;
+      });
+    } else {
+      subjects.forEach(subject => {
+        updatedSelectedSubjects[subject.id] = false;
+      });
+    }
+    setSelectAllChecked(allSelected);
     setSelectedSubjects(updatedSelectedSubjects);
   };
 
@@ -111,7 +117,10 @@ function Enroll({navigation, route}: EnrollProps) {
             </Text>
             <CheckBox
               title={'Select All'}
-              checked={selectAllChecked}
+              // checked={selectAllChecked}
+              checked={Object.values(selectedSubjects).every(
+                subject => subject,
+                )}
               onPress={toggleSelectAll}
               iconType="material-community"
               checkedIcon="checkbox-outline"
