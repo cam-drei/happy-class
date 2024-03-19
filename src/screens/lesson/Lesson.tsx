@@ -13,14 +13,7 @@ import LoadingIndicator from '../../components/loading/LoadingIndicator';
 
 interface LessonProps {
   navigation: any;
-  route: {
-    params: {
-      userName: string;
-      authToken: string;
-      courseId: number;
-      selectedSubjectsIds: number[];
-    };
-  };
+  route: {params: {userName: string; authToken: string; courseId: number}};
 }
 
 interface Subject {
@@ -57,7 +50,7 @@ interface Lesson {
 }
 
 function Lesson({navigation, route}: LessonProps) {
-  const {userName, authToken, courseId, selectedSubjectsIds} = route.params;
+  const {userName, authToken, courseId} = route.params;
   const [lessons, setLessons] = useState<Lesson[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -108,12 +101,6 @@ function Lesson({navigation, route}: LessonProps) {
             );
             lesson.contents = lessonContentResponse.data.contents;
 
-            if (lesson.subjects) {
-              lesson.subjects = lesson.subjects.filter(subject =>
-                selectedSubjectsIds.includes(subject.id),
-              );
-            }
-
             return lesson;
           }),
         );
@@ -128,7 +115,7 @@ function Lesson({navigation, route}: LessonProps) {
     if (authToken) {
       fetchLessons();
     }
-  }, [authToken, courseId, selectedSubjectsIds]);
+  }, [authToken, courseId]);
 
   useEffect(() => {
     navigation.setOptions({

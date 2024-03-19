@@ -101,7 +101,7 @@ function Enroll({navigation, route}: EnrollProps) {
       authToken,
       userName,
       courseId,
-      selectedSubjectsIds,
+      selectedSubjectsIds: selectedSubjectsIds,
     });
   };
 
