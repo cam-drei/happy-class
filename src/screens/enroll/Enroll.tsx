@@ -117,10 +117,9 @@ function Enroll({navigation, route}: EnrollProps) {
             </Text>
             <CheckBox
               title={'Select All'}
-              // checked={selectAllChecked}
               checked={Object.values(selectedSubjects).every(
                 subject => subject,
-                )}
+              )}
               onPress={toggleSelectAll}
               iconType="material-community"
               checkedIcon="checkbox-outline"

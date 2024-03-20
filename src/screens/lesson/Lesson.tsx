@@ -13,7 +13,14 @@ import LoadingIndicator from '../../components/loading/LoadingIndicator';
 
 interface LessonProps {
   navigation: any;
-  route: {params: {userName: string; authToken: string; courseId: number}};
+  route: {
+    params: {
+      userName: string;
+      authToken: string;
+      courseId: number;
+      selectedSubjectsIds: number[];
+    };
+  };
 }
 
 interface Subject {
@@ -50,7 +57,7 @@ interface Lesson {
 }
 
 function Lesson({navigation, route}: LessonProps) {
-  const {userName, authToken, courseId} = route.params;
+  const {userName, authToken, courseId, selectedSubjectsIds} = route.params;
   const [lessons, setLessons] = useState<Lesson[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -77,6 +84,11 @@ function Lesson({navigation, route}: LessonProps) {
               },
             );
             lesson.subject_lessons = subjectResponse.data.subject_lessons;
+
+            lesson.subject_lessons = lesson.subject_lessons.filter(
+              subjectLesson =>
+                selectedSubjectsIds.includes(subjectLesson.subject_id),
+            );
 
             for (let subjectLesson of lesson.subject_lessons) {
               const contentSubjectResponse = await axios.get(
@@ -105,7 +117,11 @@ function Lesson({navigation, route}: LessonProps) {
           }),
         );
 
-        setLessons(lessonsWithSubjects);
+        const filteredLessons = lessonsWithSubjects.filter(
+          (lesson: Lesson) => lesson.subject_lessons.length > 0,
+        );
+
+        setLessons(filteredLessons);
         setIsLoading(false);
       } catch (error) {
         console.error('Error fetching enrolled courses:', error);
@@ -115,7 +131,7 @@ function Lesson({navigation, route}: LessonProps) {
     if (authToken) {
       fetchLessons();
     }
-  }, [authToken, courseId]);
+  }, [authToken, courseId, selectedSubjectsIds]);
 
   useEffect(() => {
     navigation.setOptions({
