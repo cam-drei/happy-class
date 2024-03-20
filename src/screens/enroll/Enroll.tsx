@@ -1,5 +1,5 @@
 import React, {useState, useEffect} from 'react';
-import {View} from 'react-native';
+import {View, Alert} from 'react-native';
 import {Text, CheckBox} from '@rneui/base';
 import styles from './styles';
 import BottomButton from '../../components/buttons/BottomButton';
@@ -97,6 +97,12 @@ function Enroll({navigation, route}: EnrollProps) {
     const selectedSubjectsIds = Object.keys(selectedSubjects)
       .filter((subjectId: any) => selectedSubjects[subjectId])
       .map(Number);
+
+    if (selectedSubjectsIds.length === 0) {
+      Alert.alert('Selection Required', 'Please select the subjects.');
+      return;
+    }
+
     navigation.navigate('Lesson', {
       authToken,
       userName,
