@@ -12,7 +12,14 @@ import LoadingIndicator from '../../components/loading/LoadingIndicator';
 
 interface CourseProps {
   navigation: any;
-  route: {params: {authToken: string; userId: string; userName: string}};
+  route: {
+    params: {
+      authToken: string;
+      userId: string;
+      userName: string;
+      selectedSubjectsIds: number[];
+    };
+  };
 }
 
 interface Course {
@@ -29,7 +36,7 @@ interface Lesson {
 }
 
 function Course({navigation, route}: CourseProps) {
-  const {authToken, userId, userName} = route.params;
+  const {authToken, userId, userName, selectedSubjectsIds} = route.params;
   const [enrolledCourses, setEnrolledCourses] = useState<Course[]>([]);
   const [isCourseInfoModalVisible, setCourseInfoModalVisible] = useState(false);
   const [contents, setContents] = useState<{[courseId: number]: any[]}>({});
@@ -102,7 +109,13 @@ function Course({navigation, route}: CourseProps) {
   }, [navigation, userName]);
 
   const navigateToLesson = (courseId: number) => {
-    navigation.navigate('Lesson', {authToken, userId, userName, courseId});
+    navigation.navigate('Lesson', {
+      authToken,
+      userId,
+      userName,
+      courseId,
+      selectedSubjectsIds,
+    });
   };
 
   const navigateToEnroll = (courseId: number) => {

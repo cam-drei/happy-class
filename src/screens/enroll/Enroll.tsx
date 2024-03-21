@@ -17,7 +17,7 @@ interface Subject {
   id: number;
   name: string;
   description: string;
-  done: boolean;
+  selected: boolean;
 }
 
 function Enroll({navigation, route}: EnrollProps) {
@@ -43,10 +43,22 @@ function Enroll({navigation, route}: EnrollProps) {
 
         const initialSelectedSubjects: {[key: number]: boolean} = {};
         response.data.subjects.forEach((subject: Subject) => {
-          initialSelectedSubjects[subject.id] = false;
+          initialSelectedSubjects[subject.id] = subject.selected;
         });
 
-        setSubjects(response.data.subjects);
+        const sortedSubjects = response.data.subjects
+          .slice()
+          .sort((a: Subject, b: Subject) => {
+            if (a.name < b.name) {
+              return -1;
+            }
+            if (a.name > b.name) {
+              return 1;
+            }
+            return 0;
+          });
+
+        setSubjects(sortedSubjects);
         setSelectedSubjects(initialSelectedSubjects);
         setIsLoading(false);
       } catch (error) {
@@ -70,30 +82,65 @@ function Enroll({navigation, route}: EnrollProps) {
     });
   }, [navigation, userName]);
 
-  const toggleSubject = (subjectId: number) => {
-    setSelectedSubjects({
-      ...selectedSubjects,
-      [subjectId]: !selectedSubjects[subjectId],
-    });
+  const toggleSubjectSelection = async (
+    subjectId: number,
+    isSelected: boolean,
+  ) => {
+    try {
+      const endpoint = isSelected
+        ? `enrolled_courses/${courseId}/subjects/${subjectId}/mark_selected`
+        : `enrolled_courses/${courseId}/subjects/${subjectId}/unmark_selected`;
+
+      await axios.put(
+        `${baseUrl}/api/v1/users/${endpoint}`,
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${authToken}`,
+          },
+        },
+      );
+
+      setSelectedSubjects({
+        ...selectedSubjects,
+        [subjectId]: isSelected,
+      });
+    } catch (error) {
+      console.error('Error toggling subject selection:', error);
+    }
   };
 
-  const toggleSelectAll = () => {
+  const toggleSelectAll = async () => {
     const allSelected = !selectAllChecked;
     const updatedSelectedSubjects: {[key: number]: boolean} = {};
-    if (allSelected) {
-      subjects.forEach(subject => {
-        updatedSelectedSubjects[subject.id] = true;
-      });
-    } else {
-      subjects.forEach(subject => {
-        updatedSelectedSubjects[subject.id] = false;
-      });
+
+    try {
+      for (const subject of subjects) {
+        const endpoint = allSelected
+          ? `enrolled_courses/${courseId}/subjects/${subject.id}/mark_selected`
+          : `enrolled_courses/${courseId}/subjects/${subject.id}/unmark_selected`;
+
+        await axios.put(
+          `${baseUrl}/api/v1/users/${endpoint}`,
+          {},
+          {
+            headers: {
+              Authorization: `Bearer ${authToken}`,
+            },
+          },
+        );
+
+        updatedSelectedSubjects[subject.id] = allSelected;
+      }
+
+      setSelectAllChecked(allSelected);
+      setSelectedSubjects(updatedSelectedSubjects);
+    } catch (error) {
+      console.error('Error toggling select all:', error);
     }
-    setSelectAllChecked(allSelected);
-    setSelectedSubjects(updatedSelectedSubjects);
   };
 
-  const navigateToLesson = () => {
+  const navigateToCourse = () => {
     const selectedSubjectsIds = Object.keys(selectedSubjects)
       .filter((subjectId: any) => selectedSubjects[subjectId])
       .map(Number);
@@ -103,7 +150,7 @@ function Enroll({navigation, route}: EnrollProps) {
       return;
     }
 
-    navigation.navigate('Lesson', {
+    navigation.navigate('Course', {
       authToken,
       userName,
       courseId,
@@ -139,7 +186,12 @@ function Enroll({navigation, route}: EnrollProps) {
                 key={subject.id}
                 title={subject.name}
                 checked={selectedSubjects[subject.id]}
-                onPress={() => toggleSubject(subject.id)}
+                onPress={() =>
+                  toggleSubjectSelection(
+                    subject.id,
+                    !selectedSubjects[subject.id],
+                  )
+                }
                 iconType="material-community"
                 checkedIcon="checkbox-outline"
                 uncheckedIcon="checkbox-blank-outline"
@@ -156,7 +208,7 @@ function Enroll({navigation, route}: EnrollProps) {
                   .length
               }/${subjects.length} subjects`}
             </Text>
-            <BottomButton text="Next" onPress={navigateToLesson} />
+            <BottomButton text="Submit" onPress={navigateToCourse} />
           </View>
         </>
       )}

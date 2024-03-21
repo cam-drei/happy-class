@@ -85,10 +85,10 @@ function Lesson({navigation, route}: LessonProps) {
             );
             lesson.subject_lessons = subjectResponse.data.subject_lessons;
 
-            lesson.subject_lessons = lesson.subject_lessons.filter(
-              subjectLesson =>
+            lesson.subject_lessons =
+              lesson.subject_lessons?.filter(subjectLesson =>
                 selectedSubjectsIds.includes(subjectLesson.subject_id),
-            );
+              ) || [];
 
             for (let subjectLesson of lesson.subject_lessons) {
               const contentSubjectResponse = await axios.get(
