@@ -17,9 +17,15 @@ interface CourseProps {
       authToken: string;
       userId: string;
       userName: string;
-      selectedSubjectsIds: number[];
     };
   };
+}
+
+interface Subject {
+  id: number;
+  name: string;
+  description: string;
+  selected: boolean;
 }
 
 interface Course {
@@ -36,7 +42,7 @@ interface Lesson {
 }
 
 function Course({navigation, route}: CourseProps) {
-  const {authToken, userId, userName, selectedSubjectsIds} = route.params;
+  const {authToken, userId, userName} = route.params;
   const [enrolledCourses, setEnrolledCourses] = useState<Course[]>([]);
   const [isCourseInfoModalVisible, setCourseInfoModalVisible] = useState(false);
   const [contents, setContents] = useState<{[courseId: number]: any[]}>({});
@@ -108,14 +114,30 @@ function Course({navigation, route}: CourseProps) {
     });
   }, [navigation, userName]);
 
-  const navigateToLesson = (courseId: number) => {
-    navigation.navigate('Lesson', {
-      authToken,
-      userId,
-      userName,
-      courseId,
-      selectedSubjectsIds,
-    });
+  const navigateToLesson = async (courseId: number) => {
+    try {
+      const response = await axios.get(
+        `${baseUrl}/api/v1/users/enrolled_courses/${courseId}/selected_subjects`,
+        {
+          headers: {
+            Authorization: `Bearer ${authToken}`,
+          },
+        },
+      );
+      const fetchedSelectedSubjects = response.data.selected_subjects;
+      const fetchedSelectedSubjectsIds = fetchedSelectedSubjects.map(
+        (subject: Subject) => subject.id,
+      );
+      navigation.navigate('Lesson', {
+        authToken,
+        userId,
+        userName,
+        courseId,
+        selectedSubjectsIds: fetchedSelectedSubjectsIds,
+      });
+    } catch (error) {
+      console.error('Error fetching selected subjects for course:', error);
+    }
   };
 
   const navigateToEnroll = (courseId: number) => {
