@@ -1,5 +1,5 @@
-import React, {useState, useEffect} from 'react';
-import {View, Alert} from 'react-native';
+import React, {useState, useEffect, useCallback} from 'react';
+import {View, Alert, TouchableOpacity} from 'react-native';
 import {Text, CheckBox} from '@rneui/base';
 import styles from './styles';
 import BottomButton from '../../components/buttons/BottomButton';
@@ -7,6 +7,7 @@ import HeaderRight from '../../components/header/HeaderRight';
 import LoadingIndicator from '../../components/loading/LoadingIndicator';
 import axios from 'axios';
 import {baseUrl} from '../../utils/apiConfig';
+import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 
 interface EnrollProps {
   navigation: any;
@@ -71,6 +72,24 @@ function Enroll({navigation, route}: EnrollProps) {
     }
   }, [authToken, courseId]);
 
+  const navigateToCourse = useCallback(() => {
+    const selectedSubjectsIds = Object.keys(selectedSubjects)
+      .filter((subjectId: any) => selectedSubjects[subjectId])
+      .map(Number);
+
+    if (selectedSubjectsIds.length === 0) {
+      Alert.alert('Selection Required', 'Please select the subjects.');
+      return;
+    }
+
+    navigation.navigate('Course', {
+      authToken,
+      userName,
+      courseId,
+      selectedSubjectsIds: selectedSubjectsIds,
+    });
+  }, [selectedSubjects, navigation, authToken, userName, courseId]);
+
   useEffect(() => {
     navigation.setOptions({
       headerRight: () => (
@@ -79,8 +98,17 @@ function Enroll({navigation, route}: EnrollProps) {
           userImage={require('../../assets/images/tulip.webp')}
         />
       ),
-    });
-  }, [navigation, userName]);
+      headerTitle: 'Subject List',
+      headerLeft: () => (
+        <TouchableOpacity onPress={navigateToCourse}>
+          <MaterialIcons
+            name={'arrow-back'}
+            style={{marginLeft: 15, fontSize: 30}}
+            color={'#FF9900'}
+          />
+        </TouchableOpacity>
+    )});
+  }, [navigation, userName, navigateToCourse]);
 
   const toggleSubjectSelection = async (
     subjectId: number,
@@ -138,24 +166,6 @@ function Enroll({navigation, route}: EnrollProps) {
     } catch (error) {
       console.error('Error toggling select all:', error);
     }
-  };
-
-  const navigateToCourse = () => {
-    const selectedSubjectsIds = Object.keys(selectedSubjects)
-      .filter((subjectId: any) => selectedSubjects[subjectId])
-      .map(Number);
-
-    if (selectedSubjectsIds.length === 0) {
-      Alert.alert('Selection Required', 'Please select the subjects.');
-      return;
-    }
-
-    navigation.navigate('Course', {
-      authToken,
-      userName,
-      courseId,
-      selectedSubjectsIds: selectedSubjectsIds,
-    });
   };
 
   return (

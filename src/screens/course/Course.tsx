@@ -1,4 +1,4 @@
-import React, {useState, useEffect, useCallback} from 'react';
+import React, {useState, useEffect} from 'react';
 import {View, Modal, TouchableOpacity, ScrollView, Linking} from 'react-native';
 import {Text} from '@rneui/base';
 import styles from './styles';
