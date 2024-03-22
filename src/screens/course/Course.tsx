@@ -222,6 +222,10 @@ function Course({navigation, route}: CourseProps) {
     return lessonsForCourse.filter(lesson => lesson.done).length;
   };
 
+  const isCourseDone = (courseId: number) => {
+    return getTotalLessons(courseId) === getDoneLessons(courseId);
+  };
+
   return (
     <View style={styles.container}>
       {isLoading ? (
@@ -288,12 +292,10 @@ function Course({navigation, route}: CourseProps) {
                           styles.statusText,
                           getDoneLessons(course.id) === 0 &&
                             styles.todoTextColor,
-                          getDoneLessons(course.id) ===
-                            getTotalLessons(course.id) && styles.doneTextColor,
+                          isCourseDone(course.id) && styles.doneTextColor,
                         ]}>
                         Status:{' '}
-                        {getDoneLessons(course.id) ===
-                        getTotalLessons(course.id)
+                        {isCourseDone(course.id)
                           ? 'Done'
                           : getDoneLessons(course.id) === 0
                           ? 'Todo'
