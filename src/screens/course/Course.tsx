@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react';
+import React, {useState, useEffect, useCallback} from 'react';
 import {View, Modal, TouchableOpacity, ScrollView, Linking} from 'react-native';
 import {Text} from '@rneui/base';
 import styles from './styles';
@@ -9,6 +9,7 @@ import HeaderRight from '../../components/header/HeaderRight';
 import axios from 'axios';
 import {baseUrl} from '../../utils/apiConfig';
 import LoadingIndicator from '../../components/loading/LoadingIndicator';
+import {useFocusEffect} from '@react-navigation/native';
 
 interface CourseProps {
   navigation: any;
@@ -55,53 +56,55 @@ function Course({navigation, route}: CourseProps) {
     return match ? parseInt(match[0], 10) : 0;
   };
 
-  useEffect(() => {
-    const fetchEnrolledCourses = async () => {
-      try {
-        const response = await axios.get(
-          `${baseUrl}/api/v1/users/enrolled_courses`,
-          {
-            headers: {
-              Authorization: `Bearer ${authToken}`,
+  useFocusEffect(
+    useCallback(() => {
+      const fetchEnrolledCourses = async () => {
+        try {
+          const response = await axios.get(
+            `${baseUrl}/api/v1/users/enrolled_courses`,
+            {
+              headers: {
+                Authorization: `Bearer ${authToken}`,
+              },
             },
-          },
-        );
+          );
 
-        const sortedCourses = response.data.enrolled_courses.sort(
-          (a: Course, b: Course) => {
-            const aNameLower = a.name.toLowerCase();
-            const bNameLower = b.name.toLowerCase();
+          const sortedCourses = response.data.enrolled_courses.sort(
+            (a: Course, b: Course) => {
+              const aNameLower = a.name.toLowerCase();
+              const bNameLower = b.name.toLowerCase();
 
-            if (
-              aNameLower.startsWith('abeka k') &&
-              !bNameLower.startsWith('abeka k')
-            ) {
-              return -1;
-            }
-            if (
-              bNameLower.startsWith('abeka k') &&
-              !aNameLower.startsWith('abeka k')
-            ) {
-              return 1;
-            }
+              if (
+                aNameLower.startsWith('abeka k') &&
+                !bNameLower.startsWith('abeka k')
+              ) {
+                return -1;
+              }
+              if (
+                bNameLower.startsWith('abeka k') &&
+                !aNameLower.startsWith('abeka k')
+              ) {
+                return 1;
+              }
 
-            const aNumber = getNumber(a.name);
-            const bNumber = getNumber(b.name);
-            return aNumber - bNumber;
-          },
-        );
+              const aNumber = getNumber(a.name);
+              const bNumber = getNumber(b.name);
+              return aNumber - bNumber;
+            },
+          );
 
-        setEnrolledCourses(sortedCourses);
-        setIsLoading(false);
-      } catch (error) {
-        console.error('Error fetching enrolled courses:', error);
+          setEnrolledCourses(sortedCourses);
+          setIsLoading(false);
+        } catch (error) {
+          console.error('Error fetching enrolled courses:', error);
+        }
+      };
+
+      if (authToken) {
+        fetchEnrolledCourses();
       }
-    };
-
-    if (authToken) {
-      fetchEnrolledCourses();
-    }
-  }, [authToken]);
+    }, [authToken]),
+  );
 
   useEffect(() => {
     navigation.setOptions({
