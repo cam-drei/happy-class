@@ -50,6 +50,9 @@ function Course({navigation, route}: CourseProps) {
   const [lessons, setLessons] = useState<{[courseId: number]: Lesson[]}>({});
   const [selectedCourse, setSelectedCourse] = useState<Course | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [courseStatuses, setCourseStatuses] = useState<{
+    [courseId: number]: string;
+  }>({});
 
   const getNumber = (courseName: string) => {
     const match = courseName.match(/\d+/);
@@ -105,6 +108,37 @@ function Course({navigation, route}: CourseProps) {
       }
     }, [authToken]),
   );
+
+  useEffect(() => {
+    const fetchCourseStatuses = async () => {
+      try {
+        const promises = enrolledCourses.map(async course => {
+          const response = await axios.get(
+            `${baseUrl}/api/v1/users/enrolled_courses/${course.id}/status`,
+            {
+              headers: {
+                Authorization: `Bearer ${authToken}`,
+              },
+            },
+          );
+          return {courseId: course.id, status: response.data.status};
+        });
+
+        const courseStatusData = await Promise.all(promises);
+        const statusMap: {[courseId: number]: string} = {};
+        courseStatusData.forEach(item => {
+          statusMap[item.courseId] = item.status;
+        });
+        setCourseStatuses(statusMap);
+      } catch (error) {
+        console.error('Error fetching course statuses:', error);
+      }
+    };
+
+    if (enrolledCourses.length > 0) {
+      fetchCourseStatuses();
+    }
+  }, [authToken, enrolledCourses]);
 
   useEffect(() => {
     navigation.setOptions({
@@ -294,12 +328,7 @@ function Course({navigation, route}: CourseProps) {
                             styles.todoTextColor,
                           isCourseDone(course.id) && styles.doneTextColor,
                         ]}>
-                        Status:{' '}
-                        {isCourseDone(course.id)
-                          ? 'Done'
-                          : getDoneLessons(course.id) === 0
-                          ? 'Todo'
-                          : 'In progress'}
+                        Status: {courseStatuses[course.id]}
                       </Text>
                     </View>
                   </View>
