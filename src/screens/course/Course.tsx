@@ -158,7 +158,7 @@ function Course({navigation, route}: CourseProps) {
       case 'done':
         return 3;
       default:
-        return 0;
+        return 4;
     }
   };
 
