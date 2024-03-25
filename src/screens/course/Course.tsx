@@ -283,7 +283,7 @@ function Course({navigation, route}: CourseProps) {
   };
 
   return (
-    <View style={styles.container}>
+    <ScrollView contentContainerStyle={styles.container}>
       {isLoading ? (
         <LoadingIndicator />
       ) : (
@@ -406,7 +406,7 @@ function Course({navigation, route}: CourseProps) {
           )}
         </>
       )}
-    </View>
+    </ScrollView>
   );
 }
 
