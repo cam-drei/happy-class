@@ -72,31 +72,7 @@ function Course({navigation, route}: CourseProps) {
             },
           );
 
-          const sortedCourses = response.data.enrolled_courses.sort(
-            (a: Course, b: Course) => {
-              const aNameLower = a.name.toLowerCase();
-              const bNameLower = b.name.toLowerCase();
-
-              if (
-                aNameLower.startsWith('abeka k') &&
-                !bNameLower.startsWith('abeka k')
-              ) {
-                return -1;
-              }
-              if (
-                bNameLower.startsWith('abeka k') &&
-                !aNameLower.startsWith('abeka k')
-              ) {
-                return 1;
-              }
-
-              const aNumber = getNumber(a.name);
-              const bNumber = getNumber(b.name);
-              return aNumber - bNumber;
-            },
-          );
-
-          setEnrolledCourses(sortedCourses);
+          setEnrolledCourses(response.data.enrolled_courses);
           setIsLoading(false);
         } catch (error) {
           console.error('Error fetching enrolled courses:', error);
@@ -129,7 +105,40 @@ function Course({navigation, route}: CourseProps) {
         courseStatusData.forEach(item => {
           statusMap[item.courseId] = item.status;
         });
+
         setCourseStatuses(statusMap);
+
+        const sortedCourses = enrolledCourses.sort((a, b) => {
+          const statusComparison =
+            getStatusValue(statusMap[a.id]) - getStatusValue(statusMap[b.id]);
+
+          if (statusComparison === 0) {
+            const aNameLower = a.name.toLowerCase();
+            const bNameLower = b.name.toLowerCase();
+
+            if (
+              aNameLower.startsWith('abeka k') &&
+              !bNameLower.startsWith('abeka k')
+            ) {
+              return -1;
+            }
+            if (
+              bNameLower.startsWith('abeka k') &&
+              !aNameLower.startsWith('abeka k')
+            ) {
+              return 1;
+            }
+
+            const aNumber = getNumber(a.name);
+            const bNumber = getNumber(b.name);
+            return aNumber - bNumber;
+          }
+
+          return statusComparison;
+        });
+
+        setEnrolledCourses(sortedCourses);
+        setIsLoading(false);
       } catch (error) {
         console.error('Error fetching course statuses:', error);
       }
@@ -139,6 +148,19 @@ function Course({navigation, route}: CourseProps) {
       fetchCourseStatuses();
     }
   }, [authToken, enrolledCourses]);
+
+  const getStatusValue = (status: string): number => {
+    switch (status.toLowerCase()) {
+      case 'in progress':
+        return 1;
+      case 'todo':
+        return 2;
+      case 'done':
+        return 3;
+      default:
+        return 0;
+    }
+  };
 
   useEffect(() => {
     navigation.setOptions({
