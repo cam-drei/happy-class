@@ -14,6 +14,9 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     marginTop: 20,
   },
+  doneBorder: {
+    borderColor: '#A9A9A9',
+  },
   boxTitle: {
     fontWeight: 'bold',
   },
@@ -36,7 +39,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#FF9900',
   },
-  doneTextColor: {
+  doneColor: {
     color: '#A9A9A9',
   },
   todoTextColor: {

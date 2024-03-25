@@ -290,11 +290,19 @@ function Course({navigation, route}: CourseProps) {
         <>
           {enrolledCourses.length > 0 ? (
             enrolledCourses.map(course => (
-              <View key={course.id} style={styles.box}>
+              <View
+                key={course.id}
+                style={[
+                  styles.box,
+                  isCourseDone(course.id) && styles.doneBorder,
+                ]}>
                 <View style={styles.titleView}>
                   <Text
                     h4
-                    style={styles.boxTitle}
+                    style={[
+                      styles.boxTitle,
+                      isCourseDone(course.id) && styles.doneColor,
+                    ]}
                     onPress={() => {
                       setSelectedCourse(course);
                       setCourseInfoModalVisible(!!course.description);
@@ -309,7 +317,9 @@ function Course({navigation, route}: CourseProps) {
                           <Feather
                             name="video"
                             size={30}
-                            color="#4F7942"
+                            color={
+                              isCourseDone(course.id) ? '#A9A9A9' : '#4F7942'
+                            }
                             onPress={() =>
                               handleVideoPlay(content.video_link, course.name)
                             }
@@ -320,7 +330,9 @@ function Course({navigation, route}: CourseProps) {
                             name="book"
                             style={styles.bookIcon}
                             size={30}
-                            color="#4F7942"
+                            color={
+                              isCourseDone(course.id) ? '#A9A9A9' : '#4F7942'
+                            }
                             onPress={() =>
                               openResourceLink(content.document_link)
                             }
@@ -334,12 +346,16 @@ function Course({navigation, route}: CourseProps) {
                     <FontAwesome
                       name="play-circle"
                       size={60}
-                      color="#FF9900"
+                      color={isCourseDone(course.id) ? '#A9A9A9' : '#FF9900'}
                       style={styles.iconPlay}
                       onPress={() => navigateToLesson(course.id)}
                     />
                     <View>
-                      <Text style={styles.normalSizeText}>
+                      <Text
+                        style={[
+                          styles.normalSizeText,
+                          isCourseDone(course.id) && styles.doneColor,
+                        ]}>
                         Progress: {getDoneLessons(course.id)}/
                         {getTotalLessons(course.id)} lessons
                       </Text>
@@ -348,7 +364,7 @@ function Course({navigation, route}: CourseProps) {
                           styles.statusText,
                           getDoneLessons(course.id) === 0 &&
                             styles.todoTextColor,
-                          isCourseDone(course.id) && styles.doneTextColor,
+                          isCourseDone(course.id) && styles.doneColor,
                         ]}>
                         Status: {courseStatuses[course.id]}
                       </Text>
@@ -357,7 +373,7 @@ function Course({navigation, route}: CourseProps) {
                   <AntDesign
                     name="edit"
                     size={30}
-                    color="#4F7942"
+                    color={isCourseDone(course.id) ? '#A9A9A9' : '#4F7942'}
                     onPress={() => navigateToEnroll(course.id)}
                   />
                 </View>
