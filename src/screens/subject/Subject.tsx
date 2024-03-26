@@ -21,7 +21,7 @@ interface Subject {
   selected: boolean;
 }
 
-function Enroll({navigation, route}: EnrollProps) {
+function Subject({navigation, route}: EnrollProps) {
   const {authToken, userName, courseId} = route.params;
   const [isLoading, setIsLoading] = useState(true);
   const [subjects, setSubjects] = useState<Subject[]>([]);
@@ -98,7 +98,7 @@ function Enroll({navigation, route}: EnrollProps) {
           userImage={require('../../assets/images/tulip.webp')}
         />
       ),
-      headerTitle: 'Subject List',
+      headerTitle: 'Subjects',
       headerLeft: () => (
         <TouchableOpacity onPress={navigateToCourse}>
           <MaterialIcons
@@ -226,4 +226,4 @@ function Enroll({navigation, route}: EnrollProps) {
   );
 }
 
-export default Enroll;
+export default Subject;

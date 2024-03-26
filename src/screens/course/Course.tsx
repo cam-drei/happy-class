@@ -200,7 +200,7 @@ function Course({navigation, route}: CourseProps) {
   };
 
   const navigateToEnroll = (courseId: number) => {
-    navigation.navigate('Enroll', {authToken, userId, userName, courseId});
+    navigation.navigate('Subject', {authToken, userId, userName, courseId});
   };
 
   useEffect(() => {
@@ -357,8 +357,12 @@ function Course({navigation, route}: CourseProps) {
                           isCourseDone(course.id) && styles.doneColor,
                         ]}>
                         Progress: {getDoneLessons(course.id)}/
-                        {getTotalLessons(course.id)} lessons
+                        {getTotalLessons(course.id)}
+                        {getDoneLessons(course.id) <= 1
+                          ? ' lesson'
+                          : ' lessons'}
                       </Text>
+
                       <Text
                         style={[
                           styles.statusText,
