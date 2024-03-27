@@ -9,6 +9,7 @@ import Course from './src/screens/course/Course';
 import Subject from './src/screens/subject/Subject';
 import Lesson from './src/screens/lesson/Lesson';
 import VideoScreen from './src/components/video/VideoScreen';
+import CourseList from './src/screens/course/CourseList';
 
 const Stack = createStackNavigator();
 
@@ -24,6 +25,7 @@ const App = () => {
         <Stack.Screen name="Subject" component={Subject} />
         <Stack.Screen name="Lesson" component={Lesson} />
         <Stack.Screen name="VideoScreen" component={VideoScreen} />
+        <Stack.Screen name="CourseList" component={CourseList} />
       </Stack.Navigator>
     </NavigationContainer>
   );

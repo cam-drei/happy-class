@@ -1,5 +1,5 @@
 import React from 'react';
-import {View, Image, Alert} from 'react-native';
+import {View, Image} from 'react-native';
 import styles from './styles';
 import BottomButton from '../../components/buttons/BottomButton';
 import {Text} from '@rneui/base';
@@ -29,6 +29,10 @@ function User({navigation, route}: UserProps) {
     navigation.navigate('Course', {authToken, userId, userName});
   };
 
+  const navigateToChooseCourse = () => {
+    navigation.navigate('CourseList', {authToken, userId, userName});
+  };
+
   return (
     <View style={styles.container}>
       <Text h4 style={styles.title}>
@@ -45,9 +49,7 @@ function User({navigation, route}: UserProps) {
       <BottomButton
         text="Click for choose your Course"
         buttonType={'outlined'}
-        onPress={() => {
-          Alert.alert('Alert Title', 'Button Clicked!');
-        }}
+        onPress={navigateToChooseCourse}
       />
       <View style={styles.bottomTextView}>
         <Text onPress={handleLogout} style={styles.bottomText}>
