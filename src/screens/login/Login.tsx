@@ -16,7 +16,7 @@ function Login({navigation}: {navigation: any}) {
   const handleLogin = async () => {
     try {
       const response = await axios.post(
-        `${baseUrl}/api/v1/login`,
+        `${baseUrl}/login`,
         {
           user: {
             email: email,

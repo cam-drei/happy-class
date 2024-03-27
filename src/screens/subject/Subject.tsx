@@ -34,7 +34,7 @@ function Subject({navigation, route}: EnrollProps) {
     const fetchSubjects = async () => {
       try {
         const response = await axios.get(
-          `${baseUrl}/api/v1/users/enrolled_courses/${courseId}/subjects`,
+          `${baseUrl}/users/enrolled_courses/${courseId}/subjects`,
           {
             headers: {
               Authorization: `Bearer ${authToken}`,
@@ -120,7 +120,7 @@ function Subject({navigation, route}: EnrollProps) {
         : `enrolled_courses/${courseId}/subjects/${subjectId}/unmark_selected`;
 
       await axios.put(
-        `${baseUrl}/api/v1/users/${endpoint}`,
+        `${baseUrl}/users/${endpoint}`,
         {},
         {
           headers: {
@@ -149,7 +149,7 @@ function Subject({navigation, route}: EnrollProps) {
           : `enrolled_courses/${courseId}/subjects/${subject.id}/unmark_selected`;
 
         await axios.put(
-          `${baseUrl}/api/v1/users/${endpoint}`,
+          `${baseUrl}/users/${endpoint}`,
           {},
           {
             headers: {

@@ -47,7 +47,7 @@ function Lesson({navigation, route}: LessonProps) {
     const fetchEnrolledLessons = async () => {
       try {
         const response = await axios.get(
-          `${baseUrl}/api/v1/users/enrolled_courses/${courseId}/lessons`,
+          `${baseUrl}/users/enrolled_courses/${courseId}/lessons`,
           {
             headers: {
               Authorization: `Bearer ${authToken}`,
@@ -58,7 +58,7 @@ function Lesson({navigation, route}: LessonProps) {
         const lessonsWithSubjects = await Promise.all(
           response.data.lessons.map(async (lesson: Lesson) => {
             const subjectResponse = await axios.get(
-              `${baseUrl}/api/v1/users/enrolled_courses/${courseId}/lessons/${lesson.id}/subjects`,
+              `${baseUrl}/users/enrolled_courses/${courseId}/lessons/${lesson.id}/subjects`,
               {
                 headers: {
                   Authorization: `Bearer ${authToken}`,
@@ -69,7 +69,7 @@ function Lesson({navigation, route}: LessonProps) {
 
             for (let subject of lesson.subjects) {
               const contentSubjectResponse = await axios.get(
-                `${baseUrl}/api/v1/users/enrolled_courses/${courseId}/lessons/${lesson.id}/subjects/${subject.id}/contents`,
+                `${baseUrl}/users/enrolled_courses/${courseId}/lessons/${lesson.id}/subjects/${subject.id}/contents`,
                 {
                   headers: {
                     Authorization: `Bearer ${authToken}`,
@@ -80,7 +80,7 @@ function Lesson({navigation, route}: LessonProps) {
             }
 
             const lessonContentResponse = await axios.get(
-              `${baseUrl}/api/v1/users/enrolled_courses/${courseId}/lessons/${lesson.id}/contents`,
+              `${baseUrl}/users/enrolled_courses/${courseId}/lessons/${lesson.id}/contents`,
               {
                 headers: {
                   Authorization: `Bearer ${authToken}`,

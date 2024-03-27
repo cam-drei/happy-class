@@ -64,7 +64,7 @@ function Course({navigation, route}: CourseProps) {
       const fetchEnrolledCourses = async () => {
         try {
           const response = await axios.get(
-            `${baseUrl}/api/v1/users/enrolled_courses`,
+            `${baseUrl}/users/enrolled_courses`,
             {
               headers: {
                 Authorization: `Bearer ${authToken}`,
@@ -90,7 +90,7 @@ function Course({navigation, route}: CourseProps) {
       try {
         const promises = enrolledCourses.map(async course => {
           const response = await axios.get(
-            `${baseUrl}/api/v1/users/enrolled_courses/${course.id}/status`,
+            `${baseUrl}/users/enrolled_courses/${course.id}/status`,
             {
               headers: {
                 Authorization: `Bearer ${authToken}`,
@@ -176,7 +176,7 @@ function Course({navigation, route}: CourseProps) {
   const navigateToLesson = async (courseId: number) => {
     try {
       const response = await axios.get(
-        `${baseUrl}/api/v1/users/enrolled_courses/${courseId}/selected_subjects`,
+        `${baseUrl}/users/enrolled_courses/${courseId}/selected_subjects`,
         {
           headers: {
             Authorization: `Bearer ${authToken}`,
@@ -207,7 +207,7 @@ function Course({navigation, route}: CourseProps) {
     const fetchContentsForCourse = async (courseId: number) => {
       try {
         const response = await axios.get(
-          `${baseUrl}/api/v1/users/enrolled_courses/${courseId}/contents`,
+          `${baseUrl}/users/enrolled_courses/${courseId}/contents`,
           {
             headers: {
               Authorization: `Bearer ${authToken}`,
@@ -233,7 +233,7 @@ function Course({navigation, route}: CourseProps) {
     const fetchLessonsForCourse = async (courseId: number) => {
       try {
         const response = await axios.get(
-          `${baseUrl}/api/v1/users/enrolled_courses/${courseId}/lessons`,
+          `${baseUrl}/users/enrolled_courses/${courseId}/lessons`,
           {
             headers: {
               Authorization: `Bearer ${authToken}`,

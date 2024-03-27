@@ -37,7 +37,7 @@ function CourseList({navigation, route}: CourseListProps) {
   useEffect(() => {
     const fetchCourses = async () => {
       try {
-        const response = await axios.get(`${baseUrl}/api/v1/users/courses`, {
+        const response = await axios.get(`${baseUrl}/users/courses`, {
           headers: {
             Authorization: `Bearer ${authToken}`,
           },
@@ -92,7 +92,7 @@ function CourseList({navigation, route}: CourseListProps) {
         : `courses/${courseId}/unmark_selected`;
 
       await axios.put(
-        `${baseUrl}/api/v1/users/${endpoint}`,
+        `${baseUrl}/users/${endpoint}`,
         {},
         {
           headers: {
@@ -121,7 +121,7 @@ function CourseList({navigation, route}: CourseListProps) {
           : `courses/${course.id}/unmark_selected`;
 
         await axios.put(
-          `${baseUrl}/api/v1/users/${endpoint}`,
+          `${baseUrl}/users/${endpoint}`,
           {},
           {
             headers: {

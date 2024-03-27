@@ -65,7 +65,7 @@ function Lesson({navigation, route}: LessonProps) {
     const fetchLessons = async () => {
       try {
         const response = await axios.get(
-          `${baseUrl}/api/v1/users/enrolled_courses/${courseId}/lessons`,
+          `${baseUrl}/users/enrolled_courses/${courseId}/lessons`,
           {
             headers: {
               Authorization: `Bearer ${authToken}`,
@@ -76,7 +76,7 @@ function Lesson({navigation, route}: LessonProps) {
         const lessonsWithSubjects = await Promise.all(
           response.data.lessons.map(async (lesson: Lesson) => {
             const subjectResponse = await axios.get(
-              `${baseUrl}/api/v1/users/enrolled_courses/${courseId}/lessons/${lesson.id}/subject_lessons`,
+              `${baseUrl}/users/enrolled_courses/${courseId}/lessons/${lesson.id}/subject_lessons`,
               {
                 headers: {
                   Authorization: `Bearer ${authToken}`,
@@ -92,7 +92,7 @@ function Lesson({navigation, route}: LessonProps) {
 
             for (let subjectLesson of lesson.subject_lessons) {
               const contentSubjectResponse = await axios.get(
-                `${baseUrl}/api/v1/users/enrolled_courses/${courseId}/lessons/${lesson.id}/subject_lessons/${subjectLesson.id}/subject_lesson_contents`,
+                `${baseUrl}/users/enrolled_courses/${courseId}/lessons/${lesson.id}/subject_lessons/${subjectLesson.id}/subject_lesson_contents`,
                 {
                   headers: {
                     Authorization: `Bearer ${authToken}`,
@@ -104,7 +104,7 @@ function Lesson({navigation, route}: LessonProps) {
             }
 
             const lessonContentResponse = await axios.get(
-              `${baseUrl}/api/v1/users/enrolled_courses/${courseId}/lessons/${lesson.id}/contents`,
+              `${baseUrl}/users/enrolled_courses/${courseId}/lessons/${lesson.id}/contents`,
               {
                 headers: {
                   Authorization: `Bearer ${authToken}`,
@@ -171,7 +171,7 @@ function Lesson({navigation, route}: LessonProps) {
     async (lessonId: number) => {
       try {
         await axios.put(
-          `${baseUrl}/api/v1/users/enrolled_courses/${courseId}/lessons/${lessonId}/mark_done`,
+          `${baseUrl}/users/enrolled_courses/${courseId}/lessons/${lessonId}/mark_done`,
           {},
           {
             headers: {
@@ -196,7 +196,7 @@ function Lesson({navigation, route}: LessonProps) {
     async (lessonId: number) => {
       try {
         await axios.put(
-          `${baseUrl}/api/v1/users/enrolled_courses/${courseId}/lessons/${lessonId}/unmark_done`,
+          `${baseUrl}/users/enrolled_courses/${courseId}/lessons/${lessonId}/unmark_done`,
           {},
           {
             headers: {
@@ -245,7 +245,7 @@ function Lesson({navigation, route}: LessonProps) {
   ) => {
     try {
       await axios.put(
-        `${baseUrl}/api/v1/users/enrolled_courses/${courseId}/lessons/${lessonId}/subject_lessons/${subjectLessonId}/mark_done`,
+        `${baseUrl}/users/enrolled_courses/${courseId}/lessons/${lessonId}/subject_lessons/${subjectLessonId}/mark_done`,
         {},
         {
           headers: {
@@ -279,7 +279,7 @@ function Lesson({navigation, route}: LessonProps) {
   ) => {
     try {
       await axios.put(
-        `${baseUrl}/api/v1/users/enrolled_courses/${courseId}/lessons/${lessonId}/subject_lessons/${subjectLessonId}/unmark_done`,
+        `${baseUrl}/users/enrolled_courses/${courseId}/lessons/${lessonId}/subject_lessons/${subjectLessonId}/unmark_done`,
         {},
         {
           headers: {
