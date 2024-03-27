@@ -9,7 +9,7 @@ import Course from './src/screens/course/Course';
 import Subject from './src/screens/subject/Subject';
 import Lesson from './src/screens/lesson/Lesson';
 import VideoScreen from './src/components/video/VideoScreen';
-import CourseList from './src/screens/course/CourseList';
+import CourseList from './src/screens/courseList/CourseList';
 
 const Stack = createStackNavigator();
 
