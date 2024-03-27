@@ -1,5 +1,5 @@
 import React, {useState, useEffect, useCallback} from 'react';
-import {View, Alert, TouchableOpacity} from 'react-native';
+import {View, Alert, TouchableOpacity, ScrollView} from 'react-native';
 import {Text, CheckBox} from '@rneui/base';
 import styles from './styles';
 import BottomButton from '../../components/buttons/BottomButton';
@@ -174,43 +174,45 @@ function Subject({navigation, route}: EnrollProps) {
         <LoadingIndicator />
       ) : (
         <>
-          <View>
-            <Text style={styles.title}>
-              {'Select the subjects you want to learn:'}
-            </Text>
-            <CheckBox
-              title={'Select All'}
-              checked={Object.values(selectedSubjects).every(
-                subject => subject,
-              )}
-              onPress={toggleSelectAll}
-              iconType="material-community"
-              checkedIcon="checkbox-outline"
-              uncheckedIcon="checkbox-blank-outline"
-              checkedColor="#FF9900"
-              textStyle={styles.selectAllText}
-              containerStyle={styles.selectAllContainer}
-            />
-            {subjects.map(subject => (
+          <ScrollView contentContainerStyle={styles.scrollViewContainer}>
+            <View>
+              <Text style={styles.title}>
+                {'Select the subjects you want to learn:'}
+              </Text>
               <CheckBox
-                key={subject.id}
-                title={subject.name}
-                checked={selectedSubjects[subject.id]}
-                onPress={() =>
-                  toggleSubjectSelection(
-                    subject.id,
-                    !selectedSubjects[subject.id],
-                  )
-                }
+                title={'Select All'}
+                checked={Object.values(selectedSubjects).every(
+                  subject => subject,
+                )}
+                onPress={toggleSelectAll}
                 iconType="material-community"
                 checkedIcon="checkbox-outline"
                 uncheckedIcon="checkbox-blank-outline"
                 checkedColor="#FF9900"
-                textStyle={styles.checkboxTitle}
-                containerStyle={styles.checkbox}
+                textStyle={styles.selectAllText}
+                containerStyle={styles.selectAllContainer}
               />
-            ))}
-          </View>
+              {subjects.map(subject => (
+                <CheckBox
+                  key={subject.id}
+                  title={subject.name}
+                  checked={selectedSubjects[subject.id]}
+                  onPress={() =>
+                    toggleSubjectSelection(
+                      subject.id,
+                      !selectedSubjects[subject.id],
+                    )
+                  }
+                  iconType="material-community"
+                  checkedIcon="checkbox-outline"
+                  uncheckedIcon="checkbox-blank-outline"
+                  checkedColor="#FF9900"
+                  textStyle={styles.checkboxTitle}
+                  containerStyle={styles.checkbox}
+                />
+              ))}
+            </View>
+          </ScrollView>
           <View style={styles.bottomButton}>
             <Text style={styles.totalText}>
               {`You selected ${

@@ -283,134 +283,136 @@ function Course({navigation, route}: CourseProps) {
   };
 
   return (
-    <ScrollView contentContainerStyle={styles.container}>
-      {isLoading ? (
-        <LoadingIndicator />
-      ) : (
-        <>
-          {enrolledCourses.length > 0 ? (
-            enrolledCourses.map(course => (
-              <View
-                key={course.id}
-                style={[
-                  styles.box,
-                  isCourseDone(course.id) && styles.doneBorder,
-                ]}>
-                <View style={styles.titleView}>
-                  <Text
-                    h4
-                    style={[
-                      styles.boxTitle,
-                      isCourseDone(course.id) && styles.doneColor,
-                    ]}
-                    onPress={() => {
-                      setSelectedCourse(course);
-                      setCourseInfoModalVisible(!!course.description);
-                    }}>
-                    {course.name}
-                  </Text>
-                  {contents[course.id] &&
-                    contents[course.id].length > 0 &&
-                    contents[course.id].map(content => (
-                      <View key={content.id} style={styles.iconSubjectGroup}>
-                        {content.video_link && (
-                          <Feather
-                            name="video"
-                            size={30}
-                            color={
-                              isCourseDone(course.id) ? '#A9A9A9' : '#4F7942'
-                            }
-                            onPress={() =>
-                              handleVideoPlay(content.video_link, course.name)
-                            }
-                          />
-                        )}
-                        {content.document_link && (
-                          <FontAwesome
-                            name="book"
-                            style={styles.bookIcon}
-                            size={30}
-                            color={
-                              isCourseDone(course.id) ? '#A9A9A9' : '#4F7942'
-                            }
-                            onPress={() =>
-                              openResourceLink(content.document_link)
-                            }
-                          />
-                        )}
-                      </View>
-                    ))}
-                </View>
-                <View style={[styles.titleView]}>
-                  <View style={styles.contentView}>
-                    <FontAwesome
-                      name="play-circle"
-                      size={60}
-                      color={isCourseDone(course.id) ? '#A9A9A9' : '#FF9900'}
-                      style={styles.iconPlay}
-                      onPress={() => navigateToLesson(course.id)}
-                    />
-                    <View>
-                      <Text
-                        style={[
-                          styles.normalSizeText,
-                          isCourseDone(course.id) && styles.doneColor,
-                        ]}>
-                        Progress: {getDoneLessons(course.id)}/
-                        {getTotalLessons(course.id)}
-                        {getDoneLessons(course.id) <= 1
-                          ? ' lesson'
-                          : ' lessons'}
-                      </Text>
-
-                      <Text
-                        style={[
-                          styles.statusText,
-                          getDoneLessons(course.id) === 0 &&
-                            styles.todoTextColor,
-                          isCourseDone(course.id) && styles.doneColor,
-                        ]}>
-                        Status: {courseStatuses[course.id]}
-                      </Text>
-                    </View>
+    <View style={styles.container}>
+      <ScrollView contentContainerStyle={styles.scrollViewContainer}>
+        {isLoading ? (
+          <LoadingIndicator />
+        ) : (
+          <>
+            {enrolledCourses.length > 0 ? (
+              enrolledCourses.map(course => (
+                <View
+                  key={course.id}
+                  style={[
+                    styles.box,
+                    isCourseDone(course.id) && styles.doneBorder,
+                  ]}>
+                  <View style={styles.titleView}>
+                    <Text
+                      h4
+                      style={[
+                        styles.boxTitle,
+                        isCourseDone(course.id) && styles.doneColor,
+                      ]}
+                      onPress={() => {
+                        setSelectedCourse(course);
+                        setCourseInfoModalVisible(!!course.description);
+                      }}>
+                      {course.name}
+                    </Text>
+                    {contents[course.id] &&
+                      contents[course.id].length > 0 &&
+                      contents[course.id].map(content => (
+                        <View key={content.id} style={styles.iconSubjectGroup}>
+                          {content.video_link && (
+                            <Feather
+                              name="video"
+                              size={30}
+                              color={
+                                isCourseDone(course.id) ? '#A9A9A9' : '#4F7942'
+                              }
+                              onPress={() =>
+                                handleVideoPlay(content.video_link, course.name)
+                              }
+                            />
+                          )}
+                          {content.document_link && (
+                            <FontAwesome
+                              name="book"
+                              style={styles.bookIcon}
+                              size={30}
+                              color={
+                                isCourseDone(course.id) ? '#A9A9A9' : '#4F7942'
+                              }
+                              onPress={() =>
+                                openResourceLink(content.document_link)
+                              }
+                            />
+                          )}
+                        </View>
+                      ))}
                   </View>
-                  <AntDesign
-                    name="edit"
-                    size={30}
-                    color={isCourseDone(course.id) ? '#A9A9A9' : '#4F7942'}
-                    onPress={() => navigateToEnroll(course.id)}
-                  />
-                </View>
-                {selectedCourse && (
-                  <Modal visible={isCourseInfoModalVisible} transparent>
-                    <View style={styles.centeredView}>
-                      <View style={styles.modalView}>
-                        <ScrollView style={styles.scrollView}>
-                          <Text h4>{selectedCourse.name}</Text>
-                          <Text style={styles.modalText}>
-                            {selectedCourse.description}
-                          </Text>
-                        </ScrollView>
-                        <TouchableOpacity
-                          style={[styles.button, styles.buttonClose]}
-                          onPress={() => {
-                            setCourseInfoModalVisible(false);
-                            setSelectedCourse(null);
-                          }}>
-                          <Text style={styles.textStyle}>Close</Text>
-                        </TouchableOpacity>
+                  <View style={[styles.titleView]}>
+                    <View style={styles.contentView}>
+                      <FontAwesome
+                        name="play-circle"
+                        size={60}
+                        color={isCourseDone(course.id) ? '#A9A9A9' : '#FF9900'}
+                        style={styles.iconPlay}
+                        onPress={() => navigateToLesson(course.id)}
+                      />
+                      <View>
+                        <Text
+                          style={[
+                            styles.normalSizeText,
+                            isCourseDone(course.id) && styles.doneColor,
+                          ]}>
+                          Progress: {getDoneLessons(course.id)}/
+                          {getTotalLessons(course.id)}
+                          {getDoneLessons(course.id) <= 1
+                            ? ' lesson'
+                            : ' lessons'}
+                        </Text>
+
+                        <Text
+                          style={[
+                            styles.statusText,
+                            getDoneLessons(course.id) === 0 &&
+                              styles.todoTextColor,
+                            isCourseDone(course.id) && styles.doneColor,
+                          ]}>
+                          Status: {courseStatuses[course.id]}
+                        </Text>
                       </View>
                     </View>
-                  </Modal>
-                )}
-              </View>
-            ))
-          ) : (
-            <Text h4>No enrolled courses.</Text>
-          )}
-        </>
-      )}
-    </ScrollView>
+                    <AntDesign
+                      name="edit"
+                      size={30}
+                      color={isCourseDone(course.id) ? '#A9A9A9' : '#4F7942'}
+                      onPress={() => navigateToEnroll(course.id)}
+                    />
+                  </View>
+                  {selectedCourse && (
+                    <Modal visible={isCourseInfoModalVisible} transparent>
+                      <View style={styles.centeredView}>
+                        <View style={styles.modalView}>
+                          <ScrollView style={styles.scrollView}>
+                            <Text h4>{selectedCourse.name}</Text>
+                            <Text style={styles.modalText}>
+                              {selectedCourse.description}
+                            </Text>
+                          </ScrollView>
+                          <TouchableOpacity
+                            style={[styles.button, styles.buttonClose]}
+                            onPress={() => {
+                              setCourseInfoModalVisible(false);
+                              setSelectedCourse(null);
+                            }}>
+                            <Text style={styles.textStyle}>Close</Text>
+                          </TouchableOpacity>
+                        </View>
+                      </View>
+                    </Modal>
+                  )}
+                </View>
+              ))
+            ) : (
+              <Text h4>No enrolled courses.</Text>
+            )}
+          </>
+        )}
+      </ScrollView>
+    </View>
   );
 }
 

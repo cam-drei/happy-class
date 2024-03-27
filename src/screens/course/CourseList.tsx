@@ -56,25 +56,27 @@ function CourseList({navigation, route}: CourseListProps) {
   };
 
   return (
-    <ScrollView contentContainerStyle={styles.container}>
-      {isLoading ? (
-        <LoadingIndicator />
-      ) : (
-        <View>
-          <Text h4>Choose Your Course</Text>
-          {courses.map(course => (
-            <TouchableOpacity
-              key={course.id}
-              // onPress={() => handleCourseSelection(course.id)}
-              onPress={() => {
-                Alert.alert('Alert Title', 'Button Clicked!');
-              }}>
-              <Text>{course.name}</Text>
-            </TouchableOpacity>
-          ))}
-        </View>
-      )}
-    </ScrollView>
+    <View style={styles.container}>
+      <ScrollView contentContainerStyle={styles.scrollViewContainer}>
+        {isLoading ? (
+          <LoadingIndicator />
+        ) : (
+          <View>
+            <Text h4>Choose Your Course</Text>
+            {courses.map(course => (
+              <TouchableOpacity
+                key={course.id}
+                // onPress={() => handleCourseSelection(course.id)}
+                onPress={() => {
+                  Alert.alert('Alert Title', 'Button Clicked!');
+                }}>
+                <Text>{course.name}</Text>
+              </TouchableOpacity>
+            ))}
+          </View>
+        )}
+      </ScrollView>
+    </View>
   );
 }
 

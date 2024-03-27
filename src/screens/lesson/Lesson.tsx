@@ -379,186 +379,188 @@ function Lesson({navigation, route}: LessonProps) {
   });
 
   return (
-    <ScrollView contentContainerStyle={styles.container}>
-      {isLoading ? (
-        <LoadingIndicator />
-      ) : (
-        <>
-          {sortedLessons.length > 0 ? (
-            sortedLessons.map(lesson => (
-              <View key={lesson.id} style={styles.box}>
-                <View style={styles.titleLessonView}>
-                  <View style={styles.titleView}>
-                    <View style={styles.arrowButton}>
-                      <MaterialIcons
-                        name={
-                          expandedLessons[lesson.id]
-                            ? 'arrow-drop-up'
-                            : 'arrow-drop-down'
-                        }
-                        size={40}
-                        color={isLessonDone(lesson) ? '#A9A9A9' : '#4F7942'}
-                        onPress={() => toggleLessonExpansion(lesson.id)}
-                      />
-                    </View>
-                    <Text
-                      style={[
-                        styles.boxTitle,
-                        isLessonDone(lesson) && styles.doneTextColor,
-                      ]}>
-                      {lesson.name}
+    <View style={styles.container}>
+      <ScrollView contentContainerStyle={styles.scrollViewContainer}>
+        {isLoading ? (
+          <LoadingIndicator />
+        ) : (
+          <>
+            {sortedLessons.length > 0 ? (
+              sortedLessons.map(lesson => (
+                <View key={lesson.id} style={styles.box}>
+                  <View style={styles.titleLessonView}>
+                    <View style={styles.titleView}>
+                      <View style={styles.arrowButton}>
+                        <MaterialIcons
+                          name={
+                            expandedLessons[lesson.id]
+                              ? 'arrow-drop-up'
+                              : 'arrow-drop-down'
+                          }
+                          size={40}
+                          color={isLessonDone(lesson) ? '#A9A9A9' : '#4F7942'}
+                          onPress={() => toggleLessonExpansion(lesson.id)}
+                        />
+                      </View>
                       <Text
                         style={[
-                          styles.statusText,
-                          styles.statusColor,
-                          lesson.subject_lessons.filter(
-                            subjectLesson => subjectLesson.done,
-                          ).length === 0 && styles.todoTextColor,
+                          styles.boxTitle,
                           isLessonDone(lesson) && styles.doneTextColor,
                         ]}>
-                        {lesson.subject_lessons.filter(
-                          subjectLesson => subjectLesson.done,
-                        ).length === 0
-                          ? ' (Todo)'
-                          : isLessonDone(lesson)
-                          ? ' (Done)'
-                          : ' (In progress)'}
+                        {lesson.name}
+                        <Text
+                          style={[
+                            styles.statusText,
+                            styles.statusColor,
+                            lesson.subject_lessons.filter(
+                              subjectLesson => subjectLesson.done,
+                            ).length === 0 && styles.todoTextColor,
+                            isLessonDone(lesson) && styles.doneTextColor,
+                          ]}>
+                          {lesson.subject_lessons.filter(
+                            subjectLesson => subjectLesson.done,
+                          ).length === 0
+                            ? ' (Todo)'
+                            : isLessonDone(lesson)
+                            ? ' (Done)'
+                            : ' (In progress)'}
+                        </Text>
                       </Text>
-                    </Text>
-                  </View>
-                  {lesson.contents.map(content => (
-                    <View key={content.id} style={styles.iconTitleGroup}>
-                      {content.video_link && (
-                        <Feather
-                          name="video"
-                          size={30}
-                          color={lesson.done ? '#A9A9A9' : '#4F7942'}
-                          onPress={() =>
-                            handleVideoPlayForLesson(
-                              content.video_link,
-                              lesson.name,
-                            )
-                          }
-                        />
-                      )}
-                      {content.document_link && (
-                        <FontAwesome
-                          name="book"
-                          style={styles.paddingLeftIcon}
-                          size={30}
-                          color={lesson.done ? '#A9A9A9' : '#4F7942'}
-                          onPress={() =>
-                            openResourceLinkForLesson(content.document_link)
-                          }
-                        />
-                      )}
                     </View>
-                  ))}
-                </View>
-                <Text
-                  style={[
-                    styles.normalSizeText,
-                    styles.progressText,
-                    isLessonDone(lesson) && styles.doneTextColor,
-                  ]}>
-                  {'Progress: '}
-                  {
-                    lesson.subject_lessons.filter(
-                      subjectLesson => subjectLesson.done,
-                    ).length
-                  }
-                  /{lesson.subject_lessons.length}
-                  {lesson.subject_lessons.length <= 1
-                    ? ' subject'
-                    : ' subjects'}
-                </Text>
-                {expandedLessons[lesson.id] && (
-                  <>
-                    {lesson.subject_lessons.map(subjectLesson => (
-                      <View key={subjectLesson.id}>
-                        <View style={styles.subjectContainer}>
-                          <Text
-                            style={[
-                              styles.normalSizeText,
-                              subjectLesson.done && styles.doneTextColor,
-                            ]}>
-                            {subjectLesson.subject.name}
-                          </Text>
-                          {subjectLesson.contents.map(content => (
-                            <View
-                              key={content.id}
-                              style={styles.iconSubjectContainer}>
-                              {content.video_link && (
+                    {lesson.contents.map(content => (
+                      <View key={content.id} style={styles.iconTitleGroup}>
+                        {content.video_link && (
+                          <Feather
+                            name="video"
+                            size={30}
+                            color={lesson.done ? '#A9A9A9' : '#4F7942'}
+                            onPress={() =>
+                              handleVideoPlayForLesson(
+                                content.video_link,
+                                lesson.name,
+                              )
+                            }
+                          />
+                        )}
+                        {content.document_link && (
+                          <FontAwesome
+                            name="book"
+                            style={styles.paddingLeftIcon}
+                            size={30}
+                            color={lesson.done ? '#A9A9A9' : '#4F7942'}
+                            onPress={() =>
+                              openResourceLinkForLesson(content.document_link)
+                            }
+                          />
+                        )}
+                      </View>
+                    ))}
+                  </View>
+                  <Text
+                    style={[
+                      styles.normalSizeText,
+                      styles.progressText,
+                      isLessonDone(lesson) && styles.doneTextColor,
+                    ]}>
+                    {'Progress: '}
+                    {
+                      lesson.subject_lessons.filter(
+                        subjectLesson => subjectLesson.done,
+                      ).length
+                    }
+                    /{lesson.subject_lessons.length}
+                    {lesson.subject_lessons.length <= 1
+                      ? ' subject'
+                      : ' subjects'}
+                  </Text>
+                  {expandedLessons[lesson.id] && (
+                    <>
+                      {lesson.subject_lessons.map(subjectLesson => (
+                        <View key={subjectLesson.id}>
+                          <View style={styles.subjectContainer}>
+                            <Text
+                              style={[
+                                styles.normalSizeText,
+                                subjectLesson.done && styles.doneTextColor,
+                              ]}>
+                              {subjectLesson.subject.name}
+                            </Text>
+                            {subjectLesson.contents.map(content => (
+                              <View
+                                key={content.id}
+                                style={styles.iconSubjectContainer}>
+                                {content.video_link && (
+                                  <FontAwesome
+                                    name="play-circle"
+                                    size={30}
+                                    color={
+                                      subjectLesson.done ? '#A9A9A9' : '#FF9900'
+                                    }
+                                    onPress={() =>
+                                      handleVideoPlayForSubject(
+                                        content.video_link,
+                                        subjectLesson.subject.name,
+                                        lesson.id,
+                                        subjectLesson.id,
+                                      )
+                                    }
+                                  />
+                                )}
+                                {content.document_link && (
+                                  <FontAwesome
+                                    name="book"
+                                    size={30}
+                                    color={
+                                      subjectLesson.done ? '#A9A9A9' : '#4F7942'
+                                    }
+                                    style={styles.paddingLeftIcon}
+                                    onPress={() =>
+                                      openResourceLinkForSubject(
+                                        content.document_link,
+                                        lesson.id,
+                                        subjectLesson.id,
+                                      )
+                                    }
+                                  />
+                                )}
                                 <FontAwesome
-                                  name="play-circle"
-                                  size={30}
-                                  color={
-                                    subjectLesson.done ? '#A9A9A9' : '#FF9900'
-                                  }
-                                  onPress={() =>
-                                    handleVideoPlayForSubject(
-                                      content.video_link,
-                                      subjectLesson.subject.name,
-                                      lesson.id,
-                                      subjectLesson.id,
-                                    )
-                                  }
-                                />
-                              )}
-                              {content.document_link && (
-                                <FontAwesome
-                                  name="book"
-                                  size={30}
+                                  name="undo"
+                                  size={20}
                                   color={
                                     subjectLesson.done ? '#A9A9A9' : '#4F7942'
                                   }
                                   style={styles.paddingLeftIcon}
-                                  onPress={() =>
-                                    openResourceLinkForSubject(
-                                      content.document_link,
-                                      lesson.id,
-                                      subjectLesson.id,
-                                    )
-                                  }
+                                  onPress={() => {
+                                    if (subjectLesson.done) {
+                                      unmarkSubjectAsDone(
+                                        lesson.id,
+                                        subjectLesson.id,
+                                      );
+                                    } else {
+                                      markSubjectAsDone(
+                                        lesson.id,
+                                        subjectLesson.id,
+                                      );
+                                    }
+                                  }}
                                 />
-                              )}
-                              <FontAwesome
-                                name="undo"
-                                size={20}
-                                color={
-                                  subjectLesson.done ? '#A9A9A9' : '#4F7942'
-                                }
-                                style={styles.paddingLeftIcon}
-                                onPress={() => {
-                                  if (subjectLesson.done) {
-                                    unmarkSubjectAsDone(
-                                      lesson.id,
-                                      subjectLesson.id,
-                                    );
-                                  } else {
-                                    markSubjectAsDone(
-                                      lesson.id,
-                                      subjectLesson.id,
-                                    );
-                                  }
-                                }}
-                              />
-                            </View>
-                          ))}
+                              </View>
+                            ))}
+                          </View>
+                          <Line />
                         </View>
-                        <Line />
-                      </View>
-                    ))}
-                  </>
-                )}
-              </View>
-            ))
-          ) : (
-            <Text h4>No lessons.</Text>
-          )}
-        </>
-      )}
-    </ScrollView>
+                      ))}
+                    </>
+                  )}
+                </View>
+              ))
+            ) : (
+              <Text h4>No lessons.</Text>
+            )}
+          </>
+        )}
+      </ScrollView>
+    </View>
   );
 }
 

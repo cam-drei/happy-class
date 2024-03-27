@@ -4,8 +4,10 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#FFFFFF',
-    alignItems: 'center',
     padding: 20,
+  },
+  scrollViewContainer: {
+    alignItems: 'center',
   },
   title: {
     fontWeight: 'bold',
@@ -34,9 +36,9 @@ const styles = StyleSheet.create({
     paddingBottom: 5,
   },
   bottomButton: {
-    position: 'absolute',
-    bottom: 20,
+    bottom: 10,
     alignItems: 'center',
+    backgroundColor: '#FFFFFF'
   },
 });
 
