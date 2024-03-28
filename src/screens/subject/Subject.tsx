@@ -73,11 +73,11 @@ function Subject({navigation, route}: EnrollProps) {
   }, [authToken, courseId]);
 
   const navigateToCourse = useCallback(() => {
-    const selectedSubjectsIds = Object.keys(selectedSubjects)
+    const selectedSubjectsId = Object.keys(selectedSubjects)
       .filter((subjectId: any) => selectedSubjects[subjectId])
       .map(Number);
 
-    if (selectedSubjectsIds.length === 0) {
+    if (selectedSubjectsId.length === 0) {
       Alert.alert('Selection Required', 'Please select the subjects.');
       return;
     }
@@ -86,7 +86,7 @@ function Subject({navigation, route}: EnrollProps) {
       authToken,
       userName,
       courseId,
-      selectedSubjectsIds: selectedSubjectsIds,
+      selectedSubjectsId: selectedSubjectsId,
     });
   }, [selectedSubjects, navigation, authToken, userName, courseId]);
 

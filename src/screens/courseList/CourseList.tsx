@@ -64,11 +64,11 @@ function CourseList({navigation, route}: CourseListProps) {
   }, [navigation, userName]);
 
   const navigateToCourse = useCallback(() => {
-    const selectedCourseIds = Object.keys(selectedCourses)
+    const selectedCoursesId = Object.keys(selectedCourses)
       .filter((courseId: any) => selectedCourses[courseId])
       .map(Number);
 
-    if (selectedCourseIds.length === 0) {
+    if (selectedCoursesId.length === 0) {
       Alert.alert('Selection Required', 'Please select the subjects.');
       return;
     }
@@ -78,7 +78,7 @@ function CourseList({navigation, route}: CourseListProps) {
     // navigation.navigate('Course', {
     //   authToken,
     //   userName,
-    //   selectedCourseIds: selectedCourseIds,
+    //   selectedCoursesId: selectedCoursesId,
     // });
   }, [selectedCourses, navigation, authToken, userName]);
 

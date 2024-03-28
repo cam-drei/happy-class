@@ -184,7 +184,7 @@ function Course({navigation, route}: CourseProps) {
         },
       );
       const fetchedSelectedSubjects = response.data.selected_subjects;
-      const fetchedSelectedSubjectsIds = fetchedSelectedSubjects.map(
+      const fetchedSelectedSubjectsId = fetchedSelectedSubjects.map(
         (subject: Subject) => subject.id,
       );
       navigation.navigate('Lesson', {
@@ -192,7 +192,7 @@ function Course({navigation, route}: CourseProps) {
         userId,
         userName,
         courseId,
-        selectedSubjectsIds: fetchedSelectedSubjectsIds,
+        selectedSubjectsId: fetchedSelectedSubjectsId,
       });
     } catch (error) {
       console.error('Error fetching selected subjects for course:', error);

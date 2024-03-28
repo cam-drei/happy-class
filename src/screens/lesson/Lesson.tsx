@@ -18,7 +18,7 @@ interface LessonProps {
       userName: string;
       authToken: string;
       courseId: number;
-      selectedSubjectsIds: number[];
+      selectedSubjectsId: number[];
     };
   };
 }
@@ -57,7 +57,7 @@ interface Lesson {
 }
 
 function Lesson({navigation, route}: LessonProps) {
-  const {userName, authToken, courseId, selectedSubjectsIds} = route.params;
+  const {userName, authToken, courseId, selectedSubjectsId} = route.params;
   const [lessons, setLessons] = useState<Lesson[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -87,7 +87,7 @@ function Lesson({navigation, route}: LessonProps) {
 
             lesson.subject_lessons =
               lesson.subject_lessons?.filter(subjectLesson =>
-                selectedSubjectsIds.includes(subjectLesson.subject_id),
+                selectedSubjectsId.includes(subjectLesson.subject_id),
               ) || [];
 
             for (let subjectLesson of lesson.subject_lessons) {
@@ -131,7 +131,7 @@ function Lesson({navigation, route}: LessonProps) {
     if (authToken) {
       fetchLessons();
     }
-  }, [authToken, courseId, selectedSubjectsIds]);
+  }, [authToken, courseId, selectedSubjectsId]);
 
   useEffect(() => {
     navigation.setOptions({
