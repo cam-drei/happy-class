@@ -48,7 +48,7 @@ function Course({navigation, route}: CourseProps) {
   const [isCourseInfoModalVisible, setCourseInfoModalVisible] = useState(false);
   const [contents, setContents] = useState<{[courseId: number]: any[]}>({});
   const [lessons, setLessons] = useState<{[courseId: number]: Lesson[]}>({});
-  const [selectedCourse, setSelectedCourse] = useState<Course | null>(null);
+  const [currentSelection, setCurrentSelection] = useState<Course | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [courseStatuses, setCourseStatuses] = useState<{
     [courseId: number]: string;
@@ -305,7 +305,7 @@ function Course({navigation, route}: CourseProps) {
                         isCourseDone(course.id) && styles.doneColor,
                       ]}
                       onPress={() => {
-                        setSelectedCourse(course);
+                        setCurrentSelection(course);
                         setCourseInfoModalVisible(!!course.description);
                       }}>
                       {course.name}
@@ -382,21 +382,21 @@ function Course({navigation, route}: CourseProps) {
                       onPress={() => navigateToEnroll(course.id)}
                     />
                   </View>
-                  {selectedCourse && (
+                  {currentSelection && (
                     <Modal visible={isCourseInfoModalVisible} transparent>
                       <View style={styles.centeredView}>
                         <View style={styles.modalView}>
                           <ScrollView style={styles.scrollView}>
-                            <Text h4>{selectedCourse.name}</Text>
+                            <Text h4>{currentSelection.name}</Text>
                             <Text style={styles.modalText}>
-                              {selectedCourse.description}
+                              {currentSelection.description}
                             </Text>
                           </ScrollView>
                           <TouchableOpacity
                             style={[styles.button, styles.buttonClose]}
                             onPress={() => {
                               setCourseInfoModalVisible(false);
-                              setSelectedCourse(null);
+                              setCurrentSelection(null);
                             }}>
                             <Text style={styles.textStyle}>Close</Text>
                           </TouchableOpacity>
