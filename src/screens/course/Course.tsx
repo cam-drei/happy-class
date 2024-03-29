@@ -10,6 +10,7 @@ import axios from 'axios';
 import {baseUrl} from '../../utils/apiConfig';
 import LoadingIndicator from '../../components/loading/LoadingIndicator';
 import {useFocusEffect} from '@react-navigation/native';
+import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 
 interface CourseProps {
   navigation: any;
@@ -18,6 +19,7 @@ interface CourseProps {
       authToken: string;
       userId: string;
       userName: string;
+      selectedCoursesId: number[];
     };
   };
 }
@@ -43,7 +45,7 @@ interface Lesson {
 }
 
 function Course({navigation, route}: CourseProps) {
-  const {authToken, userId, userName} = route.params;
+  const {authToken, userId, userName, selectedCoursesId} = route.params;
   const [enrolledCourses, setEnrolledCourses] = useState<Course[]>([]);
   const [isCourseInfoModalVisible, setCourseInfoModalVisible] = useState(false);
   const [contents, setContents] = useState<{[courseId: number]: any[]}>({});
@@ -64,7 +66,8 @@ function Course({navigation, route}: CourseProps) {
       const fetchEnrolledCourses = async () => {
         try {
           const response = await axios.get(
-            `${baseUrl}/users/enrolled_courses`,
+            // `${baseUrl}/users/enrolled_courses`,
+            `${baseUrl}/users/courses/selected_course`,
             {
               headers: {
                 Authorization: `Bearer ${authToken}`,
@@ -72,7 +75,11 @@ function Course({navigation, route}: CourseProps) {
             },
           );
 
-          setEnrolledCourses(response.data.enrolled_courses);
+          const allEnrolledCourses = response.data.selected_courses;
+          const filteredCourses = allEnrolledCourses.filter((course: Course) =>
+            selectedCoursesId.includes(course.id),
+          );
+          setEnrolledCourses(filteredCourses);
           setIsLoading(false);
         } catch (error) {
           console.error('Error fetching enrolled courses:', error);
@@ -82,7 +89,7 @@ function Course({navigation, route}: CourseProps) {
       if (authToken) {
         fetchEnrolledCourses();
       }
-    }, [authToken]),
+    }, [authToken, selectedCoursesId]),
   );
 
   useEffect(() => {
@@ -162,6 +169,15 @@ function Course({navigation, route}: CourseProps) {
     }
   };
 
+  const navigateToUser = useCallback(() => {
+    navigation.navigate('User', {
+      authToken,
+      userId,
+      userName,
+      selectedCoursesId,
+    });
+  }, [navigation, authToken, userId, userName, selectedCoursesId]);
+
   useEffect(() => {
     navigation.setOptions({
       headerRight: () => (
@@ -170,8 +186,17 @@ function Course({navigation, route}: CourseProps) {
           userImage={require('../../assets/images/tulip.webp')}
         />
       ),
-    });
-  }, [navigation, userName]);
+      headerTitle: 'Subjects',
+      headerLeft: () => (
+        <TouchableOpacity onPress={navigateToUser}>
+          <MaterialIcons
+            name={'arrow-back'}
+            style={{marginLeft: 15, fontSize: 30}}
+            color={'#FF9900'}
+          />
+        </TouchableOpacity>
+    )});
+  }, [navigation, userName, navigateToUser]);
 
   const navigateToLesson = async (courseId: number) => {
     try {

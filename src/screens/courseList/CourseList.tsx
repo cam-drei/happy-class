@@ -23,6 +23,7 @@ interface Course {
   id: number;
   name: string;
   description: string;
+  selected: boolean;
 }
 
 function CourseList({navigation, route}: CourseListProps) {
@@ -42,7 +43,16 @@ function CourseList({navigation, route}: CourseListProps) {
             Authorization: `Bearer ${authToken}`,
           },
         });
-        setCourses(response.data.courses);
+
+        const coursesData = response.data.courses;
+
+        const initialSelectedCourses: {[key: number]: boolean} = {};
+        coursesData.forEach((course: Course) => {
+          initialSelectedCourses[course.id] = course.selected;
+        });
+
+        setCourses(coursesData);
+        setSelectedCourses(initialSelectedCourses);
         setIsLoading(false);
       } catch (error) {
         console.error('Error fetching courses:', error);
@@ -69,17 +79,15 @@ function CourseList({navigation, route}: CourseListProps) {
       .map(Number);
 
     if (selectedCoursesId.length === 0) {
-      Alert.alert('Selection Required', 'Please select the subjects.');
+      Alert.alert('Selection Required', 'Please select the courses.');
       return;
     }
 
-    Alert.alert('Alert Title', 'Button Clicked!');
-
-    // navigation.navigate('Course', {
-    //   authToken,
-    //   userName,
-    //   selectedCoursesId: selectedCoursesId,
-    // });
+    navigation.navigate('Course', {
+      authToken,
+      userName,
+      selectedCoursesId: selectedCoursesId,
+    });
   }, [selectedCourses, navigation, authToken, userName]);
 
   const toggleCourseSelection = async (
@@ -150,27 +158,6 @@ function CourseList({navigation, route}: CourseListProps) {
   };
 
   return (
-    // <View style={styles.container}>
-    //   <ScrollView contentContainerStyle={styles.scrollViewContainer}>
-    //     {isLoading ? (
-    //       <LoadingIndicator />
-    //     ) : (
-    //       <View>
-    //         <Text h4>Choose Your Course</Text>
-    //         {courses.map(course => (
-    //           <TouchableOpacity
-    //             key={course.id}
-    //             // onPress={() => handleCourseSelection(course.id)}
-    //             onPress={() => {
-    //               Alert.alert('Alert Title', 'Button Clicked!');
-    //             }}>
-    //             <Text>{course.name}</Text>
-    //           </TouchableOpacity>
-    //         ))}
-    //       </View>
-    //     )}
-    //   </ScrollView>
-    // </View>
     <View style={styles.container}>
       {isLoading ? (
         <LoadingIndicator />
@@ -183,9 +170,7 @@ function CourseList({navigation, route}: CourseListProps) {
               </Text>
               <CheckBox
                 title={'Select All'}
-                checked={Object.values(selectedCourses).every(
-                  subject => subject,
-                )}
+                checked={Object.values(selectedCourses).every(course => course)}
                 onPress={toggleSelectAll}
                 iconType="material-community"
                 checkedIcon="checkbox-outline"

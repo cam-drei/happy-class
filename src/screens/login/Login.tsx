@@ -77,7 +77,8 @@ function Login({navigation}: {navigation: any}) {
   }, []);
 
   const handleForgotPassword = () => {
-    navigation.navigate('ForgotPassword');
+    // navigation.navigate('ForgotPassword');
+    Alert.alert('Alert Title', 'Button Clicked!');
   };
 
   return (
