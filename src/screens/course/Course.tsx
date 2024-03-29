@@ -74,11 +74,7 @@ function Course({navigation, route}: CourseProps) {
             },
           );
 
-          const allEnrolledCourses = response.data.selected_courses;
-          const filteredCourses = allEnrolledCourses.filter((course: Course) =>
-            selectedCoursesId.includes(course.id),
-          );
-          setEnrolledCourses(filteredCourses);
+          setEnrolledCourses(response.data.selected_courses);
           setIsLoading(false);
         } catch (error) {
           console.error('Error fetching enrolled courses:', error);
@@ -88,7 +84,7 @@ function Course({navigation, route}: CourseProps) {
       if (authToken) {
         fetchEnrolledCourses();
       }
-    }, [authToken, selectedCoursesId]),
+    }, [authToken]),
   );
 
   useEffect(() => {
