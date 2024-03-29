@@ -35,6 +35,11 @@ function CourseList({navigation, route}: CourseListProps) {
   }>({});
   const [selectAllChecked, setSelectAllChecked] = useState(false);
 
+  const getNumber = (courseName: string) => {
+    const match = courseName.match(/\d+/);
+    return match ? parseInt(match[0], 10) : 0;
+  };
+
   useEffect(() => {
     const fetchCourses = async () => {
       try {
@@ -51,7 +56,29 @@ function CourseList({navigation, route}: CourseListProps) {
           initialSelectedCourses[course.id] = course.selected;
         });
 
-        setCourses(coursesData);
+        const sortedCourses = coursesData.sort((a: Course, b: Course) => {
+          const aNameLower = a.name.toLowerCase();
+          const bNameLower = b.name.toLowerCase();
+
+          if (
+            aNameLower.startsWith('abeka k') &&
+            !bNameLower.startsWith('abeka k')
+          ) {
+            return -1;
+          }
+          if (
+            bNameLower.startsWith('abeka k') &&
+            !aNameLower.startsWith('abeka k')
+          ) {
+            return 1;
+          }
+
+          const aNumber = getNumber(a.name);
+          const bNumber = getNumber(b.name);
+          return aNumber - bNumber;
+        });
+
+        setCourses(sortedCourses);
         setSelectedCourses(initialSelectedCourses);
         setIsLoading(false);
       } catch (error) {
