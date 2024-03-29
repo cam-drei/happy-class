@@ -185,7 +185,6 @@ function Course({navigation, route}: CourseProps) {
           userImage={require('../../assets/images/tulip.webp')}
         />
       ),
-      headerTitle: 'Subjects',
       headerLeft: () => (
         <TouchableOpacity onPress={navigateToUser}>
           <MaterialIcons
@@ -223,7 +222,7 @@ function Course({navigation, route}: CourseProps) {
     }
   };
 
-  const navigateToEnroll = (courseId: number) => {
+  const navigateToSubject = (courseId: number) => {
     navigation.navigate('Subject', {authToken, userId, userName, courseId});
   };
 
@@ -403,7 +402,7 @@ function Course({navigation, route}: CourseProps) {
                       name="edit"
                       size={30}
                       color={isCourseDone(course.id) ? '#A9A9A9' : '#4F7942'}
-                      onPress={() => navigateToEnroll(course.id)}
+                      onPress={() => navigateToSubject(course.id)}
                     />
                   </View>
                   {currentSelection && (
