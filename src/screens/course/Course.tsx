@@ -66,8 +66,7 @@ function Course({navigation, route}: CourseProps) {
       const fetchEnrolledCourses = async () => {
         try {
           const response = await axios.get(
-            // `${baseUrl}/users/enrolled_courses`,
-            `${baseUrl}/users/courses/selected_course`,
+            `${baseUrl}/users/selected_courses`,
             {
               headers: {
                 Authorization: `Bearer ${authToken}`,
