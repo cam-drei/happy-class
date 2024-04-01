@@ -46,7 +46,7 @@ function Login({navigation}: {navigation: any}) {
         }
       }
 
-      navigation.navigate('User', {authToken, userId, userName});
+      navigation.navigate('Welcome', {authToken, userId, userName});
     } catch (error: any) {
       console.error('Error:', error);
       Alert.alert('Login Failed', 'Invalid email or password');

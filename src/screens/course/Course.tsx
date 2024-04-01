@@ -165,7 +165,7 @@ function Course({navigation, route}: CourseProps) {
   };
 
   const navigateToUser = useCallback(() => {
-    navigation.navigate('User', {
+    navigation.navigate('Welcome', {
       authToken,
       userId,
       userName,

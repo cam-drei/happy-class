@@ -5,7 +5,7 @@ import BottomButton from '../../components/buttons/BottomButton';
 import {Text} from '@rneui/base';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-interface UserProps {
+interface WelcomeProps {
   navigation: any;
   route: {
     params: {
@@ -17,7 +17,7 @@ interface UserProps {
   };
 }
 
-function User({navigation, route}: UserProps) {
+function Welcome({navigation, route}: WelcomeProps) {
   const {authToken, userId, userName, selectedCoursesId} = route.params;
 
   const handleLogout = async () => {
@@ -66,6 +66,7 @@ function User({navigation, route}: UserProps) {
       <BottomButton
         text="Click for choose your Course"
         buttonType={'outlined'}
+        titleStyle={'normal'}
         onPress={navigateToChooseCourse}
       />
       <View style={styles.bottomTextView}>
@@ -77,4 +78,4 @@ function User({navigation, route}: UserProps) {
   );
 }
 
-export default User;
+export default Welcome;
