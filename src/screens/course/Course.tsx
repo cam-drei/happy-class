@@ -11,6 +11,7 @@ import {baseUrl} from '../../utils/apiConfig';
 import LoadingIndicator from '../../components/loading/LoadingIndicator';
 import {useFocusEffect} from '@react-navigation/native';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
+import BottomButton from '../../components/buttons/BottomButton';
 
 interface CourseProps {
   navigation: any;
@@ -301,6 +302,15 @@ function Course({navigation, route}: CourseProps) {
     return getTotalLessons(courseId) === getDoneLessons(courseId);
   };
 
+  const navigateToChooseCourse = () => {
+    navigation.navigate('CourseList', {
+      authToken,
+      userId,
+      userName,
+      selectedCoursesId,
+    });
+  };
+
   return (
     <View style={styles.container}>
       <ScrollView contentContainerStyle={styles.scrollViewContainer}>
@@ -426,7 +436,14 @@ function Course({navigation, route}: CourseProps) {
                 </View>
               ))
             ) : (
-              <Text h4>No enrolled courses.</Text>
+              <View style={styles.noCourse}>
+                <Text h4>No enrolled courses.</Text>
+                <BottomButton
+                  text="Click for choose your Courses"
+                  buttonType={'outlined'}
+                  onPress={navigateToChooseCourse}
+                />
+              </View>
             )}
           </>
         )}

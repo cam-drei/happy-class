@@ -64,7 +64,7 @@ function Welcome({navigation, route}: WelcomeProps) {
       </Text>
       <BottomButton text="Let's learn" onPress={navigateToCourse} />
       <BottomButton
-        text="Click for choose your Course"
+        text="Click for choose your Courses"
         buttonType={'outlined'}
         titleStyle={'normal'}
         onPress={navigateToChooseCourse}

@@ -102,6 +102,11 @@ const styles = StyleSheet.create({
   bookIcon: {
     paddingLeft: 15,
   },
+  noCourse: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 20,
+  }
 });
 
 export default styles;
