@@ -6,7 +6,7 @@ import Login from './src/screens/login/Login';
 import Signup from './src/screens/signup/Signup';
 import Welcome from './src/screens/welcome/Welcome';
 import Course from './src/screens/course/Course';
-import Subject from './src/screens/subject/Subject';
+import SubjectList from './src/screens/subjectList/SubjectList';
 import Lesson from './src/screens/lesson/Lesson';
 import VideoScreen from './src/components/video/VideoScreen';
 import CourseList from './src/screens/courseList/CourseList';
@@ -22,7 +22,7 @@ const App = () => {
         <Stack.Screen name="Signup" component={Signup} />
         <Stack.Screen name="Welcome" component={Welcome} />
         <Stack.Screen name="Course" component={Course} />
-        <Stack.Screen name="Subject" component={Subject} />
+        <Stack.Screen name="SubjectList" component={SubjectList} />
         <Stack.Screen name="Lesson" component={Lesson} />
         <Stack.Screen name="VideoScreen" component={VideoScreen} />
         <Stack.Screen name="CourseList" component={CourseList} />

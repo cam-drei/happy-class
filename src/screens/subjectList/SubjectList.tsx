@@ -9,7 +9,7 @@ import axios from 'axios';
 import {baseUrl} from '../../utils/apiConfig';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 
-interface EnrollProps {
+interface SubjectListProps {
   navigation: any;
   route: {params: {userName: string; authToken: string; courseId: number}};
 }
@@ -21,7 +21,7 @@ interface Subject {
   selected: boolean;
 }
 
-function Subject({navigation, route}: EnrollProps) {
+function SubjectList({navigation, route}: SubjectListProps) {
   const {authToken, userName, courseId} = route.params;
   const [isLoading, setIsLoading] = useState(true);
   const [subjects, setSubjects] = useState<Subject[]>([]);
@@ -107,7 +107,8 @@ function Subject({navigation, route}: EnrollProps) {
             color={'#FF9900'}
           />
         </TouchableOpacity>
-    )});
+      ),
+    });
   }, [navigation, userName, navigateToCourse]);
 
   const toggleSubjectSelection = async (
@@ -228,4 +229,4 @@ function Subject({navigation, route}: EnrollProps) {
   );
 }
 
-export default Subject;
+export default SubjectList;

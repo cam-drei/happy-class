@@ -41,7 +41,7 @@ function Welcome({navigation, route}: WelcomeProps) {
     });
   };
 
-  const navigateToChooseCourse = () => {
+  const navigateToCourseList = () => {
     navigation.navigate('CourseList', {
       authToken,
       userId,
@@ -67,7 +67,7 @@ function Welcome({navigation, route}: WelcomeProps) {
         text="Click for choose your Courses"
         buttonType={'outlined'}
         titleStyle={'normal'}
-        onPress={navigateToChooseCourse}
+        onPress={navigateToCourseList}
       />
       <View style={styles.bottomTextView}>
         <Text onPress={handleLogout} style={styles.bottomText}>

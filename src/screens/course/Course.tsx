@@ -90,10 +90,6 @@ function Course({navigation, route}: CourseProps) {
   );
 
   useEffect(() => {
-    console.log('Enrolled Course IDs:', enrolledCourses.map(course => course.id));
-  }, [enrolledCourses]);
-
-  useEffect(() => {
     const fetchCourseStatuses = async () => {
       try {
         const promises = enrolledCourses.map(async course => {
@@ -226,8 +222,8 @@ function Course({navigation, route}: CourseProps) {
     }
   };
 
-  const navigateToSubject = (courseId: number) => {
-    navigation.navigate('Subject', {authToken, userId, userName, courseId});
+  const navigateToSubjectList = (courseId: number) => {
+    navigation.navigate('SubjectList', {authToken, userId, userName, courseId});
   };
 
   useEffect(() => {
@@ -309,7 +305,7 @@ function Course({navigation, route}: CourseProps) {
     return getTotalLessons(courseId) === getDoneLessons(courseId);
   };
 
-  const navigateToChooseCourse = () => {
+  const navigateToCourseList = () => {
     navigation.navigate('CourseList', {
       authToken,
       userId,
@@ -415,7 +411,7 @@ function Course({navigation, route}: CourseProps) {
                       name="edit"
                       size={30}
                       color={isCourseDone(course.id) ? '#A9A9A9' : '#4F7942'}
-                      onPress={() => navigateToSubject(course.id)}
+                      onPress={() => navigateToSubjectList(course.id)}
                     />
                   </View>
                   {currentSelection && (
@@ -448,7 +444,7 @@ function Course({navigation, route}: CourseProps) {
                 <BottomButton
                   text="Click for choose your Courses"
                   buttonType={'outlined'}
-                  onPress={navigateToChooseCourse}
+                  onPress={navigateToCourseList}
                 />
               </View>
             )}
