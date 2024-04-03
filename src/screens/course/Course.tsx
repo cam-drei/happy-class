@@ -67,7 +67,8 @@ function Course({navigation, route}: CourseProps) {
       const fetchEnrolledCourses = async () => {
         try {
           const response = await axios.get(
-            `${baseUrl}/users/selected_courses`,
+            // `${baseUrl}/users/selected_courses`,
+            `${baseUrl}/users/enrolled_courses`,
             {
               headers: {
                 Authorization: `Bearer ${authToken}`,
@@ -75,7 +76,7 @@ function Course({navigation, route}: CourseProps) {
             },
           );
 
-          setEnrolledCourses(response.data.selected_courses);
+          setEnrolledCourses(response.data.enrolled_courses);
           setIsLoading(false);
         } catch (error) {
           console.error('Error fetching enrolled courses:', error);
@@ -87,6 +88,10 @@ function Course({navigation, route}: CourseProps) {
       }
     }, [authToken]),
   );
+
+  useEffect(() => {
+    console.log('Enrolled Course IDs:', enrolledCourses.map(course => course.id));
+  }, [enrolledCourses]);
 
   useEffect(() => {
     const fetchCourseStatuses = async () => {

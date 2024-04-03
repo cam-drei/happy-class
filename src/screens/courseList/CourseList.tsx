@@ -23,7 +23,6 @@ interface Course {
   id: number;
   name: string;
   description: string;
-  selected: boolean;
 }
 
 function CourseList({navigation, route}: CourseListProps) {
@@ -51,11 +50,6 @@ function CourseList({navigation, route}: CourseListProps) {
 
         const coursesData = response.data.courses;
 
-        const initialSelectedCourses: {[key: number]: boolean} = {};
-        coursesData.forEach((course: Course) => {
-          initialSelectedCourses[course.id] = course.selected;
-        });
-
         const sortedCourses = coursesData.sort((a: Course, b: Course) => {
           const aNameLower = a.name.toLowerCase();
           const bNameLower = b.name.toLowerCase();
@@ -77,10 +71,30 @@ function CourseList({navigation, route}: CourseListProps) {
           const bNumber = getNumber(b.name);
           return aNumber - bNumber;
         });
-
         setCourses(sortedCourses);
-        setSelectedCourses(initialSelectedCourses);
         setIsLoading(false);
+
+        const enrolledCoursesResponse = await axios.get(
+          `${baseUrl}/users/enrolled_courses`,
+          {
+            headers: {
+              Authorization: `Bearer ${authToken}`,
+            },
+          },
+        );
+
+        const enrolledCoursesIds =
+          enrolledCoursesResponse.data.enrolled_courses.map(
+            (course: Course) => course.id,
+          );
+        const selectedCoursesState: {[key: number]: boolean} = {};
+        coursesData.forEach((course: Course) => {
+          selectedCoursesState[course.id] = enrolledCoursesIds.includes(
+            course.id,
+          );
+        });
+        setSelectedCourses(selectedCoursesState);
+        setSelectAllChecked(enrolledCoursesIds.length === coursesData.length);
       } catch (error) {
         console.error('Error fetching courses:', error);
       }
@@ -115,16 +129,19 @@ function CourseList({navigation, route}: CourseListProps) {
       userName,
       selectedCoursesId: selectedCoursesId,
     });
-  }, [selectedCourses, navigation, authToken, userName]);
+  }, [navigation, authToken, userName, selectedCourses]);
 
-  const toggleCourseSelection = async (
-    courseId: number,
-    isSelected: boolean,
-  ) => {
+  const toggleCourseSelection = async (courseId: number) => {
     try {
-      const endpoint = isSelected
-        ? `courses/${courseId}/mark_selected`
-        : `courses/${courseId}/unmark_selected`;
+      const updatedSelectedCourses = {
+        ...selectedCourses,
+        [courseId]: !selectedCourses[courseId],
+      };
+      setSelectedCourses(updatedSelectedCourses);
+
+      const endpoint = updatedSelectedCourses[courseId]
+        ? `courses/${courseId}/enroll_courses`
+        : `courses/${courseId}/unenroll_courses`;
 
       await axios.put(
         `${baseUrl}/users/${endpoint}`,
@@ -136,24 +153,24 @@ function CourseList({navigation, route}: CourseListProps) {
         },
       );
 
-      setSelectedCourses({
-        ...selectedCourses,
-        [courseId]: isSelected,
-      });
+      setSelectAllChecked(
+        Object.values(updatedSelectedCourses).every(selected => selected),
+      );
     } catch (error) {
       console.error('Error toggling course selection:', error);
     }
   };
 
   const toggleSelectAll = async () => {
-    const allSelected = !selectAllChecked;
-    const updatedSelectedCourses: {[key: number]: boolean} = {};
-
     try {
+      const updatedSelectedCourses: {[key: number]: boolean} = {};
+
       for (const course of courses) {
-        const endpoint = allSelected
-          ? `courses/${course.id}/mark_selected`
-          : `courses/${course.id}/unmark_selected`;
+        updatedSelectedCourses[course.id] = !selectAllChecked;
+
+        const endpoint = !selectAllChecked
+          ? `courses/${course.id}/enroll_courses`
+          : `courses/${course.id}/unenroll_courses`;
 
         await axios.put(
           `${baseUrl}/users/${endpoint}`,
@@ -164,12 +181,10 @@ function CourseList({navigation, route}: CourseListProps) {
             },
           },
         );
-
-        updatedSelectedCourses[course.id] = allSelected;
       }
 
-      setSelectAllChecked(allSelected);
       setSelectedCourses(updatedSelectedCourses);
+      setSelectAllChecked(!selectAllChecked);
     } catch (error) {
       console.error('Error toggling select all:', error);
     }
@@ -197,7 +212,10 @@ function CourseList({navigation, route}: CourseListProps) {
               </Text>
               <CheckBox
                 title={'Select All'}
-                checked={Object.values(selectedCourses).every(course => course)}
+                // checked={Object.values(selectedCourses).every(
+                //   selected => selected,
+                // )}
+                checked={selectAllChecked}
                 onPress={toggleSelectAll}
                 iconType="material-community"
                 checkedIcon="checkbox-outline"
@@ -211,12 +229,7 @@ function CourseList({navigation, route}: CourseListProps) {
                   key={course.id}
                   title={course.name}
                   checked={selectedCourses[course.id]}
-                  onPress={() =>
-                    toggleCourseSelection(
-                      course.id,
-                      !selectedCourses[course.id],
-                    )
-                  }
+                  onPress={() => toggleCourseSelection(course.id)}
                   iconType="material-community"
                   checkedIcon="checkbox-outline"
                   uncheckedIcon="checkbox-blank-outline"
