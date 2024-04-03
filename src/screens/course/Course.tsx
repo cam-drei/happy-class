@@ -165,8 +165,10 @@ function Course({navigation, route}: CourseProps) {
         return 2;
       case 'done':
         return 3;
-      default:
+      case 'no lessons':
         return 4;
+      default:
+        return 5;
     }
   };
 

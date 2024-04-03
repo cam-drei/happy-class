@@ -131,15 +131,12 @@ function CourseList({navigation, route}: CourseListProps) {
     });
   }, [navigation, authToken, userName, selectedCourses]);
 
-  const toggleCourseSelection = async (courseId: number) => {
+  const toggleCourseSelection = async (
+    courseId: number,
+    isSelected: boolean,
+  ) => {
     try {
-      const updatedSelectedCourses = {
-        ...selectedCourses,
-        [courseId]: !selectedCourses[courseId],
-      };
-      setSelectedCourses(updatedSelectedCourses);
-
-      const endpoint = updatedSelectedCourses[courseId]
+      const endpoint = isSelected
         ? `courses/${courseId}/enroll_courses`
         : `courses/${courseId}/unenroll_courses`;
 
@@ -153,9 +150,10 @@ function CourseList({navigation, route}: CourseListProps) {
         },
       );
 
-      setSelectAllChecked(
-        Object.values(updatedSelectedCourses).every(selected => selected),
-      );
+      setSelectedCourses({
+        ...selectedCourses,
+        [courseId]: isSelected,
+      });
     } catch (error) {
       console.error('Error toggling course selection:', error);
     }
@@ -163,12 +161,11 @@ function CourseList({navigation, route}: CourseListProps) {
 
   const toggleSelectAll = async () => {
     try {
+      const allSelected = !selectAllChecked;
       const updatedSelectedCourses: {[key: number]: boolean} = {};
 
       for (const course of courses) {
-        updatedSelectedCourses[course.id] = !selectAllChecked;
-
-        const endpoint = !selectAllChecked
+        const endpoint = allSelected
           ? `courses/${course.id}/enroll_courses`
           : `courses/${course.id}/unenroll_courses`;
 
@@ -181,10 +178,12 @@ function CourseList({navigation, route}: CourseListProps) {
             },
           },
         );
+
+        updatedSelectedCourses[course.id] = allSelected;
       }
 
       setSelectedCourses(updatedSelectedCourses);
-      setSelectAllChecked(!selectAllChecked);
+      setSelectAllChecked(allSelected);
     } catch (error) {
       console.error('Error toggling select all:', error);
     }
@@ -212,10 +211,9 @@ function CourseList({navigation, route}: CourseListProps) {
               </Text>
               <CheckBox
                 title={'Select All'}
-                // checked={Object.values(selectedCourses).every(
-                //   selected => selected,
-                // )}
-                checked={selectAllChecked}
+                checked={Object.values(selectedCourses).every(
+                  selected => selected,
+                )}
                 onPress={toggleSelectAll}
                 iconType="material-community"
                 checkedIcon="checkbox-outline"
@@ -229,7 +227,12 @@ function CourseList({navigation, route}: CourseListProps) {
                   key={course.id}
                   title={course.name}
                   checked={selectedCourses[course.id]}
-                  onPress={() => toggleCourseSelection(course.id)}
+                  onPress={() =>
+                    toggleCourseSelection(
+                      course.id,
+                      !selectedCourses[course.id],
+                    )
+                  }
                   iconType="material-community"
                   checkedIcon="checkbox-outline"
                   uncheckedIcon="checkbox-blank-outline"
