@@ -165,21 +165,25 @@ function CourseList({navigation, route}: CourseListProps) {
       const updatedSelectedCourses: {[key: number]: boolean} = {};
 
       for (const course of courses) {
-        const endpoint = allSelected
-          ? `courses/${course.id}/enroll_courses`
-          : `courses/${course.id}/unenroll_courses`;
+        if (selectedCourses[course.id] !== allSelected) {
+          const endpoint = allSelected
+            ? `courses/${course.id}/enroll_courses`
+            : `courses/${course.id}/unenroll_courses`;
 
-        await axios.put(
-          `${baseUrl}/users/${endpoint}`,
-          {},
-          {
-            headers: {
-              Authorization: `Bearer ${authToken}`,
+          await axios.put(
+            `${baseUrl}/users/${endpoint}`,
+            {},
+            {
+              headers: {
+                Authorization: `Bearer ${authToken}`,
+              },
             },
-          },
-        );
+          );
 
-        updatedSelectedCourses[course.id] = allSelected;
+          updatedSelectedCourses[course.id] = allSelected;
+        } else {
+          updatedSelectedCourses[course.id] = selectedCourses[course.id];
+        }
       }
 
       setSelectedCourses(updatedSelectedCourses);
