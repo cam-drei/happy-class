@@ -67,7 +67,6 @@ function Course({navigation, route}: CourseProps) {
       const fetchEnrolledCourses = async () => {
         try {
           const response = await axios.get(
-            // `${baseUrl}/users/selected_courses`,
             `${baseUrl}/users/enrolled_courses`,
             {
               headers: {
