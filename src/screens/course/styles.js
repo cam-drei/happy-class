@@ -7,6 +7,7 @@ const styles = StyleSheet.create({
   },
   scrollViewContainer: {
     alignItems: 'center',
+    paddingBottom: 20,
   },
   box: {
     backgroundColor: '#FFFFFF',

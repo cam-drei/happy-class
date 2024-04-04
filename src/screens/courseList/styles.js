@@ -8,6 +8,7 @@ const styles = StyleSheet.create({
   },
   scrollViewContainer: {
     alignItems: 'center',
+    paddingBottom: 20,
   },
   title: {
     fontWeight: 'bold',

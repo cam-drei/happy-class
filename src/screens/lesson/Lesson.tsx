@@ -395,20 +395,20 @@ function Lesson({navigation, route}: LessonProps) {
 
   return (
     <View style={styles.container}>
-      {allLessonsTodo && (
-        <View style={styles.reviewSubjectBtn}>
-          <BottomButton
-            text="Review your Subjetcs"
-            buttonType={'outlined'}
-            onPress={() => navigateToSubjectList()}
-          />
-        </View>
-      )}
       <ScrollView contentContainerStyle={styles.scrollViewContainer}>
         {isLoading ? (
           <LoadingIndicator />
         ) : (
           <>
+            {allLessonsTodo && (
+              <View style={styles.reviewSubjectBtn}>
+                <BottomButton
+                  text="Review your Subjetcs"
+                  buttonType={'outlined'}
+                  onPress={() => navigateToSubjectList()}
+                />
+              </View>
+            )}
             {sortedLessons.length > 0 ? (
               sortedLessons.map(lesson => (
                 <View key={lesson.id} style={styles.box}>
