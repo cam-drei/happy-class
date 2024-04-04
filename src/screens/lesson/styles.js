@@ -80,6 +80,11 @@ const styles = StyleSheet.create({
   todoTextColor: {
     color: '#000000',
   },
+  reviewSubjectBtn: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: -10,
+  }
 });
 
 export default styles;

@@ -10,12 +10,14 @@ import HeaderRight from '../../components/header/HeaderRight';
 import axios from 'axios';
 import {baseUrl} from '../../utils/apiConfig';
 import LoadingIndicator from '../../components/loading/LoadingIndicator';
+import BottomButton from '../../components/buttons/BottomButton';
 
 interface LessonProps {
   navigation: any;
   route: {
     params: {
       userName: string;
+      userId: number;
       authToken: string;
       courseId: number;
       selectedSubjectsId: number[];
@@ -57,9 +59,11 @@ interface Lesson {
 }
 
 function Lesson({navigation, route}: LessonProps) {
-  const {userName, authToken, courseId, selectedSubjectsId} = route.params;
+  const {userName, userId, authToken, courseId, selectedSubjectsId} =
+    route.params;
   const [lessons, setLessons] = useState<Lesson[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [allLessonsTodo, setAllLessonsTodo] = useState(false);
 
   useEffect(() => {
     const fetchLessons = async () => {
@@ -378,8 +382,28 @@ function Lesson({navigation, route}: LessonProps) {
     return numberA - numberB;
   });
 
+  useEffect(() => {
+    const areAllLessonsTodo = sortedLessons.every(
+      lesson => getLessonStatus(lesson) === 'Todo',
+    );
+    setAllLessonsTodo(areAllLessonsTodo);
+  }, [sortedLessons]);
+
+  const navigateToSubjectList = () => {
+    navigation.navigate('SubjectList', {authToken, userId, userName, courseId});
+  };
+
   return (
     <View style={styles.container}>
+      {allLessonsTodo && (
+        <View style={styles.reviewSubjectBtn}>
+          <BottomButton
+            text="Review your Subjetcs"
+            buttonType={'outlined'}
+            onPress={() => navigateToSubjectList()}
+          />
+        </View>
+      )}
       <ScrollView contentContainerStyle={styles.scrollViewContainer}>
         {isLoading ? (
           <LoadingIndicator />
