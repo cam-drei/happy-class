@@ -331,13 +331,8 @@ function Lesson({navigation, route}: LessonProps) {
     markSubjectAsDone(lessonId, subjectLessonId);
   };
 
-  const openResourceLinkForSubject = (
-    resourceLink: string,
-    lessonId: number,
-    subjectLessonId: number,
-  ) => {
+  const openResourceLinkForSubject = (resourceLink: string) => {
     Linking.openURL(resourceLink);
-    markSubjectAsDone(lessonId, subjectLessonId);
   };
 
   const isLessonDone = (lesson: Lesson) => {
@@ -541,8 +536,6 @@ function Lesson({navigation, route}: LessonProps) {
                                     onPress={() =>
                                       openResourceLinkForSubject(
                                         content.document_link,
-                                        lesson.id,
-                                        subjectLesson.id,
                                       )
                                     }
                                   />

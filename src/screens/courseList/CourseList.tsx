@@ -193,15 +193,6 @@ function CourseList({navigation, route}: CourseListProps) {
     }
   };
 
-  const handleCourseSelection = (courseId: number) => {
-    navigation.navigate('CourseDetails', {
-      courseId,
-      authToken,
-      userId,
-      userName,
-    });
-  };
-
   return (
     <View style={styles.container}>
       {isLoading ? (
