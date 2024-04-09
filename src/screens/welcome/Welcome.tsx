@@ -1,9 +1,12 @@
-import React from 'react';
-import {View, Image} from 'react-native';
+import React, {useEffect, useCallback} from 'react';
+import {View, Image, Alert, TouchableOpacity} from 'react-native';
 import styles from './styles';
 import BottomButton from '../../components/buttons/BottomButton';
 import {Text} from '@rneui/base';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import axios from 'axios';
+import HeaderRight from '../../components/header/HeaderRight';
+import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 
 interface WelcomeProps {
   navigation: any;
@@ -20,17 +23,51 @@ interface WelcomeProps {
 function Welcome({navigation, route}: WelcomeProps) {
   const {authToken, userId, userName, selectedCoursesId} = route.params;
 
-  const handleLogout = async () => {
+  const navigateToLogin = useCallback(() => {
+    navigation.reset({
+      index: 0,
+      routes: [{name: 'Login'}],
+    });
+  }, [navigation]);
+
+  const handleLogout = useCallback(async () => {
     try {
+      await axios.delete('http://localhost:3000/api/v1/logout');
+
       await AsyncStorage.removeItem('authToken');
-      navigation.reset({
-        index: 0,
-        routes: [{name: 'Login'}],
-      });
+      await AsyncStorage.removeItem('userId');
+      await AsyncStorage.removeItem('userName');
+
+      await AsyncStorage.removeItem('email');
+      await AsyncStorage.removeItem('password');
+
+      navigateToLogin();
     } catch (error) {
-      console.error('Error during logout:', error);
+      console.error('Error:', error);
+      Alert.alert('Logout Failed', 'An error occurred while logging out.');
     }
-  };
+  }, [navigateToLogin]);
+
+  useEffect(() => {
+    navigation.setOptions({
+      headerRight: () => (
+        <HeaderRight
+          userName={userName}
+          userImage={require('../../assets/images/tulip.webp')}
+        />
+      ),
+      headerTitle: '',
+      headerLeft: () => (
+        <TouchableOpacity onPress={handleLogout}>
+          <MaterialIcons
+            name={'arrow-back'}
+            style={{marginLeft: 15, fontSize: 30}}
+            color={'#FF9900'}
+          />
+        </TouchableOpacity>
+      ),
+    });
+  }, [navigation, userName, handleLogout]);
 
   const navigateToCourse = () => {
     navigation.navigate('Course', {

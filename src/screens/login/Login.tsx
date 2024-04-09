@@ -18,10 +18,8 @@ function Login({navigation}: {navigation: any}) {
       const response = await axios.post(
         `${baseUrl}/login`,
         {
-          user: {
-            email: email,
-            password: password,
-          },
+          email: email,
+          password: password,
         },
         {
           headers: {
