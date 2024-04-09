@@ -18,7 +18,6 @@ interface CourseProps {
   route: {
     params: {
       authToken: string;
-      userId: string;
       userName: string;
       selectedCoursesId: number[];
     };
@@ -46,7 +45,7 @@ interface Lesson {
 }
 
 function Course({navigation, route}: CourseProps) {
-  const {authToken, userId, userName, selectedCoursesId} = route.params;
+  const {authToken, userName, selectedCoursesId} = route.params;
   const [enrolledCourses, setEnrolledCourses] = useState<Course[]>([]);
   const [isCourseInfoModalVisible, setCourseInfoModalVisible] = useState(false);
   const [contents, setContents] = useState<{[courseId: number]: any[]}>({});
@@ -170,11 +169,10 @@ function Course({navigation, route}: CourseProps) {
   const navigateToUser = useCallback(() => {
     navigation.navigate('Welcome', {
       authToken,
-      userId,
       userName,
       selectedCoursesId,
     });
-  }, [navigation, authToken, userId, userName, selectedCoursesId]);
+  }, [navigation, authToken, userName, selectedCoursesId]);
 
   useEffect(() => {
     navigation.setOptions({
@@ -211,7 +209,6 @@ function Course({navigation, route}: CourseProps) {
       );
       navigation.navigate('Lesson', {
         authToken,
-        userId,
         userName,
         courseId,
         selectedSubjectsId: fetchedSelectedSubjectsId,
@@ -222,7 +219,7 @@ function Course({navigation, route}: CourseProps) {
   };
 
   const navigateToSubjectList = (courseId: number) => {
-    navigation.navigate('SubjectList', {authToken, userId, userName, courseId});
+    navigation.navigate('SubjectList', {authToken, userName, courseId});
   };
 
   useEffect(() => {
@@ -307,7 +304,6 @@ function Course({navigation, route}: CourseProps) {
   const navigateToCourseList = () => {
     navigation.navigate('CourseList', {
       authToken,
-      userId,
       userName,
       selectedCoursesId,
     });

@@ -17,7 +17,6 @@ interface LessonProps {
   route: {
     params: {
       userName: string;
-      userId: number;
       authToken: string;
       courseId: number;
       selectedSubjectsId: number[];
@@ -59,7 +58,7 @@ interface Lesson {
 }
 
 function Lesson({navigation, route}: LessonProps) {
-  const {userName, userId, authToken, courseId, selectedSubjectsId} =
+  const {userName, authToken, courseId, selectedSubjectsId} =
     route.params;
   const [lessons, setLessons] = useState<Lesson[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -385,7 +384,7 @@ function Lesson({navigation, route}: LessonProps) {
   }, [sortedLessons]);
 
   const navigateToSubjectList = () => {
-    navigation.navigate('SubjectList', {authToken, userId, userName, courseId});
+    navigation.navigate('SubjectList', {authToken, userName, courseId});
   };
 
   return (

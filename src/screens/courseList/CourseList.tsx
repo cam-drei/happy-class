@@ -13,7 +13,6 @@ interface CourseListProps {
   route: {
     params: {
       authToken: string;
-      userId: string;
       userName: string;
     };
   };
@@ -26,7 +25,7 @@ interface Course {
 }
 
 function CourseList({navigation, route}: CourseListProps) {
-  const {authToken, userId, userName} = route.params;
+  const {authToken, userName} = route.params;
   const [courses, setCourses] = useState<Course[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [selectedCourses, setSelectedCourses] = useState<{

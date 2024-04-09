@@ -13,7 +13,6 @@ interface WelcomeProps {
   route: {
     params: {
       authToken: string;
-      userId: string;
       userName: string;
       selectedCoursesId: number[];
     };
@@ -21,7 +20,7 @@ interface WelcomeProps {
 }
 
 function Welcome({navigation, route}: WelcomeProps) {
-  const {authToken, userId, userName, selectedCoursesId} = route.params;
+  const {authToken, userName, selectedCoursesId} = route.params;
 
   const navigateToLogin = useCallback(() => {
     navigation.reset({
@@ -35,7 +34,6 @@ function Welcome({navigation, route}: WelcomeProps) {
       await axios.delete('http://localhost:3000/api/v1/logout');
 
       await AsyncStorage.removeItem('authToken');
-      await AsyncStorage.removeItem('userId');
       await AsyncStorage.removeItem('userName');
 
       await AsyncStorage.removeItem('email');
@@ -72,7 +70,6 @@ function Welcome({navigation, route}: WelcomeProps) {
   const navigateToCourse = () => {
     navigation.navigate('Course', {
       authToken,
-      userId,
       userName,
       selectedCoursesId,
     });
@@ -81,7 +78,6 @@ function Welcome({navigation, route}: WelcomeProps) {
   const navigateToCourseList = () => {
     navigation.navigate('CourseList', {
       authToken,
-      userId,
       userName,
       selectedCoursesId,
     });

@@ -29,10 +29,8 @@ function Login({navigation}: {navigation: any}) {
       );
 
       const authToken = response.data.token;
-      const userId = response.data.user.id.toString();
       const userName = response.data.user.email.split('@')[0];
       await AsyncStorage.setItem('authToken', authToken);
-      await AsyncStorage.setItem('userId', userId);
       await AsyncStorage.setItem('userName', userName);
 
       if (rememberMe) {
@@ -44,7 +42,7 @@ function Login({navigation}: {navigation: any}) {
         }
       }
 
-      navigation.navigate('Welcome', {authToken, userId, userName});
+      navigation.navigate('Welcome', {authToken, userName});
     } catch (error: any) {
       console.error('Error:', error);
       Alert.alert('Login Failed', 'Invalid email or password');
