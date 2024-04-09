@@ -137,8 +137,8 @@ function CourseList({navigation, route}: CourseListProps) {
   ) => {
     try {
       const endpoint = isSelected
-        ? `courses/${courseId}/enroll_courses`
-        : `courses/${courseId}/unenroll_courses`;
+        ? `courses/${courseId}/enroll_course`
+        : `courses/${courseId}/unenroll_course`;
 
       await axios.put(
         `${baseUrl}/users/${endpoint}`,
@@ -167,8 +167,8 @@ function CourseList({navigation, route}: CourseListProps) {
       for (const course of courses) {
         if (selectedCourses[course.id] !== allSelected) {
           const endpoint = allSelected
-            ? `courses/${course.id}/enroll_courses`
-            : `courses/${course.id}/unenroll_courses`;
+            ? `courses/${course.id}/enroll_course`
+            : `courses/${course.id}/unenroll_course`;
 
           await axios.put(
             `${baseUrl}/users/${endpoint}`,
