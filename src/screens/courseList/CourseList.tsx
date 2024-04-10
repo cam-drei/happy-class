@@ -4,6 +4,7 @@ import {Text, CheckBox} from '@rneui/base';
 import styles from './styles';
 import BottomButton from '../../components/buttons/BottomButton';
 import HeaderRight from '../../components/header/HeaderRight';
+import HeaderLeft from '../../components/header/HeaderLeft';
 import LoadingIndicator from '../../components/loading/LoadingIndicator';
 import axios from 'axios';
 import {baseUrl} from '../../utils/apiConfig';
@@ -104,6 +105,8 @@ function CourseList({navigation, route}: CourseListProps) {
 
   useEffect(() => {
     navigation.setOptions({
+      headerTitle: '',
+      headerLeft: () => <HeaderLeft onPress={() => navigation.goBack()} />,
       headerRight: () => (
         <HeaderRight
           userName={userName}

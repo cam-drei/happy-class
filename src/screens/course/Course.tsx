@@ -6,11 +6,11 @@ import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import Feather from 'react-native-vector-icons/Feather';
 import HeaderRight from '../../components/header/HeaderRight';
+import HeaderLeft from '../../components/header/HeaderLeft';
 import axios from 'axios';
 import {baseUrl} from '../../utils/apiConfig';
 import LoadingIndicator from '../../components/loading/LoadingIndicator';
 import {useFocusEffect} from '@react-navigation/native';
-import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import BottomButton from '../../components/buttons/BottomButton';
 
 interface CourseProps {
@@ -176,21 +176,15 @@ function Course({navigation, route}: CourseProps) {
 
   useEffect(() => {
     navigation.setOptions({
+      headerTitle: '',
+      headerLeft: () => <HeaderLeft onPress={navigateToUser} />,
       headerRight: () => (
         <HeaderRight
           userName={userName}
           userImage={require('../../assets/images/tulip.webp')}
         />
       ),
-      headerLeft: () => (
-        <TouchableOpacity onPress={navigateToUser}>
-          <MaterialIcons
-            name={'arrow-back'}
-            style={{marginLeft: 15, fontSize: 30}}
-            color={'#FF9900'}
-          />
-        </TouchableOpacity>
-    )});
+    });
   }, [navigation, userName, navigateToUser]);
 
   const navigateToLesson = async (courseId: number) => {

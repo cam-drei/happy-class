@@ -1,12 +1,12 @@
 import React, {useEffect, useCallback} from 'react';
-import {View, Image, Alert, TouchableOpacity} from 'react-native';
+import {View, Image, Alert} from 'react-native';
 import styles from './styles';
 import BottomButton from '../../components/buttons/BottomButton';
 import {Text} from '@rneui/base';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
+import HeaderLeft from '../../components/header/HeaderLeft';
 import HeaderRight from '../../components/header/HeaderRight';
-import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 
 interface WelcomeProps {
   navigation: any;
@@ -48,21 +48,13 @@ function Welcome({navigation, route}: WelcomeProps) {
 
   useEffect(() => {
     navigation.setOptions({
+      headerTitle: '',
+      headerLeft: () => <HeaderLeft onPress={handleLogout} />,
       headerRight: () => (
         <HeaderRight
           userName={userName}
           userImage={require('../../assets/images/tulip.webp')}
         />
-      ),
-      headerTitle: '',
-      headerLeft: () => (
-        <TouchableOpacity onPress={handleLogout}>
-          <MaterialIcons
-            name={'arrow-back'}
-            style={{marginLeft: 15, fontSize: 30}}
-            color={'#FF9900'}
-          />
-        </TouchableOpacity>
       ),
     });
   }, [navigation, userName, handleLogout]);

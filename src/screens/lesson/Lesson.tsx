@@ -7,6 +7,7 @@ import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import Feather from 'react-native-vector-icons/Feather';
 import Line from '../../components/line/Line';
 import HeaderRight from '../../components/header/HeaderRight';
+import HeaderLeft from '../../components/header/HeaderLeft';
 import axios from 'axios';
 import {baseUrl} from '../../utils/apiConfig';
 import LoadingIndicator from '../../components/loading/LoadingIndicator';
@@ -58,8 +59,7 @@ interface Lesson {
 }
 
 function Lesson({navigation, route}: LessonProps) {
-  const {userName, authToken, courseId, selectedSubjectsId} =
-    route.params;
+  const {userName, authToken, courseId, selectedSubjectsId} = route.params;
   const [lessons, setLessons] = useState<Lesson[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [allLessonsTodo, setAllLessonsTodo] = useState(false);
@@ -138,6 +138,8 @@ function Lesson({navigation, route}: LessonProps) {
 
   useEffect(() => {
     navigation.setOptions({
+      headerTitle: '',
+      headerLeft: () => <HeaderLeft onPress={() => navigation.goBack()} />,
       headerRight: () => (
         <HeaderRight
           userName={userName}

@@ -4,6 +4,7 @@ import {Text, CheckBox} from '@rneui/base';
 import styles from './styles';
 import BottomButton from '../../components/buttons/BottomButton';
 import HeaderRight from '../../components/header/HeaderRight';
+import HeaderLeft from '../../components/header/HeaderLeft';
 import LoadingIndicator from '../../components/loading/LoadingIndicator';
 import axios from 'axios';
 import {baseUrl} from '../../utils/apiConfig';
@@ -92,21 +93,13 @@ function SubjectList({navigation, route}: SubjectListProps) {
 
   useEffect(() => {
     navigation.setOptions({
+      headerTitle: '',
+      headerLeft: () => <HeaderLeft onPress={navigateToCourse} />,
       headerRight: () => (
         <HeaderRight
           userName={userName}
           userImage={require('../../assets/images/tulip.webp')}
         />
-      ),
-      headerTitle: 'Subjects',
-      headerLeft: () => (
-        <TouchableOpacity onPress={navigateToCourse}>
-          <MaterialIcons
-            name={'arrow-back'}
-            style={{marginLeft: 15, fontSize: 30}}
-            color={'#FF9900'}
-          />
-        </TouchableOpacity>
       ),
     });
   }, [navigation, userName, navigateToCourse]);

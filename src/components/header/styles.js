@@ -16,6 +16,10 @@ const styles = StyleSheet.create({
     borderRadius: 30 / 2,
     marginRight: 10,
   },
+  headerLeftIcon: {
+    marginLeft: 15,
+    fontSize: 30,
+  },
 });
 
 export default styles;
