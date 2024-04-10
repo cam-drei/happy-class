@@ -7,6 +7,7 @@ import Logo from '../../components/logo/Logo';
 import axios from 'axios';
 import {baseUrl} from '../../utils/apiConfig';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import HeaderLeft from '../../components/header/HeaderLeft';
 
 function Login({navigation}: {navigation: any}) {
   const [email, setEmail] = useState('');
@@ -71,6 +72,18 @@ function Login({navigation}: {navigation: any}) {
     setEmail('');
     setPassword('');
   }, []);
+
+  useEffect(() => {
+    navigation.setOptions({
+      headerTitle: '',
+      headerLeft: () => (
+        <HeaderLeft
+          iconName={'home'}
+          onPress={() => navigation.navigate('Home')}
+        />
+      ),
+    });
+  }, [navigation]);
 
   const handleForgotPassword = () => {
     // navigation.navigate('ForgotPassword');
