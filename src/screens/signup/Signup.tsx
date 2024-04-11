@@ -46,9 +46,18 @@ function Signup({navigation}: {navigation: any}) {
           : 'An error occurred';
         Alert.alert('Error', errorMessage);
       }
-    } catch (error) {
-      console.error('Error:', error);
-      Alert.alert('Error', 'An error occurred, please try again later');
+    } catch (error: any) {
+      if (error.response && error.response.status === 422) {
+        const errorMessage = error.response.data.message;
+        if (errorMessage.includes('Email has already been taken')) {
+          Alert.alert('Error', 'Email address already exists');
+        } else {
+          Alert.alert('Error', errorMessage);
+        }
+      } else {
+        console.error('Error:', error);
+        Alert.alert('Error', 'An error occurred, please try again later');
+      }
     }
   };
 
