@@ -50,6 +50,12 @@ function CourseList({navigation, route}: CourseListProps) {
 
         const coursesData = response.data.courses;
 
+        if (!coursesData) {
+          console.log('No courses data found.');
+          setIsLoading(false);
+          return;
+        }
+
         const sortedCourses = coursesData.sort((a: Course, b: Course) => {
           const aNameLower = a.name.toLowerCase();
           const bNameLower = b.name.toLowerCase();
@@ -202,43 +208,47 @@ function CourseList({navigation, route}: CourseListProps) {
       ) : (
         <>
           <ScrollView contentContainerStyle={styles.scrollViewContainer}>
-            <View>
-              <Text style={styles.title}>
-                {'Select the Courses you want to learn:'}
-              </Text>
-              <CheckBox
-                title={'Select All'}
-                checked={Object.values(selectedCourses).every(
-                  selected => selected,
-                )}
-                onPress={toggleSelectAll}
-                iconType="material-community"
-                checkedIcon="checkbox-outline"
-                uncheckedIcon="checkbox-blank-outline"
-                checkedColor="#FF9900"
-                textStyle={styles.selectAllText}
-                containerStyle={styles.selectAllContainer}
-              />
-              {courses.map(course => (
+            {courses && courses.length > 0 ? (
+              <View>
+                <Text style={styles.title}>
+                  {'Select the Courses you want to learn:'}
+                </Text>
                 <CheckBox
-                  key={course.id}
-                  title={course.name}
-                  checked={selectedCourses[course.id]}
-                  onPress={() =>
-                    toggleCourseSelection(
-                      course.id,
-                      !selectedCourses[course.id],
-                    )
-                  }
+                  title={'Select All'}
+                  checked={Object.values(selectedCourses).every(
+                    selected => selected,
+                  )}
+                  onPress={toggleSelectAll}
                   iconType="material-community"
                   checkedIcon="checkbox-outline"
                   uncheckedIcon="checkbox-blank-outline"
                   checkedColor="#FF9900"
-                  textStyle={styles.checkboxTitle}
-                  containerStyle={styles.checkbox}
+                  textStyle={styles.selectAllText}
+                  containerStyle={styles.selectAllContainer}
                 />
-              ))}
-            </View>
+                {courses.map(course => (
+                  <CheckBox
+                    key={course.id}
+                    title={course.name}
+                    checked={selectedCourses[course.id]}
+                    onPress={() =>
+                      toggleCourseSelection(
+                        course.id,
+                        !selectedCourses[course.id],
+                      )
+                    }
+                    iconType="material-community"
+                    checkedIcon="checkbox-outline"
+                    uncheckedIcon="checkbox-blank-outline"
+                    checkedColor="#FF9900"
+                    textStyle={styles.checkboxTitle}
+                    containerStyle={styles.checkbox}
+                  />
+                ))}
+              </View>
+            ) : (
+              <Text h4>No courses available.</Text>
+            )}
           </ScrollView>
           <View style={styles.bottomButton}>
             <Text style={styles.totalText}>

@@ -14,7 +14,7 @@ interface WelcomeProps {
     params: {
       authToken: string;
       userName: string;
-      selectedCoursesId: number[];
+      selectedCoursesId?: number[];
     };
   };
 }

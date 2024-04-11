@@ -1,5 +1,12 @@
 import React, {useState, useEffect, useCallback} from 'react';
-import {View, Modal, TouchableOpacity, ScrollView, Linking} from 'react-native';
+import {
+  View,
+  Modal,
+  TouchableOpacity,
+  ScrollView,
+  Linking,
+  Alert,
+} from 'react-native';
 import {Text} from '@rneui/base';
 import styles from './styles';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
@@ -90,6 +97,17 @@ function Course({navigation, route}: CourseProps) {
   useEffect(() => {
     const fetchCourseStatuses = async () => {
       try {
+        if (!enrolledCourses) {
+          console.log('Enrolled courses is undefined or null.');
+          return;
+        }
+
+        if (enrolledCourses.length === 0) {
+          console.log('No enrolled courses found.');
+          setIsLoading(false);
+          return;
+        }
+
         const promises = enrolledCourses.map(async course => {
           const response = await axios.get(
             `${baseUrl}/users/enrolled_courses/${course.id}/status`,
@@ -143,11 +161,20 @@ function Course({navigation, route}: CourseProps) {
         setIsLoading(false);
       } catch (error) {
         console.error('Error fetching course statuses:', error);
+        setIsLoading(false);
+        Alert.alert(
+          'Error',
+          'An error occurred while fetching course statuses.',
+        );
       }
     };
 
-    if (enrolledCourses.length > 0) {
+    if (enrolledCourses && enrolledCourses.length > 0) {
+      console.log('Calling fetchCourseStatuses...');
       fetchCourseStatuses();
+    } else {
+      setIsLoading(false);
+      console.log('No enrolled courses found.');
     }
   }, [authToken, enrolledCourses]);
 
@@ -237,9 +264,13 @@ function Course({navigation, route}: CourseProps) {
       }
     };
 
-    enrolledCourses.forEach(course => {
-      fetchContentsForCourse(course.id);
-    });
+    if (enrolledCourses && enrolledCourses.length > 0) {
+      enrolledCourses.forEach(course => {
+        fetchContentsForCourse(course.id);
+      });
+    } else {
+      console.log('No enrolled courses found.');
+    }
   }, [authToken, enrolledCourses]);
 
   useEffect(() => {
@@ -263,9 +294,13 @@ function Course({navigation, route}: CourseProps) {
       }
     };
 
-    enrolledCourses.forEach(course => {
-      fetchLessonsForCourse(course.id);
-    });
+    if (enrolledCourses && enrolledCourses.length > 0) {
+      enrolledCourses.forEach(course => {
+        fetchLessonsForCourse(course.id);
+      });
+    } else {
+      console.log('No enrolled courses found.');
+    }
   }, [authToken, enrolledCourses]);
 
   const openResourceLink = (resourceLink: string) => {
@@ -310,7 +345,7 @@ function Course({navigation, route}: CourseProps) {
           <LoadingIndicator />
         ) : (
           <>
-            {enrolledCourses.length > 0 ? (
+            {enrolledCourses && enrolledCourses.length > 0 ? (
               enrolledCourses.map(course => (
                 <View
                   key={course.id}

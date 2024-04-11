@@ -107,6 +107,7 @@ function Login({navigation}: {navigation: any}) {
         <Input
           placeholder="Password"
           inputContainerStyle={styles.inputField}
+          autoCapitalize={'none'}
           secureTextEntry
           onChangeText={text => setPassword(text)}
         />
