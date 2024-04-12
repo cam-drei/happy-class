@@ -34,8 +34,9 @@ function Signup({navigation}: {navigation: any}) {
       });
 
       if (response.status === 201) {
-        const {authentication_token} = response.data;
-        const userName = response.data.email.split('@')[0];
+        const {authentication_token, email: userEmail} = response.data.user;
+        const userName = userEmail.split('@')[0];
+
         navigation.navigate('Welcome', {
           authToken: authentication_token,
           userName: userName,
@@ -48,12 +49,7 @@ function Signup({navigation}: {navigation: any}) {
       }
     } catch (error: any) {
       if (error.response && error.response.status === 422) {
-        const errorMessage = error.response.data.message;
-        if (errorMessage.includes('Email has already been taken')) {
-          Alert.alert('Error', 'Email address already exists');
-        } else {
-          Alert.alert('Error', errorMessage);
-        }
+        Alert.alert('Alert', 'Email address already exists');
       } else {
         console.error('Error:', error);
         Alert.alert('Error', 'An error occurred, please try again later');

@@ -103,6 +103,8 @@ function CourseList({navigation, route}: CourseListProps) {
         setSelectAllChecked(enrolledCoursesIds.length === coursesData.length);
       } catch (error) {
         console.error('Error fetching courses:', error);
+        setIsLoading(false);
+        Alert.alert('Error', 'An error occurred while fetching courses.');
       }
     };
 
