@@ -53,7 +53,7 @@ function Welcome({navigation, route}: WelcomeProps) {
       headerRight: () => (
         <HeaderRight
           userName={userName}
-          userImage={require('../../assets/images/tulip.webp')}
+          userImage={require('../../assets/images/tiger.jpeg')}
         />
       ),
     });
@@ -81,7 +81,7 @@ function Welcome({navigation, route}: WelcomeProps) {
         Welcome, {userName}!
       </Text>
       <Image
-        source={require('../../assets/images/peppa.png')}
+        source={require('../../assets/images/tiger.jpeg')}
         style={styles.logo}
       />
       <Text h4 style={styles.userName}>

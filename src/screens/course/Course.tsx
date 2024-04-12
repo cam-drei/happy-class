@@ -208,7 +208,7 @@ function Course({navigation, route}: CourseProps) {
       headerRight: () => (
         <HeaderRight
           userName={userName}
-          userImage={require('../../assets/images/tulip.webp')}
+          userImage={require('../../assets/images/tiger.jpeg')}
         />
       ),
     });
