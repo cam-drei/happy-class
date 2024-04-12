@@ -50,7 +50,7 @@ function CourseList({navigation, route}: CourseListProps) {
 
         const coursesData = response.data.courses;
 
-        if (!coursesData) {
+        if (!coursesData || coursesData.length === 0) {
           console.log('No courses data found.');
           setIsLoading(false);
           return;
