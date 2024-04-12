@@ -1,14 +1,13 @@
 import React, {useState, useEffect, useCallback} from 'react';
-import {View, Alert, TouchableOpacity, ScrollView} from 'react-native';
+import {View, Alert, ScrollView} from 'react-native';
 import {Text, CheckBox} from '@rneui/base';
 import styles from './styles';
-import BottomButton from '../../components/buttons/BottomButton';
+import PrimaryButton from '../../components/buttons/PrimaryButton';
 import HeaderRight from '../../components/header/HeaderRight';
 import HeaderLeft from '../../components/header/HeaderLeft';
 import LoadingIndicator from '../../components/loading/LoadingIndicator';
 import axios from 'axios';
 import {baseUrl} from '../../utils/apiConfig';
-import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 
 interface SubjectListProps {
   navigation: any;
@@ -207,14 +206,14 @@ function SubjectList({navigation, route}: SubjectListProps) {
               ))}
             </View>
           </ScrollView>
-          <View style={styles.bottomButton}>
+          <View style={styles.primaryButton}>
             <Text style={styles.totalText}>
               {`You selected ${
                 Object.values(selectedSubjects).filter(selected => selected)
                   .length
               }/${subjects.length} subjects`}
             </Text>
-            <BottomButton text="Submit" onPress={navigateToCourse} />
+            <PrimaryButton text="Submit" onPress={navigateToCourse} />
           </View>
         </>
       )}

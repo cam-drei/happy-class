@@ -9,7 +9,7 @@ interface ButtonProps {
   buttonWidth?: number;
 }
 
-const BottomButton = (props: ButtonProps) => {
+const PrimaryButton = (props: ButtonProps) => {
   const {text, onPress, titleStyle, buttonType, buttonWidth} = props;
 
   const btnBgColor = buttonType === 'filled' ? '#FF9900' : '#FFFFFF';
@@ -21,7 +21,7 @@ const BottomButton = (props: ButtonProps) => {
     borderWidth: 1,
   };
 
-  const bottomBtn = {
+  const primaryBtn = {
     backgroundColor: btnBgColor,
     borderColor: 'transparent',
     borderRadius: 30,
@@ -29,7 +29,7 @@ const BottomButton = (props: ButtonProps) => {
     marginVertical: 10,
   };
 
-  const bottomBtnTitle = {
+  const primaryBtnTitle = {
     color: btnTextColor,
     fontSize: 16,
     textAlign: 'center',
@@ -39,17 +39,17 @@ const BottomButton = (props: ButtonProps) => {
   return (
     <Button
       title={text}
-      titleStyle={[bottomBtnTitle, titleStyle]}
-      buttonStyle={[bottomBtn, border]}
+      titleStyle={[primaryBtnTitle, titleStyle]}
+      buttonStyle={[primaryBtn, border]}
       onPress={onPress}
     />
   );
 };
 
-BottomButton.defaultProps = {
+PrimaryButton.defaultProps = {
   titleStyle: 'bold',
   buttonType: 'filled',
   buttonWidth: 300,
 };
 
-export default BottomButton;
+export default PrimaryButton;

@@ -12,9 +12,6 @@ const styles = StyleSheet.create({
     height: 120,
     borderRadius: 120 / 2,
   },
-  bottomButtonTitle: {
-    fontWeight: 'normal',
-  },
   title: {
     fontWeight: 'bold',
     marginTop: 100,

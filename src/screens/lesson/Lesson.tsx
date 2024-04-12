@@ -11,7 +11,7 @@ import HeaderLeft from '../../components/header/HeaderLeft';
 import axios from 'axios';
 import {baseUrl} from '../../utils/apiConfig';
 import LoadingIndicator from '../../components/loading/LoadingIndicator';
-import BottomButton from '../../components/buttons/BottomButton';
+import PrimaryButton from '../../components/buttons/PrimaryButton';
 
 interface LessonProps {
   navigation: any;
@@ -398,7 +398,7 @@ function Lesson({navigation, route}: LessonProps) {
           <>
             {allLessonsTodo && (
               <View style={styles.reviewSubjectBtn}>
-                <BottomButton
+                <PrimaryButton
                   text="Review your Subjetcs"
                   buttonType={'outlined'}
                   onPress={() => navigateToSubjectList()}

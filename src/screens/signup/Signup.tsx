@@ -2,7 +2,7 @@ import React, {useState, useEffect} from 'react';
 import {View, Alert} from 'react-native';
 import {Input, Text} from '@rneui/themed';
 import styles from './styles';
-import BottomButton from '../../components/buttons/BottomButton';
+import PrimaryButton from '../../components/buttons/PrimaryButton';
 import Logo from '../../components/logo/Logo';
 import HeaderLeft from '../../components/header/HeaderLeft';
 import axios from 'axios';
@@ -100,7 +100,7 @@ function Signup({navigation}: {navigation: any}) {
           inputContainerStyle={styles.inputField}
         />
       </View>
-      <BottomButton text="Sign up" onPress={handleSignup} />
+      <PrimaryButton text="Sign up" onPress={handleSignup} />
       <Text style={styles.baseText}>
         Already have an account?
         <Text

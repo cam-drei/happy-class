@@ -36,7 +36,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     paddingBottom: 5,
   },
-  bottomButton: {
+  primaryButton: {
     bottom: 10,
     alignItems: 'center',
     backgroundColor: '#FFFFFF'

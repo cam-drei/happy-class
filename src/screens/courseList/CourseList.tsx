@@ -2,7 +2,7 @@ import React, {useState, useEffect, useCallback} from 'react';
 import {View, Alert, ScrollView} from 'react-native';
 import {Text, CheckBox} from '@rneui/base';
 import styles from './styles';
-import BottomButton from '../../components/buttons/BottomButton';
+import PrimaryButton from '../../components/buttons/PrimaryButton';
 import HeaderRight from '../../components/header/HeaderRight';
 import HeaderLeft from '../../components/header/HeaderLeft';
 import LoadingIndicator from '../../components/loading/LoadingIndicator';
@@ -252,14 +252,14 @@ function CourseList({navigation, route}: CourseListProps) {
               <Text h4>No courses available.</Text>
             )}
           </ScrollView>
-          <View style={styles.bottomButton}>
+          <View style={styles.primaryButton}>
             <Text style={styles.totalText}>
               {`You selected ${
                 Object.values(selectedCourses).filter(selected => selected)
                   .length
               }/${courses.length} courses`}
             </Text>
-            <BottomButton text="Submit" onPress={navigateToCourse} />
+            <PrimaryButton text="Submit" onPress={navigateToCourse} />
           </View>
         </>
       )}

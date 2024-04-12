@@ -1,7 +1,7 @@
 import React, {useEffect, useCallback} from 'react';
 import {View, Image, Alert} from 'react-native';
 import styles from './styles';
-import BottomButton from '../../components/buttons/BottomButton';
+import PrimaryButton from '../../components/buttons/PrimaryButton';
 import {Text} from '@rneui/base';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
@@ -87,8 +87,8 @@ function Welcome({navigation, route}: WelcomeProps) {
       <Text h4 style={styles.userName}>
         {userName}
       </Text>
-      <BottomButton text="Let's learn" onPress={navigateToCourse} />
-      <BottomButton
+      <PrimaryButton text="Let's learn" onPress={navigateToCourse} />
+      <PrimaryButton
         text="Click for choose your Courses"
         buttonType={'outlined'}
         titleStyle={'normal'}

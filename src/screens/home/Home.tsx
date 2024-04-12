@@ -1,19 +1,19 @@
 import React from 'react';
 import {View} from 'react-native';
 import styles from './styles';
-import BottomButton from '../../components/buttons/BottomButton';
+import PrimaryButton from '../../components/buttons/PrimaryButton';
 import Logo from '../../components/logo/Logo';
 
 function Home({navigation}: {navigation: any}) {
   return (
     <View style={styles.container}>
       <Logo />
-      <BottomButton
+      <PrimaryButton
         text="Login"
         titleStyle={'normal'}
         onPress={() => navigation.navigate('Login')}
       />
-      <BottomButton
+      <PrimaryButton
         text="Signup"
         buttonType={'outlined'}
         titleStyle={'normal'}

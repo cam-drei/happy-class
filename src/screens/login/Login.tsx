@@ -2,7 +2,7 @@ import React, {useState, useEffect} from 'react';
 import {View, Alert} from 'react-native';
 import {Input, Text, CheckBox} from '@rneui/themed';
 import styles from './styles';
-import BottomButton from '../../components/buttons/BottomButton';
+import PrimaryButton from '../../components/buttons/PrimaryButton';
 import Logo from '../../components/logo/Logo';
 import axios from 'axios';
 import {baseUrl} from '../../utils/apiConfig';
@@ -126,7 +126,7 @@ function Login({navigation}: {navigation: any}) {
           containerStyle={styles.checkbox}
         />
       </View>
-      <BottomButton text="Login" onPress={handleLogin} />
+      <PrimaryButton text="Login" onPress={handleLogin} />
       <Text style={styles.baseText}>
         Don't have an account?
         <Text
