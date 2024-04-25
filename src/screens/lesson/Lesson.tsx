@@ -48,6 +48,14 @@ interface SubjectLesson {
   contents: Content[];
   subject: Subject;
 }
+
+interface UserLesson {
+  id: number;
+  user_id: number;
+  lesson_id: number;
+  done: boolean;
+}
+
 interface Lesson {
   id: number;
   name: string;
@@ -63,6 +71,8 @@ function Lesson({navigation, route}: LessonProps) {
   const [lessons, setLessons] = useState<Lesson[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [allLessonsTodo, setAllLessonsTodo] = useState(false);
+  const [userLessons, setUserLessons] = useState<UserLesson[]>([]);
+  const [userLessonsLoading, setUserLessonsLoading] = useState<boolean>(true);
 
   useEffect(() => {
     const fetchLessons = async () => {
@@ -173,22 +183,16 @@ function Lesson({navigation, route}: LessonProps) {
   };
 
   const markLessonAsDone = useCallback(
-    async (lessonId: number) => {
+    async (userLessonId: number) => {
       try {
         await axios.put(
-          `${baseUrl}/users/enrolled_courses/${courseId}/lessons/${lessonId}/mark_done`,
+          `${baseUrl}/users/enrolled_courses/${courseId}/user_lessons/${userLessonId}/mark_done`,
           {},
           {
             headers: {
               Authorization: `Bearer ${authToken}`,
             },
           },
-        );
-
-        setLessons(prevLessons =>
-          prevLessons.map(lesson =>
-            lesson.id === lessonId ? {...lesson, done: true} : lesson,
-          ),
         );
       } catch (error) {
         console.error('Error marking lesson as done:', error);
@@ -198,22 +202,16 @@ function Lesson({navigation, route}: LessonProps) {
   );
 
   const unmarkLessonAsDone = useCallback(
-    async (lessonId: number) => {
+    async (userLessonId: number) => {
       try {
         await axios.put(
-          `${baseUrl}/users/enrolled_courses/${courseId}/lessons/${lessonId}/unmark_done`,
+          `${baseUrl}/users/enrolled_courses/${courseId}/user_lessons/${userLessonId}/unmark_done`,
           {},
           {
             headers: {
               Authorization: `Bearer ${authToken}`,
             },
           },
-        );
-
-        setLessons(prevLessons =>
-          prevLessons.map(lesson =>
-            lesson.id === lessonId ? {...lesson, done: false} : lesson,
-          ),
         );
       } catch (error) {
         console.error('Error marking lesson as not done:', error);
@@ -223,26 +221,59 @@ function Lesson({navigation, route}: LessonProps) {
   );
 
   useEffect(() => {
-    lessons.forEach(lesson => {
+    const fetchUserLessons = async () => {
+      try {
+        const response = await axios.get(
+          `${baseUrl}/users/enrolled_courses/${courseId}/user_lessons`,
+          {
+            headers: {
+              Authorization: `Bearer ${authToken}`,
+            },
+          },
+        );
+        setUserLessons(response.data.user_lessons);
+        setUserLessonsLoading(false);
+      } catch (error) {
+        console.error('Error fetching user lessons:', error);
+      }
+    };
+
+    fetchUserLessons();
+  }, [authToken, courseId]);
+
+  useEffect(() => {
+    if (userLessons.length === 0 || userLessonsLoading) {
+      return;
+    }
+
+    lessons.forEach(async lesson => {
       const allSubjectsDone = lesson.subject_lessons.every(
         subjectLesson => subjectLesson.done,
       );
-      if (allSubjectsDone && !lesson.done) {
-        markLessonAsDone(lesson.id);
-      }
-    });
-  }, [lessons, markLessonAsDone]);
-
-  useEffect(() => {
-    lessons.forEach(lesson => {
-      const anySubjectNotDone = lesson.subject_lessons.some(
-        subjectLesson => !subjectLesson.done,
+      const correspondingUserLesson = userLessons.find(
+        userLesson => userLesson.lesson_id === lesson.id,
       );
-      if (anySubjectNotDone && lesson.done) {
-        unmarkLessonAsDone(lesson.id);
+      if (!correspondingUserLesson) {
+        console.error('User lesson not found for lesson:', lesson.id);
+        return;
+      }
+      const lessonCompleted = correspondingUserLesson.done;
+
+      if (allSubjectsDone && !lessonCompleted) {
+        console.log('Marking lesson as done:', correspondingUserLesson.id);
+        await markLessonAsDone(correspondingUserLesson.id);
+      } else if (!allSubjectsDone && lessonCompleted) {
+        console.log('Unmarking lesson as done:', correspondingUserLesson.id);
+        await unmarkLessonAsDone(correspondingUserLesson.id);
       }
     });
-  }, [lessons, unmarkLessonAsDone]);
+  }, [
+    lessons,
+    userLessons,
+    markLessonAsDone,
+    unmarkLessonAsDone,
+    userLessonsLoading,
+  ]);
 
   const markSubjectAsDone = async (
     lessonId: number,
