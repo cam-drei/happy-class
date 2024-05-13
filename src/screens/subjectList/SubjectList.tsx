@@ -11,13 +11,25 @@ import {baseUrl} from '../../utils/apiConfig';
 
 interface SubjectListProps {
   navigation: any;
-  route: {params: {userName: string; authToken: string; courseId: number}};
+  route: {
+    params: {
+      authToken: string;
+      userName: string;
+      courseId: number;
+    };
+  };
 }
 
 interface Subject {
   id: number;
   name: string;
   description: string;
+}
+
+interface UserSubject {
+  id: number;
+  user_id: number;
+  subject_id: number;
   selected: boolean;
 }
 
@@ -25,7 +37,8 @@ function SubjectList({navigation, route}: SubjectListProps) {
   const {authToken, userName, courseId} = route.params;
   const [isLoading, setIsLoading] = useState(true);
   const [subjects, setSubjects] = useState<Subject[]>([]);
-  const [selectedSubjects, setSelectedSubjects] = useState<{
+  const [userSubjects, setUserSubjects] = useState<UserSubject[]>([]);
+  const [selectedUserSubjects, setSelectedUserSubjects] = useState<{
     [key: number]: boolean;
   }>({});
   const [selectAllChecked, setSelectAllChecked] = useState(false);
@@ -42,12 +55,14 @@ function SubjectList({navigation, route}: SubjectListProps) {
           },
         );
 
-        const initialSelectedSubjects: {[key: number]: boolean} = {};
-        response.data.subjects.forEach((subject: Subject) => {
-          initialSelectedSubjects[subject.id] = subject.selected;
-        });
+        const initialSubjects = response.data.subjects.map(
+          (subject: Subject) => ({
+            ...subject,
+            selected: selectedUserSubjects[subject.id] || false,
+          }),
+        );
 
-        const sortedSubjects = response.data.subjects
+        const sortedSubjects = initialSubjects
           .slice()
           .sort((a: Subject, b: Subject) => {
             if (a.name < b.name) {
@@ -60,8 +75,15 @@ function SubjectList({navigation, route}: SubjectListProps) {
           });
 
         setSubjects(sortedSubjects);
-        setSelectedSubjects(initialSelectedSubjects);
         setIsLoading(false);
+
+        // const initialSelectedSubjects: {[key: number]: boolean} = {};
+        // initialSubjects.forEach((userSubject: UserSubject) => {
+        //   initialSelectedSubjects[userSubject.subject_id] =
+        //     userSubject.selected;
+        // });
+
+        // setSelectedUserSubjects(initialSelectedSubjects);
       } catch (error) {
         console.error('Error fetching subjects:', error);
       }
@@ -70,11 +92,11 @@ function SubjectList({navigation, route}: SubjectListProps) {
     if (authToken) {
       fetchSubjects();
     }
-  }, [authToken, courseId]);
+  }, [authToken, courseId, userSubjects, selectedUserSubjects]);
 
   const navigateToCourse = useCallback(() => {
-    const selectedSubjectsId = Object.keys(selectedSubjects)
-      .filter((subjectId: any) => selectedSubjects[subjectId])
+    const selectedSubjectsId = Object.keys(selectedUserSubjects)
+      .filter((subjectId: any) => selectedUserSubjects[subjectId])
       .map(Number);
 
     if (selectedSubjectsId.length === 0) {
@@ -88,7 +110,7 @@ function SubjectList({navigation, route}: SubjectListProps) {
       courseId,
       selectedSubjectsId: selectedSubjectsId,
     });
-  }, [selectedSubjects, navigation, authToken, userName, courseId]);
+  }, [selectedUserSubjects, navigation, authToken, userName, courseId]);
 
   useEffect(() => {
     navigation.setOptions({
@@ -107,10 +129,13 @@ function SubjectList({navigation, route}: SubjectListProps) {
     subjectId: number,
     isSelected: boolean,
   ) => {
+    console.log('Toggle subject selection called');
+    console.log('Subject ID:', subjectId);
+    console.log('Is Selected:', isSelected);
     try {
       const endpoint = isSelected
-        ? `enrolled_courses/${courseId}/subjects/${subjectId}/mark_selected`
-        : `enrolled_courses/${courseId}/subjects/${subjectId}/unmark_selected`;
+        ? `enrolled_courses/${courseId}/user_subjects/${subjectId}/mark_selected`
+        : `enrolled_courses/${courseId}/user_subjects/${subjectId}/unmark_selected`;
 
       await axios.put(
         `${baseUrl}/users/${endpoint}`,
@@ -122,10 +147,22 @@ function SubjectList({navigation, route}: SubjectListProps) {
         },
       );
 
-      setSelectedSubjects({
-        ...selectedSubjects,
-        [subjectId]: isSelected,
+      setUserSubjects(prevUserSubjects => {
+        return prevUserSubjects.map(subject => {
+          if (subject.subject_id === subjectId) {
+            return {
+              ...subject,
+              selected: isSelected,
+            };
+          }
+          return subject;
+        });
       });
+
+      setSelectedUserSubjects(prevSelectedUserSubjects => ({
+        ...prevSelectedUserSubjects,
+        [subjectId]: isSelected,
+      }));
     } catch (error) {
       console.error('Error toggling subject selection:', error);
     }
@@ -138,8 +175,8 @@ function SubjectList({navigation, route}: SubjectListProps) {
     try {
       for (const subject of subjects) {
         const endpoint = allSelected
-          ? `enrolled_courses/${courseId}/subjects/${subject.id}/mark_selected`
-          : `enrolled_courses/${courseId}/subjects/${subject.id}/unmark_selected`;
+          ? `enrolled_courses/${courseId}/user_subjects/${subject.id}/mark_selected`
+          : `enrolled_courses/${courseId}/user_subjects/${subject.id}/unmark_selected`;
 
         await axios.put(
           `${baseUrl}/users/${endpoint}`,
@@ -155,7 +192,7 @@ function SubjectList({navigation, route}: SubjectListProps) {
       }
 
       setSelectAllChecked(allSelected);
-      setSelectedSubjects(updatedSelectedSubjects);
+      setSelectedUserSubjects(updatedSelectedSubjects);
     } catch (error) {
       console.error('Error toggling select all:', error);
     }
@@ -174,7 +211,7 @@ function SubjectList({navigation, route}: SubjectListProps) {
               </Text>
               <CheckBox
                 title={'Select All'}
-                checked={Object.values(selectedSubjects).every(
+                checked={Object.values(selectedUserSubjects).every(
                   subject => subject,
                 )}
                 onPress={toggleSelectAll}
@@ -189,11 +226,11 @@ function SubjectList({navigation, route}: SubjectListProps) {
                 <CheckBox
                   key={subject.id}
                   title={subject.name}
-                  checked={selectedSubjects[subject.id]}
+                  checked={selectedUserSubjects[subject.id]}
                   onPress={() =>
                     toggleSubjectSelection(
                       subject.id,
-                      !selectedSubjects[subject.id],
+                      !selectedUserSubjects[subject.id],
                     )
                   }
                   iconType="material-community"
@@ -209,7 +246,7 @@ function SubjectList({navigation, route}: SubjectListProps) {
           <View style={styles.primaryButton}>
             <Text style={styles.totalText}>
               {`You selected ${
-                Object.values(selectedSubjects).filter(selected => selected)
+                Object.values(selectedUserSubjects).filter(selected => selected)
                   .length
               }/${subjects.length} subjects`}
             </Text>
