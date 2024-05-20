@@ -31,10 +31,10 @@ interface CourseProps {
   };
 }
 
-interface Subject {
+interface UserSubject {
   id: number;
-  name: string;
-  description: string;
+  user_id: number;
+  subject_id: number;
   selected: boolean;
 }
 
@@ -217,25 +217,25 @@ function Course({navigation, route}: CourseProps) {
   const navigateToLesson = async (courseId: number) => {
     try {
       const response = await axios.get(
-        `${baseUrl}/users/enrolled_courses/${courseId}/selected_subjects`,
+        `${baseUrl}/users/enrolled_courses/${courseId}/selected_user_subjects`,
         {
           headers: {
             Authorization: `Bearer ${authToken}`,
           },
         },
       );
-      const fetchedSelectedSubjects = response.data.selected_subjects;
-      const fetchedSelectedSubjectsId = fetchedSelectedSubjects.map(
-        (subject: Subject) => subject.id,
+      const fetchedSelectedSubjects = response.data.selected_user_subjects;
+      const fetchedSelectedUserSubjectsId = fetchedSelectedSubjects.map(
+        (userSubject: UserSubject) => userSubject.subject_id,
       );
       navigation.navigate('Lesson', {
         authToken,
         userName,
         courseId,
-        selectedSubjectsId: fetchedSelectedSubjectsId,
+        selectedSubjectsId: fetchedSelectedUserSubjectsId,
       });
     } catch (error) {
-      console.error('Error fetching selected subjects for course:', error);
+      console.error('Error fetching selected user subjects for course:', error);
     }
   };
 
