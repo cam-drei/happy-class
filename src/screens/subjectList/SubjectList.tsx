@@ -37,7 +37,6 @@ function SubjectList({navigation, route}: SubjectListProps) {
   const {authToken, userName, courseId} = route.params;
   const [isLoading, setIsLoading] = useState(true);
   const [subjects, setSubjects] = useState<Subject[]>([]);
-  const [userSubjects, setUserSubjects] = useState<UserSubject[]>([]);
   const [selectedUserSubjects, setSelectedUserSubjects] = useState<{
     [key: number]: boolean;
   }>({});
@@ -46,23 +45,33 @@ function SubjectList({navigation, route}: SubjectListProps) {
   useEffect(() => {
     const fetchSubjects = async () => {
       try {
-        const response = await axios.get(
-          `${baseUrl}/users/enrolled_courses/${courseId}/subjects`,
-          {
+        const [subjectsResponse, selectedSubjectsResponse] = await Promise.all([
+          axios.get(`${baseUrl}/users/enrolled_courses/${courseId}/subjects`, {
             headers: {
               Authorization: `Bearer ${authToken}`,
             },
-          },
-        );
-
-        const initialSubjects = response.data.subjects.map(
-          (subject: Subject) => ({
-            ...subject,
-            selected: selectedUserSubjects[subject.id] || false,
           }),
-        );
+          axios.get(
+            `${baseUrl}/users/enrolled_courses/${courseId}/selected_user_subjects`,
+            {
+              headers: {
+                Authorization: `Bearer ${authToken}`,
+              },
+            },
+          ),
+        ]);
 
-        const sortedSubjects = initialSubjects
+        const fetchedSubjects = subjectsResponse.data.subjects;
+        const fetchedSelectedUserSubjects =
+          selectedSubjectsResponse.data.selected_user_subjects;
+
+        const initialSelectedUserSubjects: {[key: number]: boolean} = {};
+        fetchedSelectedUserSubjects.forEach((userSubject: UserSubject) => {
+          initialSelectedUserSubjects[userSubject.subject_id] =
+            userSubject.selected;
+        });
+
+        const sortedSubjects = fetchedSubjects
           .slice()
           .sort((a: Subject, b: Subject) => {
             if (a.name < b.name) {
@@ -75,15 +84,14 @@ function SubjectList({navigation, route}: SubjectListProps) {
           });
 
         setSubjects(sortedSubjects);
+        setSelectedUserSubjects(initialSelectedUserSubjects);
+        const allSelected =
+          sortedSubjects.length > 0 &&
+          sortedSubjects.every(
+            (subject: Subject) => initialSelectedUserSubjects[subject.id],
+          );
+        setSelectAllChecked(allSelected);
         setIsLoading(false);
-
-        // const initialSelectedSubjects: {[key: number]: boolean} = {};
-        // initialSubjects.forEach((userSubject: UserSubject) => {
-        //   initialSelectedSubjects[userSubject.subject_id] =
-        //     userSubject.selected;
-        // });
-
-        // setSelectedUserSubjects(initialSelectedSubjects);
       } catch (error) {
         console.error('Error fetching subjects:', error);
       }
@@ -92,7 +100,7 @@ function SubjectList({navigation, route}: SubjectListProps) {
     if (authToken) {
       fetchSubjects();
     }
-  }, [authToken, courseId, userSubjects, selectedUserSubjects]);
+  }, [authToken, courseId]);
 
   const navigateToCourse = useCallback(() => {
     const selectedSubjectsId = Object.keys(selectedUserSubjects)
@@ -129,9 +137,6 @@ function SubjectList({navigation, route}: SubjectListProps) {
     subjectId: number,
     isSelected: boolean,
   ) => {
-    console.log('Toggle subject selection called');
-    console.log('Subject ID:', subjectId);
-    console.log('Is Selected:', isSelected);
     try {
       const endpoint = isSelected
         ? `enrolled_courses/${courseId}/user_subjects/${subjectId}/mark_selected`
@@ -147,22 +152,17 @@ function SubjectList({navigation, route}: SubjectListProps) {
         },
       );
 
-      setUserSubjects(prevUserSubjects => {
-        return prevUserSubjects.map(subject => {
-          if (subject.subject_id === subjectId) {
-            return {
-              ...subject,
-              selected: isSelected,
-            };
-          }
-          return subject;
-        });
+      setSelectedUserSubjects(prevSelectedUserSubjects => {
+        const updatedSubjects = {
+          ...prevSelectedUserSubjects,
+          [subjectId]: isSelected,
+        };
+        const allSelected =
+          subjects.length > 0 &&
+          subjects.every(subject => updatedSubjects[subject.id]);
+        setSelectAllChecked(allSelected);
+        return updatedSubjects;
       });
-
-      setSelectedUserSubjects(prevSelectedUserSubjects => ({
-        ...prevSelectedUserSubjects,
-        [subjectId]: isSelected,
-      }));
     } catch (error) {
       console.error('Error toggling subject selection:', error);
     }
@@ -211,9 +211,7 @@ function SubjectList({navigation, route}: SubjectListProps) {
               </Text>
               <CheckBox
                 title={'Select All'}
-                checked={Object.values(selectedUserSubjects).every(
-                  subject => subject,
-                )}
+                checked={selectAllChecked}
                 onPress={toggleSelectAll}
                 iconType="material-community"
                 checkedIcon="checkbox-outline"
