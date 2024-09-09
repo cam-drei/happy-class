@@ -1,3 +1,4 @@
+
 import React, {useState, useEffect, useCallback} from 'react';
 import {View, Linking, ScrollView} from 'react-native';
 import {Text} from '@rneui/base';
@@ -42,11 +43,21 @@ interface Content {
 
 interface SubjectLesson {
   id: number;
-  subject_id: number;
-  lesson_id: number;
-  done: boolean;
+  subject_id: number; //check later
+  lesson_id: number; //check later
   contents: Content[];
-  subject: Subject;
+  subject: Subject; //check later
+  user_subject_lesson: UserSubjectLesson; //check later
+  done: boolean;
+  subject_name: string;
+}
+
+interface UserSubjectLesson {
+  id: number;
+  user_id: number;
+  subject_lesson_id: number;
+  done: boolean;
+  subject_lesson: SubjectLesson;
 }
 
 interface UserLesson {
@@ -64,6 +75,7 @@ interface Lesson {
   subjects: Subject[];
   contents: Content[];
   subject_lessons: SubjectLesson[];
+  user_subject_lessons: UserSubjectLesson[];
 }
 
 function Lesson({navigation, route}: LessonProps) {
@@ -73,11 +85,16 @@ function Lesson({navigation, route}: LessonProps) {
   const [allLessonsTodo, setAllLessonsTodo] = useState(false);
   const [userLessons, setUserLessons] = useState<UserLesson[]>([]);
   const [userLessonsLoading, setUserLessonsLoading] = useState<boolean>(true);
+  const [expandedLessons, setExpandedLessons] = useState<{
+    [key: number]: boolean;
+  }>({});
 
   useEffect(() => {
     const fetchLessons = async () => {
       try {
-        const response = await axios.get(
+        console.log('selectedSubjectsId:', selectedSubjectsId);
+
+        const lessonsResponse = await axios.get(
           `${baseUrl}/users/enrolled_courses/${courseId}/lessons`,
           {
             headers: {
@@ -86,55 +103,8 @@ function Lesson({navigation, route}: LessonProps) {
           },
         );
 
-        const lessonsWithSubjects = await Promise.all(
-          response.data.lessons.map(async (lesson: Lesson) => {
-            const subjectResponse = await axios.get(
-              `${baseUrl}/users/enrolled_courses/${courseId}/lessons/${lesson.id}/subject_lessons`,
-              {
-                headers: {
-                  Authorization: `Bearer ${authToken}`,
-                },
-              },
-            );
-            lesson.subject_lessons = subjectResponse.data.subject_lessons;
-
-            lesson.subject_lessons =
-              lesson.subject_lessons?.filter(subjectLesson =>
-                selectedSubjectsId.includes(subjectLesson.subject_id),
-              ) || [];
-
-            for (let subjectLesson of lesson.subject_lessons) {
-              const contentSubjectResponse = await axios.get(
-                `${baseUrl}/users/enrolled_courses/${courseId}/lessons/${lesson.id}/subject_lessons/${subjectLesson.id}/subject_lesson_contents`,
-                {
-                  headers: {
-                    Authorization: `Bearer ${authToken}`,
-                  },
-                },
-              );
-              subjectLesson.contents =
-                contentSubjectResponse.data.subject_lesson_contents;
-            }
-
-            const lessonContentResponse = await axios.get(
-              `${baseUrl}/users/enrolled_courses/${courseId}/lessons/${lesson.id}/contents`,
-              {
-                headers: {
-                  Authorization: `Bearer ${authToken}`,
-                },
-              },
-            );
-            lesson.contents = lessonContentResponse.data.contents;
-
-            return lesson;
-          }),
-        );
-
-        const filteredLessons = lessonsWithSubjects.filter(
-          (lesson: Lesson) => lesson.subject_lessons.length > 0,
-        );
-
-        setLessons(filteredLessons);
+        console.log('lessonsResponse:', lessonsResponse.data);
+        setLessons(lessonsResponse.data);
         setIsLoading(false);
       } catch (error) {
         console.error('Error fetching enrolled courses:', error);
@@ -158,29 +128,6 @@ function Lesson({navigation, route}: LessonProps) {
       ),
     });
   }, [navigation, userName]);
-
-  const [expandedLessons, setExpandedLessons] = useState<{
-    [key: number]: boolean;
-  }>({});
-
-  useEffect(() => {
-    const initialExpandedState: {[key: number]: boolean} = {};
-    lessons.forEach(lesson => {
-      const isDone = isLessonDone(lesson);
-      const isTodo =
-        lesson.subject_lessons.filter(subjectLesson => subjectLesson.done)
-          .length === 0;
-      initialExpandedState[lesson.id] = isDone || isTodo ? false : true;
-    });
-    setExpandedLessons(initialExpandedState);
-  }, [lessons]);
-
-  const toggleLessonExpansion = (lessonId: number) => {
-    setExpandedLessons(prevState => ({
-      ...prevState,
-      [lessonId]: !prevState[lessonId],
-    }));
-  };
 
   const markLessonAsDone = useCallback(
     async (userLessonId: number) => {
@@ -247,41 +194,78 @@ function Lesson({navigation, route}: LessonProps) {
     }
 
     lessons.forEach(async lesson => {
-      const allSubjectsDone = lesson.subject_lessons.every(
-        subjectLesson => subjectLesson.done,
-      );
-      const correspondingUserLesson = userLessons.find(
-        userLesson => userLesson.lesson_id === lesson.id,
-      );
-      if (!correspondingUserLesson) {
-        console.error('User lesson not found for lesson:', lesson.id);
-        return;
-      }
-      const lessonCompleted = correspondingUserLesson.done;
+      const userLesson = userLessons.find(ul => ul.lesson_id === lesson.id);
+      if (userLesson) {
+        const isDone = lesson.subject_lessons.every(
+          subjectLesson => subjectLesson.user_subject_lesson.done,
+        );
 
-      if (allSubjectsDone && !lessonCompleted) {
-        console.log('Marking lesson as done:', correspondingUserLesson.id);
-        await markLessonAsDone(correspondingUserLesson.id);
-      } else if (!allSubjectsDone && lessonCompleted) {
-        console.log('Unmarking lesson as done:', correspondingUserLesson.id);
-        await unmarkLessonAsDone(correspondingUserLesson.id);
+        if (isDone && !userLesson.done) {
+          await markLessonAsDone(userLesson.id);
+        } else if (!isDone && userLesson.done) {
+          await unmarkLessonAsDone(userLesson.id);
+        }
       }
     });
   }, [
     lessons,
     userLessons,
+    userLessonsLoading,
     markLessonAsDone,
     unmarkLessonAsDone,
-    userLessonsLoading,
   ]);
 
-  const markSubjectAsDone = async (
+  const markUserSubjectAsDone = useCallback(
+    async (lessonId: number, userSubjectLessonId: number) => {
+      if (!userSubjectLessonId) {
+        console.error('userSubjectLessonId is undefined');
+        return;
+      }
+
+      try {
+        await axios.put(
+          `${baseUrl}/users/enrolled_courses/${courseId}/lessons/${lessonId}/user_subject_lessons/${userSubjectLessonId}/mark_done`,
+          {},
+          {
+            headers: {
+              Authorization: `Bearer ${authToken}`,
+            },
+          },
+        );
+
+        setLessons(prevLessons =>
+          prevLessons.map(lesson =>
+            lesson.id === lessonId
+              ? {
+                  ...lesson,
+                  subject_lessons: lesson.subject_lessons.map(subjectLesson =>
+                    subjectLesson.id === userSubjectLessonId
+                      ? {
+                          ...subjectLesson,
+                          done: true,
+                        }
+                      : subjectLesson,
+                  ),
+                }
+              : lesson,
+          ),
+        );
+
+        console.log('User subject lesson marked as done successfully');
+      } catch (error) {
+        console.error('Error marking user subject lesson as done:', error);
+      }
+    },
+    [authToken, courseId],
+  );
+
+  const unmarkUserSubjectAsDone = async (
     lessonId: number,
-    subjectLessonId: number,
+    userSubjectLessonId: number,
   ) => {
     try {
       await axios.put(
-        `${baseUrl}/users/enrolled_courses/${courseId}/lessons/${lessonId}/subject_lessons/${subjectLessonId}/mark_done`,
+        `${baseUrl}/users/enrolled_courses/${courseId}/lessons/${lessonId}/user_subject_lessons/${userSubjectLessonId}/unmark_done`,
         {},
         {
           headers: {
@@ -296,41 +280,7 @@ function Lesson({navigation, route}: LessonProps) {
             ? {
                 ...lesson,
                 subject_lessons: lesson.subject_lessons.map(subjectLesson =>
-                  subjectLesson.id === subjectLessonId
-                    ? {...subjectLesson, done: true}
-                    : subjectLesson,
-                ),
-              }
-            : lesson,
-        ),
-      );
-    } catch (error) {
-      console.error('Error marking subject as done:', error);
-    }
-  };
-
-  const unmarkSubjectAsDone = async (
-    lessonId: number,
-    subjectLessonId: number,
-  ) => {
-    try {
-      await axios.put(
-        `${baseUrl}/users/enrolled_courses/${courseId}/lessons/${lessonId}/subject_lessons/${subjectLessonId}/unmark_done`,
-        {},
-        {
-          headers: {
-            Authorization: `Bearer ${authToken}`,
-          },
-        },
-      );
-
-      setLessons(prevLessons =>
-        prevLessons.map(lesson =>
-          lesson.id === lessonId
-            ? {
-                ...lesson,
-                subject_lessons: lesson.subject_lessons.map(subjectLesson =>
-                  subjectLesson.id === subjectLessonId
+                  subjectLesson.id === userSubjectLessonId
                     ? {...subjectLesson, done: false}
                     : subjectLesson,
                 ),
@@ -338,8 +288,10 @@ function Lesson({navigation, route}: LessonProps) {
             : lesson,
         ),
       );
+
+      console.log('User subject lesson marked as not done successfully');
     } catch (error) {
-      console.error('Error marking subject as not done:', error);
+      console.error('Error marking user subject as not done:', error);
     }
   };
 
@@ -360,27 +312,26 @@ function Lesson({navigation, route}: LessonProps) {
     subjectLessonId: number,
   ) => {
     navigation.navigate('VideoScreen', {videoLink, videoName});
-    markSubjectAsDone(lessonId, subjectLessonId);
+    markUserSubjectAsDone(lessonId, subjectLessonId);
   };
 
   const openResourceLinkForSubject = (resourceLink: string) => {
     Linking.openURL(resourceLink);
   };
 
-  const isLessonDone = (lesson: Lesson) => {
-    return lesson.subject_lessons.every(
-      (subjectLesson: SubjectLesson) => subjectLesson.done,
-    );
-  };
-
   const getLessonStatus = (lesson: Lesson): 'InProgress' | 'Done' | 'Todo' => {
-    const allSubjectsDone = lesson.subject_lessons.every(
-      subjectLesson => subjectLesson.done,
+    if (!Array.isArray(lesson.user_subject_lessons)) {
+      return 'Todo';
+    }
+    const allSubjectsDone = lesson.user_subject_lessons.every(
+      userSubjectLesson => userSubjectLesson.done,
     );
     if (allSubjectsDone) {
       return 'Done';
     } else if (
-      lesson.subject_lessons.some(subjectLesson => subjectLesson.done)
+      lesson.user_subject_lessons.some(
+        userSubjectLesson => userSubjectLesson.done,
+      )
     ) {
       return 'InProgress';
     } else {
@@ -399,8 +350,13 @@ function Lesson({navigation, route}: LessonProps) {
     }
 
     const getNumber = (lessonName: string) => {
-      const match = lessonName.match(/\d+/);
-      return match ? parseInt(match[0], 10) : 0;
+      if (typeof lessonName === 'string') {
+        const match = lessonName.match(/\d+/);
+        return match ? parseInt(match[0], 10) : 0;
+      } else {
+        console.warn('Invalid lessonName:', lessonName);
+        return 0;
+      }
     };
 
     const numberA = getNumber(a.name);
@@ -417,126 +373,108 @@ function Lesson({navigation, route}: LessonProps) {
   }, [sortedLessons]);
 
   const navigateToSubjectList = () => {
-    navigation.navigate('SubjectList', {authToken, userName, courseId});
+    navigation.navigate('SubjectList');
+  };
+
+  const toggleLessonExpansion = (lessonId: number) => {
+    setExpandedLessons(prevState => ({
+      ...prevState,
+      [lessonId]: !prevState[lessonId],
+    }));
   };
 
   return (
-    <View style={styles.container}>
-      <ScrollView contentContainerStyle={styles.scrollViewContainer}>
-        {isLoading ? (
-          <LoadingIndicator />
-        ) : (
-          <>
-            {allLessonsTodo && (
-              <View style={styles.reviewSubjectBtn}>
-                <PrimaryButton
-                  text="Review your Subjetcs"
-                  buttonType={'outlined'}
-                  onPress={() => navigateToSubjectList()}
-                />
-              </View>
-            )}
-            {sortedLessons.length > 0 ? (
-              sortedLessons.map(lesson => (
-                <View key={lesson.id} style={styles.box}>
-                  <View style={styles.titleLessonView}>
-                    <View style={styles.titleView}>
-                      <View style={styles.arrowButton}>
-                        <MaterialIcons
-                          name={
-                            expandedLessons[lesson.id]
-                              ? 'arrow-drop-up'
-                              : 'arrow-drop-down'
-                          }
-                          size={40}
-                          color={isLessonDone(lesson) ? '#A9A9A9' : '#4F7942'}
-                          onPress={() => toggleLessonExpansion(lesson.id)}
-                        />
-                      </View>
+    <ScrollView contentContainerStyle={styles.scrollViewContainer}>
+      {isLoading ? (
+        <LoadingIndicator />
+      ) : (
+        <>
+          {allLessonsTodo && (
+            <View style={styles.reviewSubjectBtn}>
+              <PrimaryButton
+                text="Review your Subjects"
+                buttonType={'outlined'}
+                onPress={navigateToSubjectList}
+              />
+            </View>
+          )}
+          {sortedLessons.length > 0 ? (
+            sortedLessons.map(lesson => (
+              <View key={lesson.id} style={styles.box}>
+                <View style={styles.titleLessonView}>
+                  <View style={styles.titleView}>
+                    <View style={styles.arrowButton}>
+                      <MaterialIcons
+                        name={
+                          expandedLessons[lesson.id]
+                            ? 'arrow-drop-up'
+                            : 'arrow-drop-down'
+                        }
+                        size={40}
+                        color={lesson.done ? '#A9A9A9' : '#4F7942'}
+                        onPress={() => toggleLessonExpansion(lesson.id)}
+                      />
+                    </View>
+                    <Text style={styles.boxTitle}>
+                      {lesson.name}
                       <Text
                         style={[
-                          styles.boxTitle,
-                          isLessonDone(lesson) && styles.doneTextColor,
+                          styles.statusText,
+                          getLessonStatus(lesson) === 'Done' &&
+                            styles.doneTextColor,
                         ]}>
-                        {lesson.name}
-                        <Text
-                          style={[
-                            styles.statusText,
-                            styles.statusColor,
-                            lesson.subject_lessons.filter(
-                              subjectLesson => subjectLesson.done,
-                            ).length === 0 && styles.todoTextColor,
-                            isLessonDone(lesson) && styles.doneTextColor,
-                          ]}>
-                          {lesson.subject_lessons.filter(
-                            subjectLesson => subjectLesson.done,
-                          ).length === 0
-                            ? ' (Todo)'
-                            : isLessonDone(lesson)
-                            ? ' (Done)'
-                            : ' (In progress)'}
-                        </Text>
+                        {` (${getLessonStatus(lesson)})`}
                       </Text>
-                    </View>
-                    {lesson.contents.map(content => (
-                      <View key={content.id} style={styles.iconTitleGroup}>
-                        {content.video_link && (
-                          <Feather
-                            name="video"
-                            size={30}
-                            color={lesson.done ? '#A9A9A9' : '#4F7942'}
-                            onPress={() =>
-                              handleVideoPlayForLesson(
-                                content.video_link,
-                                lesson.name,
-                              )
-                            }
-                          />
-                        )}
-                        {content.document_link && (
-                          <FontAwesome
-                            name="book"
-                            style={styles.paddingLeftIcon}
-                            size={30}
-                            color={lesson.done ? '#A9A9A9' : '#4F7942'}
-                            onPress={() =>
-                              openResourceLinkForLesson(content.document_link)
-                            }
-                          />
-                        )}
-                      </View>
-                    ))}
+                    </Text>
                   </View>
-                  <Text
-                    style={[
-                      styles.normalSizeText,
-                      styles.progressText,
-                      isLessonDone(lesson) && styles.doneTextColor,
-                    ]}>
-                    {'Progress: '}
-                    {
-                      lesson.subject_lessons.filter(
-                        subjectLesson => subjectLesson.done,
-                      ).length
-                    }
-                    /{lesson.subject_lessons.length}
-                    {lesson.subject_lessons.length <= 1
-                      ? ' subject'
-                      : ' subjects'}
-                  </Text>
-                  {expandedLessons[lesson.id] && (
-                    <>
-                      {lesson.subject_lessons.map(subjectLesson => (
-                        <View key={subjectLesson.id}>
+
+                  {lesson.contents?.map((content, contentIndex) => (
+                    <View
+                      key={`${lesson.id}-${content.id}-${contentIndex}`}
+                      style={styles.iconTitleGroup}>
+                      {content.video_link && (
+                        <Feather
+                          name="video"
+                          size={30}
+                          color={lesson.done ? '#A9A9A9' : '#4F7942'}
+                          onPress={() =>
+                            handleVideoPlayForLesson(
+                              content.video_link,
+                              lesson.name,
+                            )
+                          }
+                        />
+                      )}
+                      {content.document_link && (
+                        <FontAwesome
+                          name="book"
+                          style={styles.paddingLeftIcon}
+                          size={30}
+                          color={lesson.done ? '#A9A9A9' : '#4F7942'}
+                          onPress={() =>
+                            openResourceLinkForLesson(content.document_link)
+                          }
+                        />
+                      )}
+                    </View>
+                  ))}
+                </View>
+
+                {expandedLessons[lesson.id] && (
+                  <>
+                    {lesson.subject_lessons?.map(
+                      (subjectLesson, subjectIndex) => (
+                        <View
+                          key={`${lesson.id}-${subjectLesson.id}-${subjectIndex}`}>
                           <View style={styles.subjectContainer}>
                             <Text
                               style={[
                                 styles.normalSizeText,
                                 subjectLesson.done && styles.doneTextColor,
                               ]}>
-                              {subjectLesson.subject.name}
+                              {subjectLesson.subject_name}
                             </Text>
-                            {subjectLesson.contents.map(content => (
+                            {subjectLesson.contents?.map(content => (
                               <View
                                 key={content.id}
                                 style={styles.iconSubjectContainer}>
@@ -550,7 +488,7 @@ function Lesson({navigation, route}: LessonProps) {
                                     onPress={() =>
                                       handleVideoPlayForSubject(
                                         content.video_link,
-                                        subjectLesson.subject.name,
+                                        subjectLesson.subject_name,
                                         lesson.id,
                                         subjectLesson.id,
                                       )
@@ -581,12 +519,12 @@ function Lesson({navigation, route}: LessonProps) {
                                   style={styles.paddingLeftIcon}
                                   onPress={() => {
                                     if (subjectLesson.done) {
-                                      unmarkSubjectAsDone(
+                                      unmarkUserSubjectAsDone(
                                         lesson.id,
                                         subjectLesson.id,
                                       );
                                     } else {
-                                      markSubjectAsDone(
+                                      markUserSubjectAsDone(
                                         lesson.id,
                                         subjectLesson.id,
                                       );
@@ -598,18 +536,18 @@ function Lesson({navigation, route}: LessonProps) {
                           </View>
                           <Line />
                         </View>
-                      ))}
-                    </>
-                  )}
-                </View>
-              ))
-            ) : (
-              <Text h4>No lessons.</Text>
-            )}
-          </>
-        )}
-      </ScrollView>
-    </View>
+                      ),
+                    )}
+                  </>
+                )}
+              </View>
+            ))
+          ) : (
+            <Text h4>No lessons available.</Text>
+          )}
+        </>
+      )}
+    </ScrollView>
   );
 }
 
