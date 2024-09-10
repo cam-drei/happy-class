@@ -424,7 +424,11 @@ function Lesson({navigation, route}: LessonProps) {
                             : 'arrow-drop-down'
                         }
                         size={40}
-                        color={lesson.done ? '#A9A9A9' : '#4F7942'}
+                        color={
+                          getLessonStatus(lesson) === 'Done'
+                            ? '#A9A9A9'
+                            : '#4F7942'
+                        }
                         onPress={() => toggleLessonExpansion(lesson.id)}
                       />
                     </View>
