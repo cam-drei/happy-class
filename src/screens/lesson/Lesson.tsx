@@ -389,6 +389,18 @@ function Lesson({navigation, route}: LessonProps) {
     navigation.navigate('SubjectList');
   };
 
+  useEffect(() => {
+    const initialExpandedState: {[key: number]: boolean} = {};
+    lessons.forEach(lesson => {
+      const isDone = getLessonStatus(lesson) === 'Done';
+      const isTodo =
+        lesson.subject_lessons.filter(subjectLesson => subjectLesson.done)
+          .length === 0;
+      initialExpandedState[lesson.id] = isDone || isTodo ? false : true;
+    });
+    setExpandedLessons(initialExpandedState);
+  }, [lessons]);
+
   const toggleLessonExpansion = (lessonId: number) => {
     setExpandedLessons(prevState => ({
       ...prevState,
