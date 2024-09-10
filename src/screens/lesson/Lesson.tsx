@@ -470,7 +470,11 @@ function Lesson({navigation, route}: LessonProps) {
                           <Feather
                             name="video"
                             size={30}
-                            color={lesson.done ? '#A9A9A9' : '#4F7942'}
+                            color={
+                              getLessonStatus(lesson) === 'Done'
+                                ? '#A9A9A9'
+                                : '#4F7942'
+                            }
                             onPress={() =>
                               handleVideoPlayForLesson(
                                 content.video_link,
@@ -484,7 +488,11 @@ function Lesson({navigation, route}: LessonProps) {
                             name="book"
                             style={styles.paddingLeftIcon}
                             size={30}
-                            color={lesson.done ? '#A9A9A9' : '#4F7942'}
+                            color={
+                              getLessonStatus(lesson) === 'Done'
+                                ? '#A9A9A9'
+                                : '#4F7942'
+                            }
                             onPress={() =>
                               openResourceLinkForLesson(content.document_link)
                             }
@@ -497,7 +505,8 @@ function Lesson({navigation, route}: LessonProps) {
                     style={[
                       styles.normalSizeText,
                       styles.progressText,
-                      getLessonStatus(lesson) === 'Done' && styles.doneTextColor,
+                      getLessonStatus(lesson) === 'Done' &&
+                        styles.doneTextColor,
                     ]}>
                     {'Progress: '}
                     {
@@ -533,7 +542,9 @@ function Lesson({navigation, route}: LessonProps) {
                                       name="play-circle"
                                       size={30}
                                       color={
-                                        subjectLesson.done ? '#A9A9A9' : '#FF9900'
+                                        subjectLesson.done
+                                          ? '#A9A9A9'
+                                          : '#FF9900'
                                       }
                                       onPress={() =>
                                         handleVideoPlayForSubject(
