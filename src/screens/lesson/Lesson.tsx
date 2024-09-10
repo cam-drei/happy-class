@@ -320,22 +320,35 @@ function Lesson({navigation, route}: LessonProps) {
   };
 
   const getLessonStatus = (lesson: Lesson): 'InProgress' | 'Done' | 'Todo' => {
-    if (!Array.isArray(lesson.user_subject_lessons)) {
+    const subjectLessons = lesson.subject_lessons || [];
+
+    if (subjectLessons.length === 0) {
       return 'Todo';
     }
-    const allSubjectsDone = lesson.user_subject_lessons.every(
-      userSubjectLesson => userSubjectLesson.done,
+
+    const allSubjectsDone = subjectLessons.every(
+      subjectLesson => subjectLesson.done === true,
     );
     if (allSubjectsDone) {
       return 'Done';
     } else if (
-      lesson.user_subject_lessons.some(
-        userSubjectLesson => userSubjectLesson.done,
-      )
+      subjectLessons.some(subjectLesson => subjectLesson.done === true)
     ) {
       return 'InProgress';
     } else {
       return 'Todo';
+    }
+  };
+
+  const getStatusColor = (status: 'InProgress' | 'Done' | 'Todo') => {
+    switch (status) {
+      case 'Done':
+        return '#A9A9A9'; // Gray for Done
+      case 'InProgress':
+        return '#FF9900'; // Orange for InProgress
+      case 'Todo':
+      default:
+        return '#000000'; // Black for Todo
     }
   };
 
@@ -420,10 +433,9 @@ function Lesson({navigation, route}: LessonProps) {
                       <Text
                         style={[
                           styles.statusText,
-                          getLessonStatus(lesson) === 'Done' &&
-                            styles.doneTextColor,
+                          {color: getStatusColor(getLessonStatus(lesson))},
                         ]}>
-                        {` (${getLessonStatus(lesson)})`}
+                        {`  (${getLessonStatus(lesson)})`}
                       </Text>
                     </Text>
                   </View>

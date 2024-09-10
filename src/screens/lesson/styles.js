@@ -75,12 +75,6 @@ const styles = StyleSheet.create({
   animatedLessonView: {
     overflow: 'scroll',
   },
-  doneTextColor: {
-    color: '#A9A9A9',
-  },
-  todoTextColor: {
-    color: '#000000',
-  },
   reviewSubjectBtn: {
     alignItems: 'center',
     justifyContent: 'center',
