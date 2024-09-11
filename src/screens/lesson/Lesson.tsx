@@ -386,7 +386,7 @@ function Lesson({navigation, route}: LessonProps) {
   }, [sortedLessons]);
 
   const navigateToSubjectList = () => {
-    navigation.navigate('SubjectList');
+    navigation.navigate('SubjectList', {authToken, userName, courseId});
   };
 
   useEffect(() => {
