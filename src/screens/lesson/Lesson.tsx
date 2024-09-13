@@ -100,6 +100,9 @@ function Lesson({navigation, route}: LessonProps) {
             headers: {
               Authorization: `Bearer ${authToken}`,
             },
+            params: {
+              selected_subject_ids: selectedSubjectsId,
+            },
           },
         );
 
@@ -107,7 +110,7 @@ function Lesson({navigation, route}: LessonProps) {
         setLessons(lessonsResponse.data);
         setIsLoading(false);
       } catch (error) {
-        console.error('Error fetching enrolled courses:', error);
+        console.error('Error fetching lessons:', error);
       }
     };
 
