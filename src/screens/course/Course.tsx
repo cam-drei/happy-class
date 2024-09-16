@@ -287,7 +287,7 @@ function Course({navigation, route}: CourseProps) {
 
         setLessons(prevLessons => ({
           ...prevLessons,
-          [courseId]: response.data.lessons,
+          [courseId]: response.data,
         }));
       } catch (error) {
         console.error('Error fetching lessons for course:', error);
@@ -320,10 +320,9 @@ function Course({navigation, route}: CourseProps) {
 
   const getDoneLessons = (courseId: number) => {
     const lessonsForCourse = lessons[courseId];
-    if (!lessonsForCourse) {
-      return 0;
-    }
-    return lessonsForCourse.filter(lesson => lesson.done).length;
+    return lessonsForCourse
+      ? lessonsForCourse.filter(lesson => lesson.done).length
+      : 0;
   };
 
   const isCourseDone = (courseId: number) => {
