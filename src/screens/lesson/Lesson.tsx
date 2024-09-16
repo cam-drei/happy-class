@@ -322,7 +322,7 @@ function Lesson({navigation, route}: LessonProps) {
     Linking.openURL(resourceLink);
   };
 
-  const getLessonStatus = (lesson: Lesson): 'InProgress' | 'Done' | 'Todo' => {
+  const getLessonStatus = (lesson: Lesson): 'In Progress' | 'Done' | 'Todo' => {
     const subjectLessons = lesson.subject_lessons || [];
 
     if (subjectLessons.length === 0) {
@@ -337,17 +337,17 @@ function Lesson({navigation, route}: LessonProps) {
     } else if (
       subjectLessons.some(subjectLesson => subjectLesson.done === true)
     ) {
-      return 'InProgress';
+      return 'In Progress';
     } else {
       return 'Todo';
     }
   };
 
-  const getStatusColor = (status: 'InProgress' | 'Done' | 'Todo') => {
+  const getStatusColor = (status: 'In Progress' | 'Done' | 'Todo') => {
     switch (status) {
       case 'Done':
         return '#A9A9A9'; // Gray for Done
-      case 'InProgress':
+      case 'In Progress':
         return '#FF9900'; // Orange for InProgress
       case 'Todo':
       default:
@@ -356,7 +356,7 @@ function Lesson({navigation, route}: LessonProps) {
   };
 
   const sortedLessons = lessons.slice().sort((a, b) => {
-    const statusOrder = {InProgress: 0, Todo: 1, Done: 2};
+    const statusOrder = {'In Progress': 0, Todo: 1, Done: 2};
 
     const aStatus = getLessonStatus(a);
     const bStatus = getLessonStatus(b);
