@@ -94,89 +94,85 @@ function Course({navigation, route}: CourseProps) {
     }, [authToken]),
   );
 
-  useEffect(() => {
-    const fetchCourseStatuses = async () => {
-      try {
-        if (!enrolledCourses) {
-          console.log('Enrolled courses is undefined or null.');
-          return;
-        }
-
-        if (enrolledCourses.length === 0) {
-          console.log('No enrolled courses found.');
-          setIsLoading(false);
-          return;
-        }
-
-        const promises = enrolledCourses.map(async course => {
-          const response = await axios.get(
-            `${baseUrl}/users/enrolled_courses/${course.id}/status`,
-            {
-              headers: {
-                Authorization: `Bearer ${authToken}`,
-              },
-            },
-          );
-          return {courseId: course.id, status: response.data.status};
-        });
-
-        const courseStatusData = await Promise.all(promises);
-        const statusMap: {[courseId: number]: string} = {};
-        courseStatusData.forEach(item => {
-          statusMap[item.courseId] = item.status;
-        });
-
-        setCourseStatuses(statusMap);
-
-        const sortedCourses = enrolledCourses.sort((a, b) => {
-          const statusComparison =
-            getStatusValue(statusMap[a.id]) - getStatusValue(statusMap[b.id]);
-
-          if (statusComparison === 0) {
-            const aNameLower = a.name.toLowerCase();
-            const bNameLower = b.name.toLowerCase();
-
-            if (
-              aNameLower.startsWith('abeka k') &&
-              !bNameLower.startsWith('abeka k')
-            ) {
-              return -1;
-            }
-            if (
-              bNameLower.startsWith('abeka k') &&
-              !aNameLower.startsWith('abeka k')
-            ) {
-              return 1;
-            }
-
-            const aNumber = getNumber(a.name);
-            const bNumber = getNumber(b.name);
-            return aNumber - bNumber;
+  useFocusEffect(
+    useCallback(() => {
+      const fetchCourseStatuses = async () => {
+        try {
+          if (!enrolledCourses) {
+            console.log('Enrolled courses is undefined or null.');
+            return;
           }
 
-          return statusComparison;
-        });
+          if (enrolledCourses.length === 0) {
+            console.log('No enrolled courses found.');
+            setIsLoading(false);
+            return;
+          }
 
-        setEnrolledCourses(sortedCourses);
-        setIsLoading(false);
-      } catch (error) {
-        console.error('Error fetching course statuses:', error);
-        setIsLoading(false);
-        Alert.alert(
-          'Error',
-          'An error occurred while fetching course statuses.',
-        );
-      }
-    };
+          const promises = enrolledCourses.map(async course => {
+            const response = await axios.get(
+              `${baseUrl}/users/enrolled_courses/${course.id}/status`,
+              {
+                headers: {
+                  Authorization: `Bearer ${authToken}`,
+                },
+              },
+            );
+            return {courseId: course.id, status: response.data.status};
+          });
 
-    if (enrolledCourses && enrolledCourses.length > 0) {
-      console.log('Calling fetchCourseStatuses...');
+          const courseStatusData = await Promise.all(promises);
+          const statusMap: {[courseId: number]: string} = {};
+          courseStatusData.forEach(item => {
+            statusMap[item.courseId] = item.status;
+          });
+
+          setCourseStatuses(statusMap);
+
+          const sortedCourses = enrolledCourses.sort((a, b) => {
+            const statusComparison =
+              getStatusValue(statusMap[a.id]) - getStatusValue(statusMap[b.id]);
+
+            if (statusComparison === 0) {
+              const aNameLower = a.name.toLowerCase();
+              const bNameLower = b.name.toLowerCase();
+
+              if (
+                aNameLower.startsWith('abeka k') &&
+                !bNameLower.startsWith('abeka k')
+              ) {
+                return -1;
+              }
+              if (
+                bNameLower.startsWith('abeka k') &&
+                !aNameLower.startsWith('abeka k')
+              ) {
+                return 1;
+              }
+
+              const aNumber = getNumber(a.name);
+              const bNumber = getNumber(b.name);
+              return aNumber - bNumber;
+            }
+
+            return statusComparison;
+          });
+
+          setEnrolledCourses(sortedCourses);
+          setIsLoading(false);
+        } catch (error) {
+          console.error('Error fetching course statuses:', error);
+          setIsLoading(false);
+          Alert.alert(
+            'Error',
+            'An error occurred while fetching course statuses.',
+          );
+        }
+      };
+
       fetchCourseStatuses();
-    } else {
-      setIsLoading(false);
-      console.log('No enrolled courses found.');
-    }
-  }, [authToken, enrolledCourses]);
+    }, [authToken, enrolledCourses]),
+  );
 
   const getStatusValue = (status: string): number => {
     switch (status.toLowerCase()) {
