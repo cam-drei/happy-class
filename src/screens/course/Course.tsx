@@ -418,13 +418,15 @@ function Course({navigation, route}: CourseProps) {
                             ? ' lesson'
                             : ' lessons'}
                         </Text>
-
                         <Text
                           style={[
                             styles.statusText,
-                            getDoneLessons(course.id) === 0 &&
+                            courseStatuses[course.id] === 'Todo' &&
                               styles.todoTextColor,
-                            isCourseDone(course.id) && styles.doneColor,
+                            courseStatuses[course.id] === 'Done' &&
+                              styles.doneColor,
+                            courseStatuses[course.id] === 'In Progress' &&
+                              styles.inProgressColor,
                           ]}>
                           Status: {courseStatuses[course.id]}
                         </Text>

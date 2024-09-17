@@ -92,8 +92,6 @@ function Lesson({navigation, route}: LessonProps) {
   useEffect(() => {
     const fetchLessons = async () => {
       try {
-        console.log('selectedSubjectsId:', selectedSubjectsId);
-
         const lessonsResponse = await axios.get(
           `${baseUrl}/users/enrolled_courses/${courseId}/lessons`,
           {

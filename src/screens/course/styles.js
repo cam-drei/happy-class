@@ -48,6 +48,9 @@ const styles = StyleSheet.create({
   todoTextColor: {
     color: '#000000',
   },
+  inProgressColor: {
+    color: '#FF9900',
+  },
   scrollView: {
     flexGrow: 0,
     minHeight: 50,
