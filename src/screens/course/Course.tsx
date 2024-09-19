@@ -68,23 +68,39 @@ function Course({navigation, route}: CourseProps) {
     return match ? parseInt(match[0], 10) : 0;
   };
 
+  const getStatusValue = useCallback((status: string | undefined): number => {
+    if (!status) {
+      return 5;
+    }
+
+    switch (status.toLowerCase()) {
+      case 'in progress':
+        return 1;
+      case 'todo':
+        return 2;
+      case 'done':
+        return 3;
+      case 'no lesson':
+        return 4;
+      default:
+        return 5;
+    }
+  }, []);
+
   useFocusEffect(
     useCallback(() => {
       const fetchEnrolledCourses = async () => {
         try {
           const response = await axios.get(
             `${baseUrl}/users/enrolled_courses`,
-            {
-              headers: {
-                Authorization: `Bearer ${authToken}`,
-              },
-            },
+            {headers: {Authorization: `Bearer ${authToken}`}},
           );
-
           setEnrolledCourses(response.data.enrolled_courses);
-          setIsLoading(false);
         } catch (error) {
           console.error('Error fetching enrolled courses:', error);
+          Alert.alert('Error', 'Failed to fetch enrolled courses.');
+        } finally {
+          setIsLoading(false);
         }
       };
 
@@ -158,7 +174,7 @@ function Course({navigation, route}: CourseProps) {
             return statusComparison;
           });
 
-          setEnrolledCourses(sortedCourses);
+          setEnrolledCourses([...sortedCourses]);
           setIsLoading(false);
         } catch (error) {
           console.error('Error fetching course statuses:', error);
@@ -171,36 +187,102 @@ function Course({navigation, route}: CourseProps) {
       };
 
       fetchCourseStatuses();
-    }, [authToken, enrolledCourses]),
+    }, [authToken, enrolledCourses, getStatusValue]),
   );
 
-  const getStatusValue = (status: string): number => {
-    switch (status.toLowerCase()) {
-      case 'in progress':
-        return 1;
-      case 'todo':
-        return 2;
-      case 'done':
-        return 3;
-      case 'no lessons':
-        return 4;
-      default:
-        return 5;
-    }
-  };
+  useEffect(() => {
+    const fetchData = async () => {
+      const promises = enrolledCourses.map(async course => {
+        const [contentResponse, lessonResponse] = await Promise.all([
+          axios.get(`${baseUrl}/users/enrolled_courses/${course.id}/contents`, {
+            headers: {
+              Authorization: `Bearer ${authToken}`,
+            },
+          }),
+          axios.get(`${baseUrl}/users/enrolled_courses/${course.id}/lessons`, {
+            headers: {
+              Authorization: `Bearer ${authToken}`,
+            },
+          }),
+        ]);
 
-  const navigateToUser = useCallback(() => {
-    navigation.navigate('Welcome', {
-      authToken,
-      userName,
-      selectedCoursesId,
-    });
-  }, [navigation, authToken, userName, selectedCoursesId]);
+        setContents(prev => ({
+          ...prev,
+          [course.id]: contentResponse.data.contents,
+        }));
+        setLessons(prev => ({
+          ...prev,
+          [course.id]: lessonResponse.data,
+        }));
+      });
+
+      await Promise.all(promises);
+    };
+
+    if (enrolledCourses.length) {
+      fetchData();
+    }
+  }, [authToken, enrolledCourses]);
+
+  const navigateToLesson = useCallback(
+    async (courseId: number) => {
+      try {
+        const response = await axios.get(
+          `${baseUrl}/users/enrolled_courses/${courseId}/selected_user_subjects`,
+          {
+            headers: {
+              Authorization: `Bearer ${authToken}`,
+            },
+          },
+        );
+        const selectedSubjectsId = response.data.selected_user_subjects.map(
+          (userSubject: UserSubject) => userSubject.subject_id,
+        );
+        navigation.navigate('Lesson', {
+          authToken,
+          userName,
+          courseId,
+          selectedSubjectsId,
+        });
+      } catch (error) {
+        console.error('Error fetching selected user subjects:', error);
+      }
+    },
+    [authToken, navigation, userName],
+  );
+
+  const navigateToSubjectList = useCallback(
+    (courseId: number) => {
+      navigation.navigate('SubjectList', {
+        authToken,
+        userName,
+        courseId,
+      });
+    },
+    [authToken, navigation, userName],
+  );
+
+  const getTotalLessons = (courseId: number) => lessons[courseId]?.length || 0;
+  const getDoneLessons = (courseId: number) =>
+    lessons[courseId]?.filter(lesson => lesson.done).length || 0;
+
+  const isCourseDone = (courseId: number) =>
+    getTotalLessons(courseId) === getDoneLessons(courseId);
 
   useEffect(() => {
     navigation.setOptions({
       headerTitle: '',
-      headerLeft: () => <HeaderLeft onPress={navigateToUser} />,
+      headerLeft: () => (
+        <HeaderLeft
+          onPress={() =>
+            navigation.navigate('Welcome', {
+              authToken,
+              userName,
+              selectedCoursesId,
+            })
+          }
+        />
+      ),
       headerRight: () => (
         <HeaderRight
           userName={userName}
@@ -208,96 +290,7 @@ function Course({navigation, route}: CourseProps) {
         />
       ),
     });
-  }, [navigation, userName, navigateToUser]);
-
-  const navigateToLesson = async (courseId: number) => {
-    try {
-      const response = await axios.get(
-        `${baseUrl}/users/enrolled_courses/${courseId}/selected_user_subjects`,
-        {
-          headers: {
-            Authorization: `Bearer ${authToken}`,
-          },
-        },
-      );
-      const fetchedSelectedSubjects = response.data.selected_user_subjects;
-      const fetchedSelectedUserSubjectsId = fetchedSelectedSubjects.map(
-        (userSubject: UserSubject) => userSubject.subject_id,
-      );
-      navigation.navigate('Lesson', {
-        authToken,
-        userName,
-        courseId,
-        selectedSubjectsId: fetchedSelectedUserSubjectsId,
-      });
-    } catch (error) {
-      console.error('Error fetching selected user subjects for course:', error);
-    }
-  };
-
-  const navigateToSubjectList = (courseId: number) => {
-    navigation.navigate('SubjectList', {authToken, userName, courseId});
-  };
-
-  useEffect(() => {
-    const fetchContentsForCourse = async (courseId: number) => {
-      try {
-        const response = await axios.get(
-          `${baseUrl}/users/enrolled_courses/${courseId}/contents`,
-          {
-            headers: {
-              Authorization: `Bearer ${authToken}`,
-            },
-          },
-        );
-
-        setContents(prevContents => ({
-          ...prevContents,
-          [courseId]: response.data.contents,
-        }));
-      } catch (error) {
-        console.error('Error fetching contents for course:', error);
-      }
-    };
-
-    if (enrolledCourses && enrolledCourses.length > 0) {
-      enrolledCourses.forEach(course => {
-        fetchContentsForCourse(course.id);
-      });
-    } else {
-      console.log('No enrolled courses found.');
-    }
-  }, [authToken, enrolledCourses]);
-
-  useEffect(() => {
-    const fetchLessonsForCourse = async (courseId: number) => {
-      try {
-        const response = await axios.get(
-          `${baseUrl}/users/enrolled_courses/${courseId}/lessons`,
-          {
-            headers: {
-              Authorization: `Bearer ${authToken}`,
-            },
-          },
-        );
-
-        setLessons(prevLessons => ({
-          ...prevLessons,
-          [courseId]: response.data,
-        }));
-      } catch (error) {
-        console.error('Error fetching lessons for course:', error);
-      }
-    };
-
-    if (enrolledCourses && enrolledCourses.length > 0) {
-      enrolledCourses.forEach(course => {
-        fetchLessonsForCourse(course.id);
-      });
-    } else {
-      console.log('No enrolled courses found.');
-    }
-  }, [authToken, enrolledCourses]);
+  }, [navigation, userName, authToken, selectedCoursesId]);
 
   const openResourceLink = (resourceLink: string) => {
     if (resourceLink) {
@@ -307,22 +300,6 @@ function Course({navigation, route}: CourseProps) {
 
   const handleVideoPlay = (videoLink: string, videoName: string) => {
     navigation.navigate('VideoScreen', {videoLink, videoName});
-  };
-
-  const getTotalLessons = (courseId: number) => {
-    const lessonsForCourse = lessons[courseId];
-    return lessonsForCourse ? lessonsForCourse.length : 0;
-  };
-
-  const getDoneLessons = (courseId: number) => {
-    const lessonsForCourse = lessons[courseId];
-    return lessonsForCourse
-      ? lessonsForCourse.filter(lesson => lesson.done).length
-      : 0;
-  };
-
-  const isCourseDone = (courseId: number) => {
-    return getTotalLessons(courseId) === getDoneLessons(courseId);
   };
 
   const navigateToCourseList = () => {
@@ -419,7 +396,8 @@ function Course({navigation, route}: CourseProps) {
                             styles.statusText,
                             courseStatuses[course.id] === 'Todo' &&
                               styles.todoTextColor,
-                            courseStatuses[course.id] === 'Done' &&
+                            (courseStatuses[course.id] === 'Done' ||
+                              courseStatuses[course.id] === 'No Lesson') &&
                               styles.doneColor,
                             courseStatuses[course.id] === 'In Progress' &&
                               styles.inProgressColor,
