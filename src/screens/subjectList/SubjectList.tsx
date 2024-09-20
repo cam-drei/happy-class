@@ -128,10 +128,17 @@ function SubjectList({navigation, route}: SubjectListProps) {
         <HeaderRight
           userName={userName}
           userImage={require('../../assets/images/tiger.jpeg')}
+          onPress={() =>
+            navigation.navigate('Welcome', {
+              authToken,
+              userName,
+              selectedCoursesId: courseId,
+            })
+          }
         />
       ),
     });
-  }, [navigation, userName, navigateToCourse]);
+  }, [navigation, userName, navigateToCourse, authToken, courseId]);
 
   const toggleSubjectSelection = async (
     subjectId: number,

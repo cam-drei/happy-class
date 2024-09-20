@@ -125,10 +125,17 @@ function Lesson({navigation, route}: LessonProps) {
         <HeaderRight
           userName={userName}
           userImage={require('../../assets/images/tiger.jpeg')}
+          onPress={() =>
+            navigation.navigate('Welcome', {
+              authToken,
+              userName,
+              selectedSubjectsId,
+            })
+          }
         />
       ),
     });
-  }, [navigation, userName]);
+  }, [navigation, userName, authToken, selectedSubjectsId]);
 
   const markLessonAsDone = useCallback(
     async (userLessonId: number) => {
