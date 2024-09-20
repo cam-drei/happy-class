@@ -1,5 +1,5 @@
 import React, {useState, useEffect} from 'react';
-import {View, Alert} from 'react-native';
+import {View, Alert, KeyboardAvoidingView, Platform} from 'react-native';
 import {Input, Text, CheckBox} from '@rneui/themed';
 import styles from './styles';
 import PrimaryButton from '../../components/buttons/PrimaryButton';
@@ -91,7 +91,9 @@ function Login({navigation}: {navigation: any}) {
   };
 
   return (
-    <View style={styles.container}>
+    <KeyboardAvoidingView
+      style={styles.container}
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
       <Logo width={250} height={250} />
       <View style={styles.inputGroup}>
         <Text h4 style={styles.title}>
@@ -135,7 +137,7 @@ function Login({navigation}: {navigation: any}) {
           {' Sign up'}
         </Text>
       </Text>
-    </View>
+    </KeyboardAvoidingView>
   );
 }
 
