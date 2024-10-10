@@ -174,7 +174,13 @@ function Course({navigation, route}: CourseProps) {
             return statusComparison;
           });
 
-          setEnrolledCourses([...sortedCourses]);
+          const isDifferent =
+            JSON.stringify(sortedCourses) !== JSON.stringify(enrolledCourses);
+
+          if (isDifferent) {
+            setEnrolledCourses(sortedCourses);
+          }
+
           setIsLoading(false);
         } catch (error) {
           console.error('Error fetching course statuses:', error);
