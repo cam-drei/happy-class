@@ -19,7 +19,9 @@ import {baseUrl} from '../../utils/apiConfig';
 import LoadingIndicator from '../../components/loading/LoadingIndicator';
 import {useFocusEffect} from '@react-navigation/native';
 import PrimaryButton from '../../components/buttons/PrimaryButton';
-
+import CourseCard from './CourseCard';
+import NoCourses from './NoCourses';
+import CourseInfoModal from './CourseInfoModal';
 interface CourseProps {
   navigation: any;
   route: {
@@ -69,13 +71,16 @@ function Course({navigation, route}: CourseProps) {
   };
 
   const getStatusValue = useCallback((status: string | undefined): number => {
-    const statusMap = {
+    const statusMap: {[key: string]: number} = {
       'in progress': 1,
       todo: 2,
       done: 3,
       'no lesson': 4,
     };
-    return status ? statusMap[status.toLowerCase()] ?? 5 : 5;
+
+    return status
+      ? statusMap[status.toLowerCase() as keyof typeof statusMap] ?? 5
+      : 5;
   }, []);
 
   useFocusEffect(
@@ -322,122 +327,35 @@ function Course({navigation, route}: CourseProps) {
           enrolledCourses.map(course => {
             const isDone = isCourseDone(course.id);
             return (
-              <View
+              <CourseCard
                 key={course.id}
-                style={[styles.box, isDone && styles.doneBorder]}>
-                {/* Course Title and Description */}
-                <View style={styles.titleView}>
-                  <Text
-                    h4
-                    style={[styles.boxTitle, isDone && styles.doneColor]}
-                    onPress={() => {
-                      setCurrentSelection(course);
-                      setCourseInfoModalVisible(!!course.description);
-                    }}>
-                    {course.name}
-                  </Text>
-                  {contents[course.id]?.map(content => (
-                    <View key={content.id} style={styles.iconSubjectGroup}>
-                      {content.video_link && (
-                        <Feather
-                          name="video"
-                          size={30}
-                          color={isDone ? '#A9A9A9' : '#4F7942'}
-                          onPress={() =>
-                            handleVideoPlay(content.video_link, course.name)
-                          }
-                        />
-                      )}
-                      {content.document_link && (
-                        <FontAwesome
-                          name="book"
-                          size={30}
-                          color={isDone ? '#A9A9A9' : '#4F7942'}
-                          onPress={() =>
-                            openResourceLink(content.document_link)
-                          }
-                        />
-                      )}
-                    </View>
-                  ))}
-                </View>
-
-                {/* Course Progress and Status */}
-                <View style={styles.contentView}>
-                  <FontAwesome
-                    name="play-circle"
-                    size={60}
-                    color={isDone ? '#A9A9A9' : '#FF9900'}
-                    onPress={() => navigateToLesson(course.id)}
-                  />
-                  <View>
-                    <Text
-                      style={[
-                        styles.normalSizeText,
-                        isDone && styles.doneColor,
-                      ]}>
-                      Progress: {getDoneLessons(course.id)}/
-                      {getTotalLessons(course.id)}{' '}
-                      {getDoneLessons(course.id) <= 1 ? 'lesson' : 'lessons'}
-                    </Text>
-                    <Text
-                      style={[
-                        styles.statusText,
-                        courseStatuses[course.id] === 'Todo' &&
-                          styles.todoTextColor,
-                        (courseStatuses[course.id] === 'Done' ||
-                          courseStatuses[course.id] === 'No Lesson') &&
-                          styles.doneColor,
-                        courseStatuses[course.id] === 'In Progress' &&
-                          styles.inProgressColor,
-                      ]}>
-                      Status: {courseStatuses[course.id]}
-                    </Text>
-                  </View>
-                  <AntDesign
-                    name="edit"
-                    size={30}
-                    color={isDone ? '#A9A9A9' : '#4F7942'}
-                    onPress={() => navigateToSubjectList(course.id)}
-                  />
-                </View>
-
-                {currentSelection && (
-                  <Modal visible={isCourseInfoModalVisible} transparent>
-                    <View style={styles.centeredView}>
-                      <View style={styles.modalView}>
-                        <ScrollView>
-                          <Text h4>{currentSelection.name}</Text>
-                          <Text style={styles.modalText}>
-                            {currentSelection.description}
-                          </Text>
-                        </ScrollView>
-                        <TouchableOpacity
-                          style={[styles.button, styles.buttonClose]}
-                          onPress={() => {
-                            setCourseInfoModalVisible(false);
-                            setCurrentSelection(null);
-                          }}>
-                          <Text style={styles.textStyle}>Close</Text>
-                        </TouchableOpacity>
-                      </View>
-                    </View>
-                  </Modal>
-                )}
-              </View>
+                course={course}
+                isDone={isDone}
+                contents={contents[course.id]}
+                onVideoPlay={handleVideoPlay}
+                onResourceLinkOpen={openResourceLink}
+                navigateToLesson={navigateToLesson}
+                navigateToSubjectList={navigateToSubjectList}
+                setCurrentSelection={setCurrentSelection}
+                setCourseInfoModalVisible={setCourseInfoModalVisible}
+                courseStatuses={courseStatuses}
+              />
             );
           })
         ) : (
-          <View style={styles.noCourse}>
-            <Text h4>No enrolled courses.</Text>
-            <PrimaryButton
-              text="Click to choose your Courses"
-              buttonType="outlined"
-              onPress={navigateToCourseList}
-            />
-          </View>
+          <NoCourses navigateToCourseList={navigateToCourseList} />
         )}
       </ScrollView>
+      {currentSelection && (
+        <CourseInfoModal
+          visible={isCourseInfoModalVisible}
+          course={currentSelection}
+          onClose={() => {
+            setCourseInfoModalVisible(false);
+            setCurrentSelection(null);
+          }}
+        />
+      )}
     </View>
   );
 }
