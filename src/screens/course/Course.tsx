@@ -11,8 +11,8 @@ import axios from 'axios';
 import {baseUrl} from '../../utils/apiConfig';
 import LoadingIndicator from '../../components/loading/LoadingIndicator';
 import {useFocusEffect} from '@react-navigation/native';
-import PrimaryButton from '../../components/buttons/PrimaryButton';
 import CourseInfoModal from './CourseInfoModal';
+import NoCourses from './NoCourses';
 
 interface CourseProps {
   navigation: any;
@@ -416,14 +416,7 @@ function Course({navigation, route}: CourseProps) {
                 </View>
               ))
             ) : (
-              <View style={styles.noCourse}>
-                <Text h4>No enrolled courses.</Text>
-                <PrimaryButton
-                  text="Click for choose your Courses"
-                  buttonType={'outlined'}
-                  onPress={navigateToCourseList}
-                />
-              </View>
+              <NoCourses navigateToCourseList={navigateToCourseList} />
             )}
           </>
         )}
