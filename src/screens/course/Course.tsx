@@ -413,16 +413,6 @@ function Course({navigation, route}: CourseProps) {
                       onPress={() => navigateToSubjectList(course.id)}
                     />
                   </View>
-                  {currentSelection && (
-                    <CourseInfoModal
-                      visible={isCourseInfoModalVisible}
-                      course={currentSelection}
-                      onClose={() => {
-                        setCourseInfoModalVisible(false);
-                        setCurrentSelection(null);
-                      }}
-                    />
-                  )}
                 </View>
               ))
             ) : (
@@ -438,6 +428,16 @@ function Course({navigation, route}: CourseProps) {
           </>
         )}
       </ScrollView>
+      {currentSelection && (
+        <CourseInfoModal
+          visible={isCourseInfoModalVisible}
+          course={currentSelection}
+          onClose={() => {
+            setCourseInfoModalVisible(false);
+            setCurrentSelection(null);
+          }}
+        />
+      )}
     </View>
   );
 }
