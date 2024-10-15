@@ -310,6 +310,42 @@ function Course({navigation, route}: CourseProps) {
     });
   };
 
+  const renderContentElements = (
+    courseContents: any[],
+    isDone: boolean,
+    courseName: string,
+  ) => {
+    return courseContents.map(content => (
+      <View key={content.id} style={styles.iconSubjectGroup}>
+        {content.video_link && (
+          <Feather
+            name="video"
+            size={30}
+            color={isDone ? '#A9A9A9' : '#4F7942'}
+            onPress={() => handleVideoPlay(content.video_link, courseName)}
+          />
+        )}
+        {content.document_link && (
+          <FontAwesome
+            name="book"
+            style={styles.bookIcon}
+            size={30}
+            color={isDone ? '#A9A9A9' : '#4F7942'}
+            onPress={() => openResourceLink(content.document_link)}
+          />
+        )}
+      </View>
+    ));
+  };
+
+  const getStatusStyle = (status: string) => {
+    return [
+      status === 'Todo' && styles.todoTextColor,
+      ['Done', 'No Lesson'].includes(status) && styles.doneColor,
+      status === 'In Progress' && styles.inProgressColor,
+    ];
+  };
+
   return (
     <View style={styles.container}>
       <ScrollView contentContainerStyle={styles.scrollViewContainer}>
@@ -317,104 +353,69 @@ function Course({navigation, route}: CourseProps) {
           <LoadingIndicator />
         ) : (
           <>
-            {enrolledCourses && enrolledCourses.length > 0 ? (
-              enrolledCourses.map(course => (
-                <View
-                  key={course.id}
-                  style={[
-                    styles.box,
-                    isCourseDone(course.id) && styles.doneBorder,
-                  ]}>
-                  <View style={styles.titleView}>
-                    <Text
-                      h4
-                      style={[
-                        styles.boxTitle,
-                        isCourseDone(course.id) && styles.doneColor,
-                      ]}
-                      onPress={() => {
-                        setCurrentSelection(course);
-                        setCourseInfoModalVisible(!!course.description);
-                      }}>
-                      {course.name}
-                    </Text>
-                    {contents[course.id] &&
-                      contents[course.id].length > 0 &&
-                      contents[course.id].map(content => (
-                        <View key={content.id} style={styles.iconSubjectGroup}>
-                          {content.video_link && (
-                            <Feather
-                              name="video"
-                              size={30}
-                              color={
-                                isCourseDone(course.id) ? '#A9A9A9' : '#4F7942'
-                              }
-                              onPress={() =>
-                                handleVideoPlay(content.video_link, course.name)
-                              }
-                            />
-                          )}
-                          {content.document_link && (
-                            <FontAwesome
-                              name="book"
-                              style={styles.bookIcon}
-                              size={30}
-                              color={
-                                isCourseDone(course.id) ? '#A9A9A9' : '#4F7942'
-                              }
-                              onPress={() =>
-                                openResourceLink(content.document_link)
-                              }
-                            />
-                          )}
-                        </View>
-                      ))}
-                  </View>
-                  <View style={[styles.titleView]}>
-                    <View style={styles.contentView}>
-                      <FontAwesome
-                        name="play-circle"
-                        size={60}
-                        color={isCourseDone(course.id) ? '#A9A9A9' : '#FF9900'}
-                        style={styles.iconPlay}
-                        onPress={() => navigateToLesson(course.id)}
-                      />
-                      <View>
-                        <Text
-                          style={[
-                            styles.normalSizeText,
-                            isCourseDone(course.id) && styles.doneColor,
-                          ]}>
-                          Progress: {getDoneLessons(course.id)}/
-                          {getTotalLessons(course.id)}
-                          {getDoneLessons(course.id) <= 1
-                            ? ' lesson'
-                            : ' lessons'}
-                        </Text>
-                        <Text
-                          style={[
-                            styles.statusText,
-                            courseStatuses[course.id] === 'Todo' &&
-                              styles.todoTextColor,
-                            (courseStatuses[course.id] === 'Done' ||
-                              courseStatuses[course.id] === 'No Lesson') &&
-                              styles.doneColor,
-                            courseStatuses[course.id] === 'In Progress' &&
-                              styles.inProgressColor,
-                          ]}>
-                          Status: {courseStatuses[course.id]}
-                        </Text>
-                      </View>
+            {enrolledCourses?.length > 0 ? (
+              enrolledCourses.map(course => {
+                const isDone = isCourseDone(course.id);
+                const courseContents = contents[course.id] || [];
+                const statusStyle = getStatusStyle(courseStatuses[course.id]);
+
+                return (
+                  <View
+                    key={course.id}
+                    style={[styles.box, isDone && styles.doneBorder]}>
+                    <View style={styles.titleView}>
+                      <Text
+                        h4
+                        style={[styles.boxTitle, isDone && styles.doneColor]}
+                        onPress={() => {
+                          setCurrentSelection(course);
+                          setCourseInfoModalVisible(!!course.description);
+                        }}>
+                        {course.name}
+                      </Text>
+                      {renderContentElements(
+                        courseContents,
+                        isDone,
+                        course.name,
+                      )}
                     </View>
-                    <AntDesign
-                      name="edit"
-                      size={30}
-                      color={isCourseDone(course.id) ? '#A9A9A9' : '#4F7942'}
-                      onPress={() => navigateToSubjectList(course.id)}
-                    />
+
+                    <View style={styles.titleView}>
+                      <View style={styles.contentView}>
+                        <FontAwesome
+                          name="play-circle"
+                          size={60}
+                          color={isDone ? '#A9A9A9' : '#FF9900'}
+                          style={styles.iconPlay}
+                          onPress={() => navigateToLesson(course.id)}
+                        />
+                        <View>
+                          <Text
+                            style={[
+                              styles.normalSizeText,
+                              isDone && styles.doneColor,
+                            ]}>
+                            Progress: {getDoneLessons(course.id)}/
+                            {getTotalLessons(course.id)}{' '}
+                            {getDoneLessons(course.id) <= 1
+                              ? 'lesson'
+                              : 'lessons'}
+                          </Text>
+                          <Text style={[styles.statusText, ...statusStyle]}>
+                            Status: {courseStatuses[course.id]}
+                          </Text>
+                        </View>
+                      </View>
+                      <AntDesign
+                        name="edit"
+                        size={30}
+                        color={isDone ? '#A9A9A9' : '#4F7942'}
+                        onPress={() => navigateToSubjectList(course.id)}
+                      />
+                    </View>
                   </View>
-                </View>
-              ))
+                );
+              })
             ) : (
               <NoCourses navigateToCourseList={navigateToCourseList} />
             )}
