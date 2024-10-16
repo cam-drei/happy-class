@@ -346,6 +346,58 @@ function Course({navigation, route}: CourseProps) {
     ];
   };
 
+  const renderTitleView = (
+    course: Course,
+    isDone: boolean,
+    courseContents: any[],
+  ) => (
+    <View style={styles.titleView}>
+      <Text
+        h4
+        style={[styles.boxTitle, isDone && styles.doneColor]}
+        onPress={() => {
+          setCurrentSelection(course);
+          setCourseInfoModalVisible(!!course.description);
+        }}>
+        {course.name}
+      </Text>
+      {renderContentElements(courseContents, isDone, course.name)}
+    </View>
+  );
+
+  const renderContentView = (
+    course: Course,
+    isDone: boolean,
+    statusStyle: any[],
+  ) => (
+    <View style={styles.titleView}>
+      <View style={styles.contentView}>
+        <FontAwesome
+          name="play-circle"
+          size={60}
+          color={isDone ? '#A9A9A9' : '#FF9900'}
+          style={styles.iconPlay}
+          onPress={() => navigateToLesson(course.id)}
+        />
+        <View>
+          <Text style={[styles.normalSizeText, isDone && styles.doneColor]}>
+            Progress: {getDoneLessons(course.id)}/{getTotalLessons(course.id)}{' '}
+            {getDoneLessons(course.id) <= 1 ? 'lesson' : 'lessons'}
+          </Text>
+          <Text style={[styles.statusText, ...statusStyle]}>
+            Status: {courseStatuses[course.id]}
+          </Text>
+        </View>
+      </View>
+      <AntDesign
+        name="edit"
+        size={30}
+        color={isDone ? '#A9A9A9' : '#4F7942'}
+        onPress={() => navigateToSubjectList(course.id)}
+      />
+    </View>
+  );
+
   return (
     <View style={styles.container}>
       <ScrollView contentContainerStyle={styles.scrollViewContainer}>
@@ -363,56 +415,8 @@ function Course({navigation, route}: CourseProps) {
                   <View
                     key={course.id}
                     style={[styles.box, isDone && styles.doneBorder]}>
-                    <View style={styles.titleView}>
-                      <Text
-                        h4
-                        style={[styles.boxTitle, isDone && styles.doneColor]}
-                        onPress={() => {
-                          setCurrentSelection(course);
-                          setCourseInfoModalVisible(!!course.description);
-                        }}>
-                        {course.name}
-                      </Text>
-                      {renderContentElements(
-                        courseContents,
-                        isDone,
-                        course.name,
-                      )}
-                    </View>
-
-                    <View style={styles.titleView}>
-                      <View style={styles.contentView}>
-                        <FontAwesome
-                          name="play-circle"
-                          size={60}
-                          color={isDone ? '#A9A9A9' : '#FF9900'}
-                          style={styles.iconPlay}
-                          onPress={() => navigateToLesson(course.id)}
-                        />
-                        <View>
-                          <Text
-                            style={[
-                              styles.normalSizeText,
-                              isDone && styles.doneColor,
-                            ]}>
-                            Progress: {getDoneLessons(course.id)}/
-                            {getTotalLessons(course.id)}{' '}
-                            {getDoneLessons(course.id) <= 1
-                              ? 'lesson'
-                              : 'lessons'}
-                          </Text>
-                          <Text style={[styles.statusText, ...statusStyle]}>
-                            Status: {courseStatuses[course.id]}
-                          </Text>
-                        </View>
-                      </View>
-                      <AntDesign
-                        name="edit"
-                        size={30}
-                        color={isDone ? '#A9A9A9' : '#4F7942'}
-                        onPress={() => navigateToSubjectList(course.id)}
-                      />
-                    </View>
+                    {renderTitleView(course, isDone, courseContents)}
+                    {renderContentView(course, isDone, statusStyle)}
                   </View>
                 );
               })
