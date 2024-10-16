@@ -43,11 +43,7 @@ interface Content {
 
 interface SubjectLesson {
   id: number;
-  subject_id: number; //check later
-  lesson_id: number; //check later
   contents: Content[];
-  subject: Subject; //check later
-  user_subject_lesson: UserSubjectLesson; //check later
   done: boolean;
   subject_name: string;
 }
