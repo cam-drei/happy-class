@@ -74,35 +74,41 @@ function Signup({navigation}: {navigation: any}) {
       style={styles.container}
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
       <Logo width={250} height={250} />
+
       <View style={styles.inputGroup}>
         <Text h4 style={styles.title}>
           SIGN UP
         </Text>
+
         <Input
           placeholder="Email"
           value={email}
-          autoCapitalize={'none'}
+          autoCapitalize="none"
           onChangeText={setEmail}
           inputContainerStyle={styles.inputField}
         />
+
         <Input
           placeholder="Password"
           value={password}
-          autoCapitalize={'none'}
+          autoCapitalize="none"
           onChangeText={setPassword}
           secureTextEntry
           inputContainerStyle={styles.inputField}
         />
+
         <Input
           placeholder="Confirm password"
           value={confirmPassword}
-          autoCapitalize={'none'}
+          autoCapitalize="none"
           onChangeText={setConfirmPassword}
           secureTextEntry
           inputContainerStyle={styles.inputField}
         />
       </View>
+
       <PrimaryButton text="Sign up" onPress={handleSignup} />
+
       <Text style={styles.baseText}>
         Already have an account?
         <Text

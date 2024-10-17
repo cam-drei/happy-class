@@ -95,40 +95,47 @@ function Login({navigation}: {navigation: any}) {
       style={styles.container}
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
       <Logo width={250} height={250} />
+
       <View style={styles.inputGroup}>
         <Text h4 style={styles.title}>
           LOGIN
         </Text>
+
         <Input
           placeholder="Email"
           inputContainerStyle={styles.inputField}
-          autoCapitalize={'none'}
-          keyboardType={'email-address'}
-          onChangeText={text => setEmail(text)}
+          autoCapitalize="none"
+          keyboardType="email-address"
+          onChangeText={setEmail}
         />
+
         <Input
           placeholder="Password"
           inputContainerStyle={styles.inputField}
-          autoCapitalize={'none'}
+          autoCapitalize="none"
           secureTextEntry
-          onChangeText={text => setPassword(text)}
+          onChangeText={setPassword}
         />
+
         <Text onPress={handleForgotPassword} style={styles.forgotText}>
           Forgot password?
         </Text>
+
         <CheckBox
           title="Remember me"
           checked={rememberMe}
           onPress={() => setRememberMe(!rememberMe)}
           iconType="material-community"
           checkedIcon="checkbox-outline"
-          uncheckedIcon={'checkbox-blank-outline'}
+          uncheckedIcon="checkbox-blank-outline"
           checkedColor="#FF9900"
           textStyle={styles.checkboxTitle}
           containerStyle={styles.checkbox}
         />
       </View>
+
       <PrimaryButton text="Login" onPress={handleLogin} />
+
       <Text style={styles.baseText}>
         Don't have an account?
         <Text
