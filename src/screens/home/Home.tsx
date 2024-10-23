@@ -1,10 +1,16 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import {View} from 'react-native';
 import styles from './styles';
 import PrimaryButton from '../../components/buttons/PrimaryButton';
 import Logo from '../../components/logo/Logo';
 
 function Home({navigation}: {navigation: any}) {
+  useEffect(() => {
+    navigation.setOptions({
+      headerTitle: '',
+    });
+  });
+
   return (
     <View style={styles.container}>
       <Logo />
