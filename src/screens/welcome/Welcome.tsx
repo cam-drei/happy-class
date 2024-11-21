@@ -7,6 +7,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 import HeaderLeft from '../../components/header/HeaderLeft';
 import HeaderRight from '../../components/header/HeaderRight';
+import {baseUrl} from '../../utils/apiConfig';
 
 interface WelcomeProps {
   navigation: any;
@@ -31,7 +32,7 @@ function Welcome({navigation, route}: WelcomeProps) {
 
   const handleLogout = useCallback(async () => {
     try {
-      await axios.delete('http://localhost:3000/api/v1/logout');
+      await axios.delete('baseUrl/logout');
 
       await AsyncStorage.removeItem('authToken');
       await AsyncStorage.removeItem('userName');
