@@ -32,7 +32,7 @@ function Welcome({navigation, route}: WelcomeProps) {
 
   const handleLogout = useCallback(async () => {
     try {
-      await axios.delete('baseUrl/logout');
+      await axios.delete(`${baseUrl}/logout`);
 
       await AsyncStorage.removeItem('authToken');
       await AsyncStorage.removeItem('userName');
