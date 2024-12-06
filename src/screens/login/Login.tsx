@@ -25,6 +25,7 @@ function Login({navigation}: {navigation: any}) {
         {
           headers: {
             'Content-Type': 'application/json',
+            Accept: 'application/json',
           },
         },
       );
